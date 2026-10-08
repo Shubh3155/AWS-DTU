@@ -1,5 +1,6 @@
 import argparse
 import json
+import time
 from pathlib import Path
 
 import httpx
@@ -30,10 +31,21 @@ def main() -> int:
             base_url="https://api.openaq.org",
             headers={"X-API-Key": key.get_secret_value()},
             timeout=20,
+            # The audit makes one request per station. Stay below the documented
+            # 60 requests/minute instead of bursting through a large station list.
+            event_hooks={"request": [lambda request: time.sleep(1.1)]},
         ) as client:
             report = audit_locations(client, args.lat, args.lng, args.radius)
     except httpx.HTTPStatusError as error:
         print(f"OpenAQ audit failed: HTTP {error.response.status_code}; no report saved.")
+        if error.response.status_code == 429:
+            print(
+                "Stop requests until the quota resets; this attempt will not retry automatically."
+            )
+            for header in ("retry-after", "x-ratelimit-reset", "x-ratelimit-remaining"):
+                value = error.response.headers.get(header, "")
+                if value.isdigit():
+                    print(f"{header}: {value}")
         return 1
     except (httpx.RequestError, ValueError, KeyError):
         print("OpenAQ audit failed: network error or unexpected response; no report saved.")
