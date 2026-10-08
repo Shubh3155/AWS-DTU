@@ -7,8 +7,8 @@ The foundation portion of Thursday's work is implemented across each project par
 | Frontend | Next.js 15, TypeScript, Tailwind, responsive form, detour control, optional map selection, result placeholders, API connection check | Verify map access; agree an audited pilot; inspect a real routing response |
 | Backend | FastAPI, settings, health/pilot endpoints, request validation, OpenAPI contract, local CORS, environment template | Provider access checks; real walking request; database connectivity |
 | Data/model | Observation/estimate contracts and OpenAQ coverage-audit command | Run authenticated audit; select pilot; save genuine snapshot; define interpolation parameters |
-| AWS/container | Non-root container definition and health check | Build/deployment checks; account/region verification; Supabase and S3 access |
-| CI | Frontend lint/types/build, backend lint/tests and container-build jobs | Confirm hosted workflow results; deployment workflow comes later |
+| AWS/container | Non-root container definition, health check and successful CI build | Deployment checks; account/region verification; Supabase and S3 access |
+| CI | Passing hosted frontend, backend and container-build jobs | Add the deployment workflow in the later integration step |
 | Documentation | Setup/run instructions, API contract, audit checklist and updated plan | Record provider findings and pilot evidence |
 
 Use Node.js 22 and Python 3.12. Docker is needed only for local container builds; CI also builds the container. The apps start without provider credentials. Live routing, scoring, database integrations and AWS deployment are pending.
@@ -24,7 +24,7 @@ Next.js 15 is pinned because the chosen [Amplify documentation](https://docs.aws
 - The audit command exits explicitly without a report when its key is missing.
 - Documentation links resolve and the original proposal checksum is unchanged.
 
-Docker is not installed on the local machine; the container build is delegated to the CI job. Live provider access, actual map loading and cloud deployment are not verified by these checks.
+The [setup CI run](https://github.com/Shubh3155/AWS-DTU/actions/runs/37794286232) passed for commit `55cbdca`, including the container build. Docker is not installed on the local machine. Live provider access, actual map loading and cloud deployment are not verified by these checks.
 
 ## Next team actions
 
