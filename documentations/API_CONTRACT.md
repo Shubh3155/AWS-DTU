@@ -57,7 +57,7 @@ If Mapbox is unconfigured, requests return **HTTP 503**:
 
 Invalid requests return **HTTP 422** with FastAPI validation details. The frontend displays the pending message and does not substitute fabricated results.
 
-## Next-step comparison contract
+## Comparison contract
 
 `backend/app/schemas/routes.py` defines the response schema in OpenAPI. Walking geometry/duration/eligibility are implemented; pollution scoring fields remain unavailable:
 

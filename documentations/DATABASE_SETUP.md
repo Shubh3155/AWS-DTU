@@ -4,8 +4,10 @@ On 8 October 2026 the `aeroroute` Supabase project was created in the AeroRoute 
 organization. The dashboard reports it healthy in Tokyo (`ap-northeast-1`). PostGIS 3.3.7
 is enabled in schema `gis`. The local backend connection passed the live read-only check
 over certificate/hostname-verified TLS on 8 October 2026. Migration `001_initial.sql` was applied successfully on 8 October 2026; the runner
-reports the database up to date. The 24-test backend suite passed, including a live
-forced-rollback integration test. No real monitoring data has been ingested yet.
+reports the database up to date. The 37-test backend suite passed, including live
+forced-rollback schema/ingestion tests. A genuine OpenAQ replay snapshot now contains
+118 observations from 77 stations; original timestamps are preserved. See
+[INGESTION.md](INGESTION.md).
 See `backend/migrations/README.md` for application and verification commands. Teammates must configure their own ignored environment.
 
 The check trusts Supabase's public database CA in `backend/certs/supabase-ca.crt`,
