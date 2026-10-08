@@ -14,7 +14,7 @@ Health: `http://localhost:8000/health`. API documentation: `http://localhost:800
 
 Checks: `ruff check .`, `ruff format --check .`, `pytest -q`.
 
-Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Interpolation, segmentation, database access and AWS deployment remain pending.
+Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Database connectivity and versioned migrations are available; see [migrations/README.md](migrations/README.md). Interpolation, segmentation, ingestion and AWS deployment remain pending.
 
 From the repository root, build with `docker build -t aeroroute-api backend`. The image listens on port 8000 and runs as a non-root user. Use `/health` as the Lightsail health-check path.
 

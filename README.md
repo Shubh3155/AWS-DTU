@@ -2,7 +2,7 @@
 
 Walking-route comparisons using estimated PM2.5 exposure and a user-defined time budget.
 
-The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. The initial frontend, backend, audit tooling and CI foundation are implemented. Live routing, scoring, pilot selection and cloud deployment are next.
+The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. The initial frontend, backend, audit tooling and CI foundation are implemented. Mapbox routing access and Supabase/PostGIS migrations are verified. Live routing integration, data ingestion, scoring, pilot selection and cloud deployment are next.
 
 - [Implementation plan and daily checklist](documentations/IMPLEMENTATION_PLAN.md)
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
