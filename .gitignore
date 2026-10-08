@@ -15,3 +15,6 @@ __pycache__/
 .coverage
 coverage/
 htmlcov/
+*.tsbuildinfo
+*.egg-info/
+backend/data/

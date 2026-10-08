@@ -4,7 +4,7 @@
 
 **Source:** [AeroRoute revised proposal](AeroRoute_Revised_Proposal%20%281%29.pdf), pages 1–2.
 
-**Current status:** Planning scaffold only. The folders and proposal are organized; application code, operational workflows, provider access and deployed services are still to be implemented or verified. Unchecked tasks below are planned work.
+**Current status:** The initial frontend, FastAPI service, request/data contracts, OpenAQ audit command, environment templates, container definition and CI foundation are implemented. See [SETUP_STATUS.md](SETUP_STATUS.md). Provider access, pilot selection, actual observations, route scoring and deployment remain pending. Unchecked tasks below are remaining work.
 
 ## 1. Sunday delivery target
 
@@ -42,7 +42,7 @@ Open-Meteo weather and OSM/OSMnx feature extraction belong to the conditional mo
 
 Maintain one frontend, one backend, one workflows directory and one documentation directory. Model/data work lives inside `backend/`.
 
-Created for this planning step:
+Original scaffold (the initial setup adds application and configuration files beneath these directories):
 
 ```text
 AWS-DTU/
@@ -54,13 +54,13 @@ AWS-DTU/
 │   └── README.md
 ├── .github/
 │   └── workflows/
-│       └── .gitkeep
+│       └── ci.yml
 └── documentations/
     ├── AeroRoute_Revised_Proposal (1).pdf
     └── IMPLEMENTATION_PLAN.md
 ```
 
-Add these files during implementation; the following is a target layout, not existing application code:
+Full build target layout; the setup implements a subset, with deployment and validation work still pending:
 
 ```text
 frontend/
@@ -114,13 +114,14 @@ Amplify build settings can be configured in its console; add a root build-spec f
 
 - [ ] **Backend/AWS:** Verify Mapbox routing access, AWS access in the chosen region, Supabase connectivity and the repository's GitHub Actions settings. Record dependencies and account limits.
 - [ ] **Data/model:** Audit Delhi PM2.5 stations, units, provider metadata, recent observation times and historical availability. Save findings in `DATA_AUDIT.md`; do not select the pilot just from the project name or a convenient map location.
-- [ ] **Frontend:** Sketch the journey form, map, two comparison cards and freshness/coverage notice. Use map-click origin/destination selection as the dependable initial input; searchable addresses are optional polish.
+- [x] **Frontend:** Implement the initial journey form, optional map selection, comparison placeholders and data-quality notice. Searchable addresses remain optional polish.
 
 **Second hour: agree the contract and initialize applications.**
 
-- [ ] **All:** Choose a pilot boundary after the audit; agree extra-time minutes, coordinate format, data-quality rules, sample response and error states in `API_CONTRACT.md`.
-- [ ] **Backend/AWS:** Initialize FastAPI, configuration, `/health`, request validation and local CORS. Add the backend environment template and container skeleton.
-- [ ] **Frontend:** Initialize Next.js, TypeScript and Tailwind inside `frontend/`; add the page shell, map and form using an explicitly labelled development fixture.
+- [x] **All:** Define the initial coordinate/time-budget contract and explicit pending API states in `API_CONTRACT.md`.
+- [ ] **All:** Choose a pilot boundary after the audit and finalize data-quality rules using real monitoring evidence.
+- [x] **Backend/AWS:** Initialize FastAPI, configuration, `/health`, request validation and local CORS. Add the backend environment template and container skeleton.
+- [x] **Frontend:** Initialize Next.js, TypeScript and Tailwind inside `frontend/`; add the page shell, map component and form with clearly pending results.
 
 **Final hour: prepare Friday's real data path.**
 
