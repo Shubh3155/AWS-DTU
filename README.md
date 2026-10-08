@@ -2,7 +2,7 @@
 
 Walking-route comparisons using estimated PM2.5 exposure and a user-defined time budget.
 
-The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. The initial frontend, backend, audit tooling and CI foundation are implemented. Mapbox routing access and Supabase/PostGIS migrations are verified. Live routing integration, data ingestion, scoring, pilot selection and cloud deployment are next.
+The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. The initial frontend, backend, audit tooling and CI foundation are implemented. Mapbox routing access and Supabase/PostGIS migrations are verified. Live walking routes and recorded OpenAQ ingestion are implemented. Scoring, pilot selection and cloud deployment are next.
 
 - [Implementation plan and daily checklist](documentations/IMPLEMENTATION_PLAN.md)
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
@@ -48,7 +48,7 @@ npm run dev
 
 Visit `http://localhost:3000` and use **Check connection**. Backend health is at `http://localhost:8000/health`; API docs are at `http://localhost:8000/docs`. Both apps start without provider credentials. Add a browser Mapbox token for the map; private credentials belong only in `backend/.env`.
 
-The page is a setup preview with pending route cards. Valid comparison requests return HTTP 503 until routing and scoring are implemented. No live pollution readings or exposure estimates are displayed.
+With Mapbox configured, the page displays actual walking routes, durations and detour eligibility. Pollution scoring remains unavailable and no cleaner-route recommendation is made. Missing routing credentials return HTTP 503. See [routing and ingestion](documentations/INGESTION.md) for the genuine recorded OpenAQ snapshot and remaining coverage work.
 
 ## Checks
 

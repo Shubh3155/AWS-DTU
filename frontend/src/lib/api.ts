@@ -1,6 +1,6 @@
-import type { ComparisonRequest, HealthResponse } from "@/types/api";
+import type { ComparisonRequest, ComparisonResponse, HealthResponse } from "@/types/api";
 
-const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
 
 export async function checkHealth(): Promise<HealthResponse> {
   const response = await fetch(`${baseUrl}/health`, {
@@ -11,7 +11,7 @@ export async function checkHealth(): Promise<HealthResponse> {
   return response.json();
 }
 
-export async function compareJourney(request: ComparisonRequest): Promise<void> {
+export async function compareJourney(request: ComparisonRequest): Promise<ComparisonResponse> {
   const response = await fetch(`${baseUrl}/api/routes/compare`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -27,6 +27,5 @@ export async function compareJourney(request: ComparisonRequest): Promise<void> 
         : "This journey could not be compared. Check your locations and try again.",
     );
   }
-  // Real result rendering is the next implementation step.
-  throw new Error("Route results are not available in this setup preview yet.");
+  return response.json();
 }

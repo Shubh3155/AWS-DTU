@@ -21,3 +21,32 @@ export type PilotResponse = {
   data_mode: "unavailable";
   warning: string;
 };
+
+export type RouteCandidate = {
+  id: string;
+  geometry: { type: "LineString"; coordinates: [number, number][] };
+  distance_metres: number;
+  duration_seconds: number;
+  estimated_exposure: number | null;
+  exposure_unit: "µg·min/m³";
+  within_budget: boolean;
+  coverage_percent: number;
+};
+export type ComparisonResponse = {
+  status: "comparison_available" | "uncertain_difference" | "no_lower_exposure_candidate" | "single_candidate" | "limited_data" | "no_route";
+  candidates: RouteCandidate[];
+  fastest_id: string | null;
+  lowest_exposure_eligible_id: string | null;
+  estimated_reduction_percent: number | null;
+  warnings: string[];
+  data_quality: {
+    data_mode: "live" | "replay" | "unavailable";
+    observed_from: string | null;
+    observed_to: string | null;
+    fetched_at: string | null;
+    source_ids: string[];
+    provider_ids: string[];
+    data_version: string | null;
+    model_version: string | null;
+  };
+};

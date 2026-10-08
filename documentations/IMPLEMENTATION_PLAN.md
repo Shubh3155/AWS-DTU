@@ -4,7 +4,7 @@
 
 **Source:** [AeroRoute revised proposal](AeroRoute_Revised_Proposal%20%281%29.pdf), pages 1–2.
 
-**Current status:** The initial frontend, FastAPI service, request/data contracts, OpenAQ audit command, environment templates, container definition and CI foundation are implemented. See [SETUP_STATUS.md](SETUP_STATUS.md). Mapbox and Supabase access are verified; PostGIS application migrations are applied. OpenAQ coverage, pilot selection, actual observations, route scoring and AWS access/deployment remain pending. Unchecked tasks below are remaining work.
+**Current status:** The initial frontend, FastAPI service, request/data contracts, OpenAQ audit command, environment templates, container definition and CI foundation are implemented. See [SETUP_STATUS.md](SETUP_STATUS.md). Mapbox and Supabase access are verified; PostGIS application migrations are applied. Live walking candidates and genuine recorded OpenAQ ingestion are implemented. Fresh OpenAQ coverage, pilot selection, route scoring and AWS access/deployment remain pending. Unchecked tasks below are remaining work.
 
 ## 1. Sunday delivery target
 
