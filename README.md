@@ -9,6 +9,7 @@ The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**,
 - [Setup handoff and remaining work](documentations/SETUP_STATUS.md)
 - [API contract](documentations/API_CONTRACT.md)
 - [Monitoring data audit](documentations/DATA_AUDIT.md)
+- [Database access setup](documentations/DATABASE_SETUP.md)
 
 ```text
 AWS-DTU/
