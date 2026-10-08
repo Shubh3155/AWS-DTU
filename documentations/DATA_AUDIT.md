@@ -37,9 +37,20 @@ or enable the comparison API. [Mapbox Directions reference](https://docs.mapbox.
 
 ### Access status
 
-Mapbox and OpenAQ keys are not configured yet. Live access checks, actual station coverage
-and pilot selection remain blocked. Request/response behavior is checked using synthetic
-automated tests; these tests provide no evidence about Delhi coverage.
+Keys are configured locally in the ignored backend environment. On 8 October 2026:
+
+- Mapbox returned one genuine walking candidate for the illustrative journey above:
+  3,462.667 metres, 2,540.128 seconds, 167 geometry points and 38 steps.
+  Step durations sum to 2,540.130 seconds (0.002 seconds of provider rounding).
+  The local response is saved at `backend/data/mapbox-audit-2026-10-08.json`.
+  This establishes routing access, not pollution support or an approved pilot.
+- The OpenAQ audit encountered HTTP 429 (rate limiting) and saved no report.
+  Retry after the provider's quota window resets; do not infer station counts or
+  freshness from this incomplete attempt. Monitoring coverage and pilot selection
+  remain unverified.
+
+Keys and local snapshots are ignored by Git. Synthetic automated tests verify request
+behavior separately and provide no evidence about Delhi monitoring coverage.
 
 - [ ] Confirm real provider access and review the saved report.
 - [ ] Count usable PM2.5 sensors and verify units, values and coordinates.
