@@ -35,7 +35,7 @@ def test_pilot_is_unselected_until_data_audit(client):
 def test_comparison_never_fakes_success(client):
     response = client.post("/api/routes/compare", json=journey())
     assert response.status_code == 503
-    assert response.json()["detail"]["code"] == "comparison_not_ready"
+    assert response.json()["detail"]["code"] == "routing_unconfigured"
 
 
 @pytest.mark.parametrize("value", [-1, True, "5"])

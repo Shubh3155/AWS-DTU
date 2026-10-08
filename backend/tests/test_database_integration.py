@@ -92,3 +92,58 @@ def test_schema_constraints_spatial_lookup_and_repeat_migration():
             "SELECT has_schema_privilege('anon','aeroroute','USAGE'), "
             "has_schema_privilege('authenticated','aeroroute','USAGE')"
         ).fetchone() == (False, False)
+
+
+def test_ingestion_idempotent_and_original_timestamps_preserved():
+    from app.services.ingestion import ingest_snapshot, prepare_snapshot
+
+    url = get_settings().database_url
+    assert url is not None
+    try:
+        connection = psycopg.connect(
+            url.get_secret_value(),
+            sslmode="verify-full",
+            sslrootcert=str(CA),
+            connect_timeout=10,
+            autocommit=True,
+        )
+    except psycopg.Error:
+        pytest.fail("Database connection failed; credentials omitted.", pytrace=False)
+    raw = {
+        "source": "OpenAQ v3",
+        "fetched_at": "2026-10-08T10:00:00Z",
+        "limitations": ["Synthetic integration fixture; always rolled back"],
+        "stations": [
+            {
+                "station_id": 999999999,
+                "name": "Synthetic rollback fixture",
+                "coordinates": {"latitude": 28.6, "longitude": 77.2},
+                "measurements": [
+                    {
+                        "sensor_id": 999999999,
+                        "value": 42.0,
+                        "unit": "ug/m3",
+                        "observed_at": "2016-10-08T10:00:00Z",
+                    }
+                ],
+            }
+        ],
+    }
+    prepared = prepare_snapshot(raw, "replay")
+    with connection, connection.transaction(force_rollback=True):
+        assert ingest_snapshot(connection, prepared)
+        assert not ingest_snapshot(connection, prepared)
+        row = connection.execute(
+            "SELECT o.observed_at,o.source_unit,s.data_mode FROM aeroroute.observations o "
+            "JOIN aeroroute.snapshots s USING (snapshot_id) WHERE snapshot_id=%s",
+            (prepared["snapshot_id"],),
+        ).fetchone()
+        assert row[0].year == 2016
+        assert row[1:] == ("ug/m3", "replay")
+        assert (
+            connection.execute(
+                "SELECT count(*) FROM aeroroute.observations WHERE snapshot_id=%s",
+                (prepared["snapshot_id"],),
+            ).fetchone()[0]
+            == 1
+        )

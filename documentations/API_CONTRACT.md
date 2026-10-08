@@ -42,22 +42,24 @@ This does not claim that monitoring data, routing, database or AWS access is ver
 
 Coordinates must be finite JSON numbers within latitude/longitude bounds. Extra time must be a finite non-negative number; booleans and numeric strings are rejected. Only walking is accepted. Unknown request fields are rejected.
 
-Valid requests currently return **HTTP 503**, because provider integration and scoring are the next build step:
+With Mapbox configured, valid requests now return **HTTP 200** with actual walking candidates, `limited_data`, exact time-budget eligibility, zero assessed pollution coverage and null exposure/recommendation. No-route responses return `no_route` and an empty candidate list. Pollution scoring remains pending. See [INGESTION.md](INGESTION.md).
+
+If Mapbox is unconfigured, requests return **HTTP 503**:
 
 ```json
 {
   "detail": {
-    "code": "comparison_not_ready",
-    "message": "Route comparison is not available yet. Routing and data checks are next."
+    "code": "routing_unconfigured",
+    "message": "Walking route access is not configured."
   }
 }
 ```
 
 Invalid requests return **HTTP 422** with FastAPI validation details. The frontend displays the pending message and does not substitute fabricated results.
 
-## Next-step comparison contract
+## Comparison contract
 
-`backend/app/schemas/routes.py` defines the future result schema in OpenAPI. It is a handoff contract, not an implemented comparison:
+`backend/app/schemas/routes.py` defines the response schema in OpenAPI. Walking geometry/duration/eligibility are implemented; pollution scoring fields remain unavailable:
 
 - `status`: comparison available, uncertain difference, no lower-exposure candidate, single candidate, limited data or no route.
 - `candidates`: ID, GeoJSON LineString, `distance_metres`, `duration_seconds`, nullable `estimated_exposure`, `exposure_unit`, `within_budget` and `coverage_percent`.

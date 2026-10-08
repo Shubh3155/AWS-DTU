@@ -69,3 +69,12 @@ behavior separately and provide no evidence about Delhi monitoring coverage.
 - [ ] Confirm Mapbox walking access, alternatives and step timings.
 
 Record findings here after checking them. Synthetic stations appear only in automated tests and are not pilot evidence.
+
+## Resumed audit — 8 October 2026
+
+OpenAQ access succeeded. The genuine report contains 79 candidate stations and 118
+valid PM2.5 readings from 77 stations. No latest reading was under 24 hours old at
+fetch. Observation dates range from November 2016 to 7 October 2026; broad station
+counts alone do not establish usable live coverage. The readings were ingested into
+Supabase as explicit replay with original timestamps. No pilot boundary or freshness
+policy is approved yet. See [INGESTION.md](INGESTION.md) for the manifest and commands.

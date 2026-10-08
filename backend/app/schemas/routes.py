@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator
 
 
 class Coordinate(BaseModel):
@@ -18,8 +18,19 @@ class ComparisonRequest(BaseModel):
 
 
 class LineString(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     type: Literal["LineString"] = "LineString"
     coordinates: list[tuple[float, float]] = Field(min_length=2)
+
+    @field_validator("coordinates", mode="before")
+    @classmethod
+    def valid_positions(cls, values: list[tuple[float, float]]) -> list[tuple[float, float]]:
+        for pair in values:
+            if len(pair) != 2 or any(type(value) not in (int, float) for value in pair):
+                raise ValueError("Coordinates must contain numeric longitude/latitude pairs")
+            lng, lat = pair
+            Coordinate(lat=lat, lng=lng)
+        return values
 
 
 class RouteCandidate(BaseModel):

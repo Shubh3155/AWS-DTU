@@ -3,14 +3,16 @@
 ## Latest progress — 8 October 2026
 
 - Mapbox walking access is verified; provider-access PR #1 is merged.
-- OpenAQ request pacing and sanitized quota diagnostics are merged in PR #2. The last
-  live audit was blocked by HTTP 429; a real monitoring snapshot/pilot is still pending.
+- OpenAQ request pacing and sanitized quota diagnostics are merged in PR #2. The resumed audit succeeded: 118 readings from 77 stations were ingested as replay.
+  None were under 24 hours old at fetch; fresh live coverage/pilot selection remain pending.
 - Supabase verified TLS and PostGIS access are merged in PR #3.
 - Migration `001_initial.sql` is applied: backend-only stations, observations, snapshots
   and comparison cache tables. Read-only migration status reports up to date.
-- Backend lint/format checks and 24 tests pass, including live schema checks with all
+- Backend lint/format checks and 37 tests pass, including live schema checks with all
   synthetic fixture writes rolled back.
-- Next: real observation ingestion, routing/scoring integration, then AWS account and
+- Actual walking candidates now reach the frontend; geometry, duration and detour eligibility
+  are implemented. Scoring remains unavailable. See [INGESTION.md](INGESTION.md).
+- Next: pilot/coverage review, segmentation/interpolation/scoring, then AWS account and
   deployment configuration. A restricted backend database role remains a production prerequisite.
 
 ## Initial foundation record
