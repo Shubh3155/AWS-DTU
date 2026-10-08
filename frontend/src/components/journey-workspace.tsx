@@ -1,0 +1,106 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { JourneyMap } from "@/components/journey-map";
+import { checkHealth, compareJourney } from "@/lib/api";
+import type { Coordinate } from "@/types/api";
+
+type PointFields = { lat: string; lng: string };
+const blankPoint: PointFields = { lat: "", lng: "" };
+
+function coordinate(fields: PointFields): Coordinate | null {
+  if (!fields.lat.trim() || !fields.lng.trim()) return null;
+  const lat = Number(fields.lat), lng = Number(fields.lng);
+  return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+    ? { lat, lng } : null;
+}
+
+export function JourneyWorkspace() {
+  const [origin, setOrigin] = useState<PointFields>(blankPoint);
+  const [destination, setDestination] = useState<PointFields>(blankPoint);
+  const [activePoint, setActivePoint] = useState<"origin" | "destination">("origin");
+  const [detour, setDetour] = useState(5);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [connection, setConnection] = useState("Connection not checked");
+  const [checking, setChecking] = useState(false);
+
+  function selectPoint(point: Coordinate) {
+    const fields = { lat: point.lat.toFixed(5), lng: point.lng.toFixed(5) };
+    if (activePoint === "origin") { setOrigin(fields); setActivePoint("destination"); }
+    else setDestination(fields);
+    setMessage("");
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const from = coordinate(origin), to = coordinate(destination);
+    if (!from || !to) { setMessage("Enter valid coordinates for both locations, or select them on the map."); return; }
+    setBusy(true);
+    setMessage("");
+    try {
+      await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode: "walking" });
+    } catch (error) {
+      setMessage(error instanceof TypeError ? "Could not connect to the route service. Start it and try again." : error instanceof Error ? error.message : "Please try again.");
+    } finally { setBusy(false); }
+  }
+
+  async function testConnection() {
+    setChecking(true);
+    try { await checkHealth(); setConnection("Service connected"); }
+    catch { setConnection("Service unavailable — start the backend and retry"); }
+    finally { setChecking(false); }
+  }
+
+  return (
+    <div className="app-shell">
+      <header className="topbar">
+        <Link href="/" className="brand"><span className="brand-mark" aria-hidden="true">↗</span>AeroRoute</Link>
+        <span className="preview-badge">Setup preview</span>
+      </header>
+      <main>
+        <div className="page-intro">
+          <p className="eyebrow">A little more time. A more informed walk.</p>
+          <h1>Choose your walk<br /><span>within your time budget.</span></h1>
+          <p>Compare journey time and estimated air-pollution exposure, with room for a detour that works for you.</p>
+        </div>
+        <div className="workspace">
+          <aside className="journey-panel">
+            <div className="panel-title"><h2>Plan a journey</h2><span>Walking</span></div>
+            <form onSubmit={submit}>
+              {(["origin", "destination"] as const).map((name) => {
+                const fields = name === "origin" ? origin : destination;
+                const update = name === "origin" ? setOrigin : setDestination;
+                return (
+                  <fieldset key={name} disabled={busy}>
+                    <legend>{name === "origin" ? "Where are you starting?" : "Where are you going?"}</legend>
+                    <button type="button" className={`point-picker ${activePoint === name ? "selected" : ""}`} onClick={() => setActivePoint(name)} aria-pressed={activePoint === name}>Select {name} on map</button>
+                    <div className="coordinate-inputs">
+                      <label>Latitude<input required aria-label={`${name} latitude`} type="number" step="any" min="-90" max="90" placeholder="28.6139" value={fields.lat} onChange={(event) => { update({ ...fields, lat: event.target.value }); setMessage(""); }} /></label>
+                      <label>Longitude<input required aria-label={`${name} longitude`} type="number" step="any" min="-180" max="180" placeholder="77.2090" value={fields.lng} onChange={(event) => { update({ ...fields, lng: event.target.value }); setMessage(""); }} /></label>
+                    </div>
+                  </fieldset>
+                );
+              })}
+              <div className="detour-heading"><label htmlFor="detour">Maximum extra time</label><output htmlFor="detour">{detour} min</output></div>
+              <input id="detour" type="range" min="0" max="30" step="1" value={detour} disabled={busy} onChange={(event) => { setDetour(Number(event.target.value)); setMessage(""); }} />
+              <div className="range-labels"><span>No detour</span><span>30 minutes</span></div>
+              <button className="primary-button" disabled={busy} type="submit">{busy ? "Checking journey…" : "Compare walking routes"}<span aria-hidden="true">→</span></button>
+              <p className="form-message" role="status" aria-live="polite">{message || "Route comparison will be connected in the next build step."}</p>
+            </form>
+          </aside>
+          <div className="map-and-results">
+            <JourneyMap origin={coordinate(origin)} destination={coordinate(destination)} activePoint={activePoint} onSelect={selectPoint} />
+            <div className="result-previews" aria-label="Route comparison placeholders">
+              <div className="result-card"><p className="eyebrow">Fastest evaluated route</p><h3>Waiting for a journey</h3><p>Travel time and estimated exposure will appear here.</p></div>
+              <div className="result-card"><p className="eyebrow">Lowest estimated exposure</p><h3>Within your allowance</h3><p>Only available candidates within your time budget will be compared.</p></div>
+            </div>
+          </div>
+        </div>
+        <section className="data-notice"><span className="notice-dot" aria-hidden="true" /><div><h2>Data quality comes with the comparison.</h2><p>Observation times, coverage and uncertain differences will be shown. No live pollution readings or exposure estimates are available in this preview.</p></div></section>
+      </main>
+      <footer><p>Ambient exposure estimates · walking only · field validation still needed</p><div><span role="status">{connection}</span><button onClick={testConnection} disabled={checking}>{checking ? "Checking…" : "Check connection"}</button></div></footer>
+    </div>
+  );
+}
