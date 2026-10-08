@@ -16,6 +16,31 @@ The command uses [OpenAQ locations](https://docs.openaq.org/api/operations/locat
 
 ## Finish before selecting the pilot
 
+### Walking access check
+
+Configure `AEROROUTE_MAPBOX_TOKEN` in `backend/.env`, then run from `backend/`:
+
+```bash
+python -m scripts.audit_mapbox --origin 28.6139 77.2090 --destination 28.6200 77.2200 --output data/mapbox-audit-2026-10-08.json
+```
+
+These are illustrative Delhi coordinates, not an approved pilot journey. Inputs are latitude
+then longitude; the provider request converts them to longitude then latitude. The command
+requests walking alternatives, full GeoJSON and step timings and saves the genuine provider
+response with fetch time. It never saves the request URL or token, and refuses to overwrite
+an existing output. A no-route response is saved for inspection but exits unsuccessfully.
+Missing credentials and failed HTTP requests produce no report.
+
+Review candidate count, route geometry, leg/step durations and returned waypoint snapping.
+One candidate is valid; alternatives are not guaranteed. This command does not score routes
+or enable the comparison API. [Mapbox Directions reference](https://docs.mapbox.com/api/navigation/directions/).
+
+### Access status
+
+Mapbox and OpenAQ keys are not configured yet. Live access checks, actual station coverage
+and pilot selection remain blocked. Request/response behavior is checked using synthetic
+automated tests; these tests provide no evidence about Delhi coverage.
+
 - [ ] Confirm real provider access and review the saved report.
 - [ ] Count usable PM2.5 sensors and verify units, values and coordinates.
 - [ ] Inspect observation ages and missingness; agree a freshness policy.
