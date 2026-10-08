@@ -3,8 +3,10 @@
 On 8 October 2026 the `aeroroute` Supabase project was created in the AeroRoute free
 organization. The dashboard reports it healthy in Tokyo (`ap-northeast-1`). PostGIS 3.3.7
 is enabled in schema `gis`. The local backend connection passed the live read-only check
-over certificate/hostname-verified TLS on 8 October 2026. No station/observation/cache
-tables have been created yet. Teammates must configure their own ignored environment.
+over certificate/hostname-verified TLS on 8 October 2026. Migration `001_initial.sql` was applied successfully on 8 October 2026; the runner
+reports the database up to date. The 24-test backend suite passed, including a live
+forced-rollback integration test. No real monitoring data has been ingested yet.
+See `backend/migrations/README.md` for application and verification commands. Teammates must configure their own ignored environment.
 
 The check trusts Supabase's public database CA in `backend/certs/supabase-ca.crt`,
 downloaded from the certificate link in the project's Database Settings:
@@ -39,9 +41,10 @@ Exit codes: `0` = connected with PostGIS in a dedicated schema; `1` = connection
 check failed; `2` = database URL unconfigured. Check host, username, password, pooler/network
 availability and TLS if the check fails. Keep provider health separate from `/health`.
 
-## Next after access passes
+## Application schema
 
-Add versioned migrations for stations, observations, snapshot manifests and route cache.
+Run `python -m scripts.migrate_database` from `backend/` to inspect pending migrations;
+use `--apply` to apply them. See [migration instructions](../backend/migrations/README.md).
 Keep credentials and database queries on the FastAPI backend. The initial bootstrap connection
 uses the project database owner; establish an application role with only the needed table
 permissions before production deployment.
