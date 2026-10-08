@@ -1,6 +1,7 @@
 """Read-only database/PostGIS check; connection errors must not expose credentials."""
 
-import certifi
+from pathlib import Path
+
 import psycopg
 
 from app.core.config import get_settings
@@ -16,7 +17,7 @@ def main() -> int:
             url.get_secret_value(),
             connect_timeout=10,
             sslmode="verify-full",
-            sslrootcert=certifi.where(),
+            sslrootcert=str(Path(__file__).resolve().parents[1] / "certs" / "supabase-ca.crt"),
         ) as connection:
             connection.read_only = True
             connection.execute("SET LOCAL statement_timeout = 10000")

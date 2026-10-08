@@ -2,8 +2,16 @@
 
 On 8 October 2026 the `aeroroute` Supabase project was created in the AeroRoute free
 organization. The dashboard reports it healthy in Tokyo (`ap-northeast-1`). PostGIS 3.3.7
-is enabled in schema `gis`. Backend connectivity still requires local password entry and
-a successful check; no station/observation/cache tables have been created yet.
+is enabled in schema `gis`. The local backend connection passed the live read-only check
+over certificate/hostname-verified TLS on 8 October 2026. No station/observation/cache
+tables have been created yet. Teammates must configure their own ignored environment.
+
+The check trusts Supabase's public database CA in `backend/certs/supabase-ca.crt`,
+downloaded from the certificate link in the project's Database Settings:
+`https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt`.
+This is a public trust certificate, not a private key. The generic web CA bundle alone
+does not validate this database's certificate chain. Certificate/hostname verification
+remains enabled with `sslmode=verify-full`.
 
 ## Configure locally
 
