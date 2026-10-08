@@ -12,6 +12,12 @@ The command searches stationary reference PM2.5 monitors and saves their latest 
 
 Reports preserve provider/license metadata, sensor units, observation timestamps and fetch time, and flag pagination caps. Observation age does not establish that data is current. Missing credentials and failed requests produce an explicit failure without a report.
 
+The CLI spaces requests by at least 1.1 seconds to stay below OpenAQ's documented
+60 requests/minute limit for this process. Other users/processes sharing the key and the
+hourly quota can still cause HTTP 429. On rate limiting it stops and prints numeric quota
+headers when available; it does not retry automatically or save a partial success report.
+Respect the reset window before trying again. [OpenAQ rate limits](https://docs.openaq.org/using-the-api/rate-limits).
+
 The command uses [OpenAQ locations](https://docs.openaq.org/api/operations/locations_get_v3_locations_get), [latest readings](https://docs.openaq.org/resources/latest) and server-side [API-key authentication](https://docs.openaq.org/using-the-api/api-key). Latest readings alone do not establish complete historical coverage.
 
 ## Finish before selecting the pilot
@@ -45,6 +51,8 @@ Keys are configured locally in the ignored backend environment. On 8 October 202
   The local response is saved at `backend/data/mapbox-audit-2026-10-08.json`.
   This establishes routing access, not pollution support or an approved pilot.
 - The OpenAQ audit encountered HTTP 429 (rate limiting) and saved no report.
+  A second attempt also returned HTTP 429; request pacing and quota diagnostics were
+  added afterward, and their live behavior remains unverified.
   Retry after the provider's quota window resets; do not infer station counts or
   freshness from this incomplete attempt. Monitoring coverage and pilot selection
   remain unverified.
