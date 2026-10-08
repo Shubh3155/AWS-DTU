@@ -16,6 +16,42 @@ The command uses [OpenAQ locations](https://docs.openaq.org/api/operations/locat
 
 ## Finish before selecting the pilot
 
+### Walking access check
+
+Configure `AEROROUTE_MAPBOX_TOKEN` in `backend/.env`, then run from `backend/`:
+
+```bash
+python -m scripts.audit_mapbox --origin 28.6139 77.2090 --destination 28.6200 77.2200 --output data/mapbox-audit-2026-10-08.json
+```
+
+These are illustrative Delhi coordinates, not an approved pilot journey. Inputs are latitude
+then longitude; the provider request converts them to longitude then latitude. The command
+requests walking alternatives, full GeoJSON and step timings and saves the genuine provider
+response with fetch time. It never saves the request URL or token, and refuses to overwrite
+an existing output. A no-route response is saved for inspection but exits unsuccessfully.
+Missing credentials and failed HTTP requests produce no report.
+
+Review candidate count, route geometry, leg/step durations and returned waypoint snapping.
+One candidate is valid; alternatives are not guaranteed. This command does not score routes
+or enable the comparison API. [Mapbox Directions reference](https://docs.mapbox.com/api/navigation/directions/).
+
+### Access status
+
+Keys are configured locally in the ignored backend environment. On 8 October 2026:
+
+- Mapbox returned one genuine walking candidate for the illustrative journey above:
+  3,462.667 metres, 2,540.128 seconds, 167 geometry points and 38 steps.
+  Step durations sum to 2,540.130 seconds (0.002 seconds of provider rounding).
+  The local response is saved at `backend/data/mapbox-audit-2026-10-08.json`.
+  This establishes routing access, not pollution support or an approved pilot.
+- The OpenAQ audit encountered HTTP 429 (rate limiting) and saved no report.
+  Retry after the provider's quota window resets; do not infer station counts or
+  freshness from this incomplete attempt. Monitoring coverage and pilot selection
+  remain unverified.
+
+Keys and local snapshots are ignored by Git. Synthetic automated tests verify request
+behavior separately and provide no evidence about Delhi monitoring coverage.
+
 - [ ] Confirm real provider access and review the saved report.
 - [ ] Count usable PM2.5 sensors and verify units, values and coordinates.
 - [ ] Inspect observation ages and missingness; agree a freshness policy.
