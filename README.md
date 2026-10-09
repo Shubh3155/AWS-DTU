@@ -2,7 +2,7 @@
 
 Walking-route comparisons using estimated PM2.5 exposure and a user-defined time budget.
 
-The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. The initial frontend, backend, audit tooling and CI foundation are implemented. Mapbox routing access and Supabase/PostGIS migrations are verified. Live walking routes and recorded OpenAQ ingestion are implemented. Scoring, pilot selection and cloud deployment are next.
+The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. Walking routes, recorded OpenAQ ingestion, Supabase/PostGIS migrations and CI are implemented. Friday's exposure baseline now segments routes, interpolates station readings and ranks supported candidates within the exact detour limit. Pilot selection, real-data validation, caching and cloud deployment remain open.
 
 - [Implementation plan and daily checklist](documentations/IMPLEMENTATION_PLAN.md)
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
@@ -10,6 +10,7 @@ The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**,
 - [API contract](documentations/API_CONTRACT.md)
 - [Monitoring data audit](documentations/DATA_AUDIT.md)
 - [Database access setup](documentations/DATABASE_SETUP.md)
+- [Friday exposure baseline and next tasks](documentations/EXPOSURE_BASELINE.md)
 
 ```text
 AWS-DTU/
@@ -48,7 +49,7 @@ npm run dev
 
 Visit `http://localhost:3000` and use **Check connection**. Backend health is at `http://localhost:8000/health`; API docs are at `http://localhost:8000/docs`. Both apps start without provider credentials. Add a browser Mapbox token for the map; private credentials belong only in `backend/.env`.
 
-With Mapbox configured, the page displays actual walking routes, durations and detour eligibility. Pollution scoring remains unavailable and no cleaner-route recommendation is made. Missing routing credentials return HTTP 503. See [routing and ingestion](documentations/INGESTION.md) for the genuine recorded OpenAQ snapshot and remaining coverage work.
+With Mapbox configured, the page displays actual walking routes, durations and detour eligibility. Database access enables PM2.5 scores when every route sample has sufficient recent station support. Live mode is the default; **Use recorded pollution observations** explicitly selects historical replay. Missing or stale readings keep exposure unavailable. Lower model estimates remain uncertain, and reduction percentages are withheld pending validation. Missing routing credentials return HTTP 503. See the [baseline handoff](documentations/EXPOSURE_BASELINE.md) and [recorded snapshot](documentations/INGESTION.md).
 
 ## Checks
 
@@ -61,7 +62,7 @@ GitHub Actions runs these checks and a container build on pushes and pull reques
 ## Branch and merge rules
 
 1. Create a new branch from the latest `main` for each task. Use names such as `feat/route-comparison`, `fix/detour-limit` or `docs/merge-rules`.
-2. Make and commit task changes on that branch. Stage only the files belonging to the task.
+2. Make focused commits grouped by project part or a coherent change, such as the model, backend/API, frontend and documentation. Keep related tests with their code and preserve dependency order. Stage only that group's files; avoid combining all parts into one commit.
 3. Before merging, bring the latest `origin/main` into your task branch, resolve conflicts there, review the changes and run the relevant checks. Once CI is configured, its required checks must pass.
 4. Merge the completed branch into your local `main`, then push `main` to GitHub.
 5. Keep `main` working. Avoid direct feature commits to `main` and never force-push it. If a push is rejected because someone else updated `main`, integrate their changes and rerun the relevant checks before pushing again.

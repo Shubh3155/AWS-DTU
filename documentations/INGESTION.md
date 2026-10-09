@@ -9,8 +9,11 @@ display rounding. The frontend renders candidates and draws green eligible/brown
 routes. Changing the journey clears old results and prevents a previous response from
 replacing a newer one.
 
-Until interpolation and geographic/freshness policies are implemented, successful journeys
-return `limited_data`, zero assessed pollution coverage and null exposure/recommendation.
+The comparison now reads one pollution snapshot and applies the provisional
+[exposure baseline policy](EXPOSURE_BASELINE.md). Live mode is the default and rejects stale
+readings. Explicit replay uses historical observations relative to the snapshot's observation
+reference time. Missing or incomplete support returns `limited_data` with null full-route
+exposure; missing values never become zero pollution.
 A single provider candidate remains one candidate. `NoRoute`/`NoSegment` return `no_route`.
 Missing configuration returns 503; provider rate limits return 503, timeouts 504, and other
 provider failures or malformed geometry return 502. Errors omit credentials/provider URLs.
@@ -19,8 +22,8 @@ backend origin. Optional `NEXT_PUBLIC_API_URL` enables direct browser calls and 
 matching CORS. Configure these before the frontend build. Provider and database credentials
 remain on the backend.
 
-The API preserves validated step geometry/durations internally for the later segment scorer.
-It does not yet read pollution snapshots or use the route-cache tables.
+The API uses validated step geometry/durations for time-weighted scoring. It reads snapshots
+with verified TLS in a read-only transaction; runtime route caching remains unimplemented.
 
 ## Obtain and ingest actual observations
 
@@ -63,9 +66,11 @@ Snapshots are genuine inputs, not an approved pilot or evidence of exposure redu
   genuine route (42.3 min, 3.46 km), clears old results when detour changes, and
   confirms backend health through the same-origin proxy. Exposure remains unavailable.
 
-Next: choose a pilot and freshness/radius policies using actual coverage evidence; implement
-segmentation, interpolation, exposure ranking and snapshot loading; configure AWS hosting.
-S3 snapshot upload and historical measurement downloads are not implemented yet.
+Friday update: segmentation, interpolation, exposure ranking and snapshot loading are now
+implemented and fixture-tested. This checkout has no current provider/database credentials,
+so the historical snapshot and real-data scoring were not reverified. Next: choose a pilot,
+review the provisional freshness/radius policy using actual coverage, run a supported
+comparison, and configure AWS hosting. S3 upload and historical downloads remain pending.
 
 References: [Mapbox Directions](https://docs.mapbox.com/api/navigation/directions/),
 [OpenAQ latest](https://docs.openaq.org/resources/latest).

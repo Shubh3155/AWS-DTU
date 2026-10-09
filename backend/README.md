@@ -1,6 +1,6 @@
 # Backend
 
-Initial FastAPI service with configuration, health/pilot endpoints, journey validation and a coverage-audit command.
+FastAPI service with walking routes, versioned pollution ingestion, station interpolation and time-weighted exposure comparisons.
 
 ```bash
 python3.12 -m venv .venv
@@ -10,11 +10,11 @@ cp .env.example .env
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Health: `http://localhost:8000/health`. API documentation: `http://localhost:8000/docs`. Configured Mapbox requests return actual candidates with `limited_data` and null exposure; see [API_CONTRACT.md](../documentations/API_CONTRACT.md). Copy the environment template only if `.env` does not already contain your settings.
+Health: `http://localhost:8000/health`. API documentation: `http://localhost:8000/docs`. Mapbox provides walking candidates; database snapshot reads enable exposure scoring when support is sufficient. Live mode rejects stale observations; replay requires an explicit request. See [API_CONTRACT.md](../documentations/API_CONTRACT.md). Copy the environment template only if `.env` does not already contain your settings.
 
 Checks: `ruff check .`, `ruff format --check .`, `pytest -q`.
 
-Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Database connectivity and versioned migrations are available; see [migrations/README.md](migrations/README.md). OpenAQ report ingestion is available; see [INGESTION.md](../documentations/INGESTION.md). Interpolation, segmentation and AWS deployment remain pending.
+Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Database connectivity and versioned migrations are available; see [migrations/README.md](migrations/README.md). OpenAQ report ingestion is available; see [INGESTION.md](../documentations/INGESTION.md). The [baseline handoff](../documentations/EXPOSURE_BASELINE.md) documents provisional parameters and validation limits. Caching, S3 and AWS deployment remain pending.
 
 From the repository root, build with `docker build -t aeroroute-api backend`. The image listens on port 8000 and runs as a non-root user. Use `/health` as the Lightsail health-check path.
 
