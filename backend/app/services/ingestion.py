@@ -13,11 +13,15 @@ from app.model.contracts import StationObservation
 from app.schemas.routes import Coordinate
 
 UNITS = {"µg/m³", "μg/m³", "ug/m3", "µg/m3", "μg/m3"}
+ARCHIVE_SOURCE = "OpenAQ public archive, derived UTC station-hour means"
+SOURCES = {"OpenAQ v3", "OpenAQ v3 hourly", ARCHIVE_SOURCE}
 
 
 def prepare_snapshot(report: dict[str, Any], mode: str) -> dict[str, Any]:
-    if report.get("source") != "OpenAQ v3" or mode not in ("live", "replay"):
-        raise ValueError("Expected an OpenAQ v3 audit and explicit live/replay mode.")
+    if report.get("source") not in SOURCES or mode not in ("live", "replay"):
+        raise ValueError("Expected a supported OpenAQ report and explicit live/replay mode.")
+    if report["source"] == ARCHIVE_SOURCE and mode != "replay":
+        raise ValueError("Derived public archive labels are restricted to explicit replay.")
     fetched = datetime.fromisoformat(report["fetched_at"].replace("Z", "+00:00"))
     if fetched.tzinfo is None:
         raise ValueError("Fetch time must include a timezone.")
@@ -28,6 +32,7 @@ def prepare_snapshot(report: dict[str, Any], mode: str) -> dict[str, Any]:
     observations: dict[tuple[int, datetime], StationObservation] = {}
     stations = {}
     source_units = {}
+    observation_metadata = {}
     for raw_station in report["stations"]:
         try:
             location = Coordinate(
@@ -69,6 +74,20 @@ def prepare_snapshot(report: dict[str, Any], mode: str) -> dict[str, Any]:
                 continue
             observations[key] = observation
             source_units[key] = raw["unit"]
+            observation_metadata[key] = {
+                **{"latitude": location.lat, "longitude": location.lng},
+                **{
+                    field: raw[field]
+                    for field in (
+                        "period",
+                        "coverage",
+                        "aggregation",
+                        "source_count",
+                        "source_units",
+                    )
+                    if field in raw
+                },
+            }
             stations[station_id] = {
                 "name": raw_station.get("name") or str(station_id),
                 "location": location,
@@ -84,12 +103,16 @@ def prepare_snapshot(report: dict[str, Any], mode: str) -> dict[str, Any]:
         "stations": stations,
         "observations": list(observations.values()),
         "source_units": source_units,
+        "observation_metadata": observation_metadata,
         "rejected": dict(rejected),
         "source_manifest": {
-            "source": "OpenAQ v3",
+            "source": report["source"],
             "sha256": digest,
             "search": report.get("search"),
             "pagination_capped": report.get("pagination_capped"),
+            "source_files": report.get("source_files", []),
+            "interval": report.get("interval"),
+            "sensor_selection_capped": report.get("sensor_selection_capped", False),
             "limitations": report.get("limitations", []),
             "rejected": dict(rejected),
         },
@@ -145,7 +168,7 @@ def ingest_snapshot(connection: psycopg.Connection, prepared: dict[str, Any]) ->
                 reading.fetched_at,
                 reading.pm25_micrograms_per_m3,
                 prepared["source_units"][(reading.sensor_id, reading.observed_at)],
-                Jsonb({"latitude": reading.location.lat, "longitude": reading.location.lng}),
+                Jsonb(prepared["observation_metadata"][(reading.sensor_id, reading.observed_at)]),
             ),
         )
     return True
