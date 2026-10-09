@@ -69,3 +69,8 @@ footer > div { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 footer button { color: var(--accent); border: 1px solid var(--line); border-radius: 5px; background: transparent; padding: 6px 9px; font-size: 10px; }
 @media (max-width: 900px) { .app-shell { padding: 0 24px; } .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 16px; } .result-previews { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .app-shell { padding: 0 18px; } .topbar { height: 72px; } .page-intro { padding-top: 28px; } h1 { letter-spacing: -1.3px; } .workspace { grid-template-columns: 1fr; } .journey-panel { padding: 22px; } .map-panel { height: 300px; } .result-previews { grid-template-columns: 1fr 1fr; } .result-card { padding: 14px; } .result-card h3 { font-size: 14px; } footer { align-items: flex-start; flex-direction: column; } }
+
+.route-legend { position: absolute; top: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 12px; max-width: calc(100% - 76px); padding: 9px 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; box-shadow: 0 2px 8px #00000012; }
+.route-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.route-legend i { width: 18px; height: 4px; border-radius: 2px; }
+.route-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }

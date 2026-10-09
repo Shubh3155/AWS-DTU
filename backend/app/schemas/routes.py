@@ -44,6 +44,7 @@ class RouteCandidate(BaseModel):
     exposure_unit: Literal["µg·min/m³"] = "µg·min/m³"
     within_budget: bool
     coverage_percent: float = Field(ge=0, le=100)
+    via: Coordinate | None = None
 
 
 class DataQuality(BaseModel):

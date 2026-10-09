@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { routeColor } from "@/lib/route-colors";
 import type { Coordinate, RouteCandidate } from "@/types/api";
 
 type Props = {
@@ -21,16 +22,17 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes 
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   function showRoutes(instance: mapboxgl.Map, candidates: RouteCandidate[]) {
-    const data = { type: "FeatureCollection" as const, features: candidates.map((route) => ({
-      type: "Feature" as const, geometry: route.geometry, properties: { eligible: route.within_budget },
+    const data = { type: "FeatureCollection" as const, features: candidates.map((route, index) => ({
+      type: "Feature" as const, geometry: route.geometry, properties: { color: routeColor(index), width: 9 - index * 3, order: index },
     })) };
     const source = instance.getSource("walking-routes") as mapboxgl.GeoJSONSource | undefined;
     if (source) source.setData(data);
     else {
       instance.addSource("walking-routes", { type: "geojson", data });
-      instance.addLayer({ id: "walking-routes", type: "line", source: "walking-routes", paint: {
-        "line-color": ["case", ["get", "eligible"], "#25614b", "#ad7040"],
-        "line-width": 5, "line-opacity": 0.8,
+      instance.addLayer({ id: "walking-routes", type: "line", source: "walking-routes",
+        layout: { "line-sort-key": ["get", "order"], "line-cap": "round", "line-join": "round" }, paint: {
+        "line-color": ["get", "color"],
+        "line-width": ["get", "width"], "line-opacity": 1,
       } });
     }
     if (candidates.length) {
@@ -86,6 +88,11 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes 
           <h2>{failed ? "Map unavailable" : "Your journey starts here"}</h2>
           <p>{failed ? "You can still enter coordinates in the journey form." : "Enter two locations to prepare your walk. The interactive map will appear when map access is configured."}</p>
           <span className="map-caption">Delhi · pilot area pending data checks</span>
+        </div>
+      )}
+      {token && !failed && routes.length > 0 && (
+        <div className="route-legend" aria-label="Route colours">
+          {routes.map((route, index) => <span key={route.id}><i aria-hidden="true" style={{ backgroundColor: routeColor(index) }} />Route {index + 1}</span>)}
         </div>
       )}
       {token && !failed && <div className="map-instruction">Click the map to set your {activePoint}.</div>}

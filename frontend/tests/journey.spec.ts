@@ -12,7 +12,7 @@ function comparison(status: ComparisonResponse["status"] = "uncertain_difference
         exposure_unit: "µg·min/m³", within_budget: true, coverage_percent: limited ? 0 : 100 },
       { id: "slow", geometry: { type: "LineString", coordinates: [[77.2, 28.6], [77.22, 28.61]] },
         duration_seconds: 1500, distance_metres: 1200, estimated_exposure: limited ? null : 1250,
-        exposure_unit: "µg·min/m³", within_budget: true, coverage_percent: limited ? 0 : 100 },
+        exposure_unit: "µg·min/m³", within_budget: true, coverage_percent: limited ? 0 : 100, via: { lat: 28.605, lng: 77.215 } },
     ],
     data_quality: {
       data_mode: limited ? "live" : "replay", observed_from: "2026-10-07T12:00:00Z",
@@ -44,6 +44,7 @@ test("explicit replay shows scores, source times and uncertainty without overflo
   await page.getByRole("button", { name: "Compare walking routes" }).click();
   await expect(page.getByText("Estimated exposure: 1250.0 µg·min/m³")).toBeVisible();
   expect(mode).toBe("replay");
+  await expect(page.getByText(/Waypoint-generated candidate/)).toBeVisible();
   await expect(page.getByRole("heading", { name: /Recorded-data replay/ })).toBeVisible();
   await expect(page.getByText(/The difference is uncertain/)).toBeVisible();
   await expect(page.getByText(/Historical reference:/)).toContainText("IST");

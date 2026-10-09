@@ -111,7 +111,7 @@ def test_api_cache_hit_skips_provider_but_rechecks_current_freshness(monkeypatch
     def provider(*args):
         raise AssertionError("A cache hit must skip the routing provider")
 
-    monkeypatch.setattr("app.api.routes.walking_routes", provider)
+    monkeypatch.setattr("app.api.routes.walking_candidates", provider)
     client = TestClient(create_app(Settings(mapbox_token="private", _env_file=None)))
     result = client.post("/api/routes/compare", json=request(mode="live").model_dump())
     assert result.status_code == 200

@@ -8,7 +8,7 @@ from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotRespo
 from app.services.cache import read_routes, store_routes
 from app.services.comparison import compare_routes
 from app.services.snapshots import load_snapshot
-from app.services.walking import RoutingError, walking_routes
+from app.services.walking import RoutingError, walking_candidates
 
 router = APIRouter(prefix="/api")
 
@@ -46,7 +46,7 @@ def compare(
     if routes is None:
         try:
             with httpx.Client(base_url="https://api.mapbox.com", timeout=8) as client:
-                routes = walking_routes(
+                routes = walking_candidates(
                     client, token.get_secret_value(), request.origin, request.destination
                 )
         except RoutingError as error:

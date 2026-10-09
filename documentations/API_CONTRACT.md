@@ -90,3 +90,7 @@ reference). Stored comparison JSON is diagnostic metadata and is never returned 
 score. Failed/expired/invalid cache entries fall back to the provider; writes occur after
 the response and are optional. Real database hit/miss and latency measurements remain
 pending. Use the journey checker in [DEPLOYMENT.md](DEPLOYMENT.md) to record them.
+
+## Bounded waypoint candidates
+
+Route candidates may include optional `via: {lat, lng} | null`. A non-null value identifies a real Mapbox walking route requested through an intermediate point, rather than a native provider alternative. The page labels this provenance. Single-route results can trigger at most two bounded waypoint probes; failed probes retain the original route. All candidates use their actual step travel times and exact allowance checks. See [candidate policy and genuine demo evidence](MULTI_ROUTE_DEMO.md).

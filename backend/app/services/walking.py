@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import math
 
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
@@ -23,6 +24,7 @@ class WalkingRoute(BaseModel):
     duration: float = Field(ge=0, strict=True)
     distance: float = Field(ge=0, strict=True)
     steps: list[WalkingStep]
+    via: Coordinate | None = None
 
 
 class RoutingError(Exception):
@@ -31,18 +33,24 @@ class RoutingError(Exception):
 
 
 def walking_routes(
-    client: httpx.Client, token: str, origin: Coordinate, destination: Coordinate
+    client: httpx.Client,
+    token: str,
+    origin: Coordinate,
+    destination: Coordinate,
+    via: Coordinate | None = None,
 ) -> list[WalkingRoute]:
+    points = [origin, destination] if via is None else [origin, via, destination]
+    coordinates = ";".join(f"{point.lng},{point.lat}" for point in points)
     try:
         response = client.get(
-            f"/directions/v5/mapbox/walking/{origin.lng},{origin.lat};"
-            f"{destination.lng},{destination.lat}",
+            f"/directions/v5/mapbox/walking/{coordinates}",
             params={
                 "access_token": token,
                 "alternatives": "true",
                 "steps": "true",
                 "geometries": "geojson",
                 "overview": "full",
+                **({"radiuses": "50;100;50"} if via is not None else {}),
             },
         )
         response.raise_for_status()
@@ -71,6 +79,7 @@ def walking_routes(
                     duration=raw["duration"],
                     distance=raw["distance"],
                     steps=steps,
+                    via=via,
                 )
             )
         return list({route.id: route for route in routes}.values())
@@ -87,3 +96,39 @@ def walking_routes(
         raise RoutingError(
             "routing_provider_error", "Routing returned no usable response."
         ) from None
+
+
+def walking_candidates(
+    client: httpx.Client, token: str, origin: Coordinate, destination: Coordinate
+) -> list[WalkingRoute]:
+    """Keep provider alternatives; probe at most two via points for a single route."""
+    routes = walking_routes(client, token, origin, destination)
+    if len(routes) != 1:
+        return routes[:3]
+    latitude = (origin.lat + destination.lat) / 2
+    longitude_scale = 111195 * math.cos(math.radians(latitude))
+    dy = (destination.lat - origin.lat) * 111195
+    dx = (destination.lng - origin.lng) * longitude_scale
+    length = math.hypot(dx, dy)
+    # Keep this exploratory policy local and bounded; avoid polar/dateline arithmetic.
+    if not 500 <= length <= 10000 or abs(latitude) > 75 or abs(destination.lng - origin.lng) > 180:
+        return routes
+    offset = min(400, length / 4)
+    geometries = {json.dumps(routes[0].geometry.model_dump(), sort_keys=True)}
+    for sign in (-1, 1):
+        via = Coordinate(
+            lat=latitude + sign * dx / length * offset / 111195,
+            lng=(origin.lng + destination.lng) / 2 - sign * dy / length * offset / longitude_scale,
+        )
+        try:
+            alternatives = walking_routes(client, token, origin, destination, via)
+        except RoutingError:
+            # Preserve the direct route and stop probing on throttling or provider failure.
+            break
+        for candidate in alternatives:
+            geometry = json.dumps(candidate.geometry.model_dump(), sort_keys=True)
+            if geometry not in geometries:
+                geometries.add(geometry)
+                routes.append(candidate)
+                break
+    return routes[:3]

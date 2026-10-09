@@ -54,6 +54,11 @@ def compare_routes(
             notes.append(
                 "Interpolation parameters and street-level estimates are not field-validated."
             )
+    if any(route.via is not None for route in routes):
+        notes.append(
+            "Waypoint candidates are real walking routes requested through nearby points; "
+            "they are not exhaustive alternatives or validated cleaner routes."
+        )
     fastest = min(routes, key=lambda route: (route.duration, route.id)) if routes else None
     candidates = []
     for route in routes:
@@ -68,6 +73,7 @@ def compare_routes(
                 estimated_exposure=score.exposure,
                 within_budget=route.duration <= fastest.duration + 60 * request.max_detour_minutes,
                 coverage_percent=score.coverage_percent,
+                via=route.via,
             )
         )
     eligible = [candidate for candidate in candidates if candidate.within_budget]

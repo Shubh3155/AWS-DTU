@@ -96,3 +96,76 @@ def test_no_route_and_bad_geometry_are_not_fabricated():
         walking_routes(
             client, "secret", Coordinate(lat=28.6, lng=77.2), Coordinate(lat=28.61, lng=77.21)
         )
+
+
+def test_single_route_probes_real_waypoints_and_deduplicates_geometry():
+    from app.services.walking import walking_candidates
+
+    calls = []
+
+    def provider(request):
+        calls.append(request)
+        raw = route(600.0)
+        if len(calls) == 2:
+            raw["geometry"]["coordinates"].insert(1, [77.205, 28.608])
+            raw["legs"][0]["steps"][0]["geometry"] = raw["geometry"]
+            raw["duration"] = 720.0
+            raw["legs"][0]["steps"][0]["duration"] = 720.0
+        return httpx.Response(200, json={"code": "Ok", "routes": [raw]})
+
+    with httpx.Client(
+        base_url="https://api.mapbox.com", transport=httpx.MockTransport(provider)
+    ) as client:
+        results = walking_candidates(
+            client, "secret", Coordinate(lat=28.6, lng=77.2), Coordinate(lat=28.61, lng=77.21)
+        )
+    assert len(calls) == 3
+    assert len(results) == 2
+    assert results[0].via is None
+    assert results[1].via is not None
+    assert calls[1].url.path.count(";") == 2
+    assert calls[1].url.params["radiuses"] == "50;100;50"
+    assert sum(step.duration for step in results[1].steps) == 720
+
+
+def test_failed_optional_probes_keep_original_route():
+    from app.services.walking import walking_candidates
+
+    count = 0
+
+    def provider(request):
+        nonlocal count
+        count += 1
+        return (
+            httpx.Response(200, json={"code": "Ok", "routes": [route(600.0)]})
+            if count == 1
+            else httpx.Response(429)
+        )
+
+    with httpx.Client(
+        base_url="https://api.mapbox.com", transport=httpx.MockTransport(provider)
+    ) as client:
+        result = walking_candidates(
+            client, "secret", Coordinate(lat=28.6, lng=77.2), Coordinate(lat=28.61, lng=77.21)
+        )
+    assert len(result) == 1
+    assert count == 2
+
+
+def test_existing_provider_alternatives_do_not_trigger_probes():
+    from app.services.walking import walking_candidates
+
+    calls = []
+
+    def provider(request):
+        calls.append(request)
+        return httpx.Response(200, json={"code": "Ok", "routes": [route(600.0), route(650.0)]})
+
+    with httpx.Client(
+        base_url="https://api.mapbox.com", transport=httpx.MockTransport(provider)
+    ) as client:
+        result = walking_candidates(
+            client, "secret", Coordinate(lat=28.6, lng=77.2), Coordinate(lat=28.61, lng=77.21)
+        )
+    assert len(result) == 2
+    assert len(calls) == 1
