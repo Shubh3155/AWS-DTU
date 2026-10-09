@@ -1,0 +1,28 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AeroRoute private versioned snapshots and minimal backend container service",
+  "Parameters": {
+    "ServiceName": {"Type": "String", "Default": "aeroroute-api", "AllowedPattern": "[a-z][a-z0-9-]{0,61}"}
+  },
+  "Resources": {
+    "Backend": {
+      "Type": "AWS::Lightsail::Container",
+      "Properties": {"ServiceName": {"Ref": "ServiceName"}, "Power": "nano", "Scale": 1}
+    },
+    "Snapshots": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": {"Fn::Sub": "aeroroute-snapshots-${AWS::AccountId}-${AWS::Region}"},
+        "VersioningConfiguration": {"Status": "Enabled"},
+        "BucketEncryption": {"ServerSideEncryptionConfiguration": [{"ServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]},
+        "PublicAccessBlockConfiguration": {"BlockPublicAcls": true, "IgnorePublicAcls": true, "BlockPublicPolicy": true, "RestrictPublicBuckets": true}
+      }
+    }
+  },
+  "Outputs": {
+    "Service": {"Value": {"Ref": "ServiceName"}},
+    "SnapshotBucket": {"Value": {"Ref": "Snapshots"}}
+  }
+}

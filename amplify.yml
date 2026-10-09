@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - appRoot: frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm use 22
+            - npm ci
+        build:
+          commands:
+            - node -e 'if (!process.env.AEROROUTE_API_URL?.startsWith("https://")) throw new Error("Configure the deployed HTTPS backend URL")'
+            - npm run lint
+            - npm run typecheck
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
