@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { routeColor } from "@/lib/route-colors";
 import { JourneyMap } from "@/components/journey-map";
 import { checkHealth, compareJourney } from "@/lib/api";
 import type { Coordinate, ComparisonResponse } from "@/types/api";
@@ -119,8 +120,8 @@ export function JourneyWorkspace() {
             <JourneyMap origin={coordinate(origin)} destination={coordinate(destination)} activePoint={activePoint} onSelect={selectPoint} routes={result?.candidates ?? []} />
             <div className="result-previews" aria-label="Walking route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
-                <div className="result-card" key={route.id}>
-                  <p className="eyebrow">{route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
+                <div className="result-card" key={route.id} style={{ borderTopColor: routeColor(index) }}>
+                  <p className="eyebrow"><span className="route-swatch" aria-hidden="true" style={{ backgroundColor: routeColor(index) }} />Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
                   {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
