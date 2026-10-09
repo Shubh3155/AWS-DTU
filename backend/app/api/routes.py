@@ -5,7 +5,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
 
 from app.model.baseline import BaselinePolicy
 from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotResponse
-from app.services.cache import read_routes, store_routes
+from app.services.cache import cache_identity, read_routes, store_routes
 from app.services.comparison import compare_routes
 from app.services.snapshots import load_snapshot
 from app.services.walking import RoutingError, walking_candidates
@@ -35,13 +35,28 @@ def compare(
             },
         )
     settings = http_request.app.state.settings
+    pool = http_request.app.state.database_pool
     now = datetime.now(UTC)
-    snapshot, warnings = load_snapshot(settings, request.data_mode, request.snapshot_id)
+    snapshot_cache = http_request.app.state.snapshot_cache
+    snapshot_key = (request.data_mode, request.snapshot_id)
+    loaded = snapshot_cache.get(snapshot_key)
+    if loaded is None:
+        loaded = load_snapshot(settings, request.data_mode, request.snapshot_id, pool)
+        if loaded[0] is not None:
+            snapshot_cache.put(snapshot_key, loaded, ttl=10)
+    snapshot, warnings = loaded
     policy = BaselinePolicy(
         station_radius_metres=settings.baseline_station_radius_metres,
         max_age_hours=settings.baseline_max_age_hours,
     )
-    routes = read_routes(settings, request, snapshot, policy, now) if snapshot else None
+    route_cache = http_request.app.state.route_cache
+    route_key = cache_identity(request, snapshot, policy, now)[0] if snapshot else None
+    routes = route_cache.get(route_key) if route_key else None
+    if routes is None and snapshot:
+        routes = read_routes(settings, request, snapshot, policy, now, pool)
+        if routes is not None:
+            # Database hits get at most ten seconds in memory, not a renewed full TTL.
+            route_cache.put(route_key, routes, ttl=min(10, settings.cache_ttl_seconds))
     hit = routes is not None
     if routes is None:
         try:
@@ -63,7 +78,16 @@ def compare(
     )
     http_response.headers["X-AeroRoute-Cache"] = "hit" if hit else "miss" if snapshot else "bypass"
     if snapshot and not hit:
+        route_cache.put(route_key, routes, ttl=settings.cache_ttl_seconds)
         background_tasks.add_task(
-            store_routes, settings, request, snapshot, policy, routes, result, datetime.now(UTC)
+            store_routes,
+            settings,
+            request,
+            snapshot,
+            policy,
+            routes,
+            result,
+            datetime.now(UTC),
+            pool,
         )
     return result

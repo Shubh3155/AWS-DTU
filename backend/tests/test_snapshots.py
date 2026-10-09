@@ -153,7 +153,7 @@ def test_api_consumes_explicit_snapshot_mode_and_serializes_scoring(monkeypatch,
     monkeypatch.setattr("app.api.routes.walking_candidates", lambda *args: [route])
     calls = []
 
-    def snapshot(settings, requested_mode, identity):
+    def snapshot(settings, requested_mode, identity, pool=None):
         calls.append((requested_mode, identity))
         readings = [
             StationObservation(
