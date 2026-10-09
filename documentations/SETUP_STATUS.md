@@ -1,6 +1,17 @@
-# Thursday setup handoff
+# Setup and implementation handoff
 
-## Latest progress — 8 October 2026
+## Latest progress — 9 October 2026
+
+- Reviewed the completed walking-route and recorded-ingestion work; implemented the next Friday scoring slice.
+- Added time-preserving route samples, provisional inverse-distance station interpolation, full-route exposure and exact-detour ranking. Missing support withholds full scores; old readings never become live evidence through a new fetch.
+- Added read-only snapshot selection with verified TLS, explicit replay, original observation times and policy-derived model versions. The container now includes the database CA certificate.
+- Frontend cards show scores/units and supported travel time. Quality notices show observation/fetch times, sources and replay reference in IST. Lower estimates remain uncertain; percentage reductions stay unavailable pending validation.
+- Local backend checks pass: 65 tests passed, 2 opt-in database tests skipped. Frontend lint, types and production build pass.
+- Current provider/database credentials are absent from this checkout; genuine-data scoring and deployed AWS behavior were not verified in this slice. Pilot selection, runtime caching, validation, S3 and Amplify/Lightsail remain open.
+
+See [EXPOSURE_BASELINE.md](EXPOSURE_BASELINE.md) for policy, API replay example and next Friday tasks.
+
+## Previous progress — 8 October 2026
 
 - Mapbox walking access is verified; provider-access PR #1 is merged.
 - OpenAQ request pacing and sanitized quota diagnostics are merged in PR #2. The resumed audit succeeded: 118 readings from 77 stations were ingested as replay.
@@ -43,10 +54,12 @@ Next.js 15 is pinned because the chosen [Amplify documentation](https://docs.aws
 
 The [setup CI run](https://github.com/Shubh3155/AWS-DTU/actions/runs/37794286232) passed for commit `55cbdca`, including the container build. Docker is not installed on the local machine. Live provider access, actual map loading and cloud deployment are not verified by these checks.
 
-## Next team actions
+## Original Thursday next actions (historical)
 
 1. Follow the root README to start both apps; use **Check connection** to verify the browser-to-API path.
 2. Configure provider values locally. Private credentials belong in the backend environment.
 3. Run the audit and complete `DATA_AUDIT.md`; agree the pilot and freshness/coverage policies.
 4. Make the first genuine walking request and save source snapshots with timestamps.
 5. Implement interpolation, segmentation, scoring and real result rendering using `API_CONTRACT.md` on Friday.
+
+The latest Friday handoff above supersedes this original next-action list.

@@ -67,3 +67,8 @@ def test_empty_optional_credentials_are_accepted():
     settings = Settings(openaq_api_key="", database_url="", _env_file=None)
     assert settings.openaq_api_key is None
     assert settings.database_url is None
+
+
+def test_unknown_data_mode_is_rejected(client):
+    payload = {**journey(), "data_mode": "automatic"}
+    assert client.post("/api/routes/compare", json=payload).status_code == 422

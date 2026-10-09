@@ -10,7 +10,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(
         title="AeroRoute API",
         version=configuration.app_version,
-        description="Walking candidates and detour eligibility; pollution scoring is pending.",
+        description="Walking candidates and station-interpolated PM2.5 exposure with data quality.",
     )
     application.add_middleware(
         CORSMiddleware,

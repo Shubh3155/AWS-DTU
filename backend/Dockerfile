@@ -6,6 +6,7 @@ COPY requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock \
     && useradd --create-home --uid 10001 aeroroute
 COPY app ./app
+COPY certs ./certs
 USER aeroroute
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \

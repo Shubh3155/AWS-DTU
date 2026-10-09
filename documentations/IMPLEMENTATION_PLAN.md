@@ -4,7 +4,7 @@
 
 **Source:** [AeroRoute revised proposal](AeroRoute_Revised_Proposal%20%281%29.pdf), pages 1–2.
 
-**Current status:** The initial frontend, FastAPI service, request/data contracts, OpenAQ audit command, environment templates, container definition and CI foundation are implemented. See [SETUP_STATUS.md](SETUP_STATUS.md). Mapbox and Supabase access are verified; PostGIS application migrations are applied. Live walking candidates and genuine recorded OpenAQ ingestion are implemented. Fresh OpenAQ coverage, pilot selection, route scoring and AWS access/deployment remain pending. Unchecked tasks below are remaining work.
+**Current status — Friday, 9 October:** Walking routes, recorded OpenAQ ingestion, PostGIS migrations and CI are implemented. The exposure baseline now includes time-preserving segmentation, provisional station interpolation, exact-budget ranking, read-only snapshot loading and frontend timestamps/replay notices. See [EXPOSURE_BASELINE.md](EXPOSURE_BASELINE.md) for policy and synthetic test evidence. Fresh coverage, pilot selection, a supported genuine-data comparison, validation, caching and AWS deployment remain pending. Earlier Thursday access findings are recorded in [SETUP_STATUS.md](SETUP_STATUS.md); bundled unchecked items can include completed parts.
 
 ## 1. Sunday delivery target
 
@@ -135,21 +135,26 @@ Amplify build settings can be configured in its console; add a root build-spec f
 
 **09:30–12:30: implement independently against the contract.**
 
-- [ ] **Backend/AWS:** Implement the walking-route provider client, normalize route IDs/geometry/durations, validate inputs and handle provider errors/timeouts. Enable PostGIS and apply stations/observations/cache migrations.
-- [ ] **Data/model:** Implement ingestion with deduplication, unit checks, timestamps and distance-weighted station interpolation. Fetch historical station-hour labels in the background for validation; historical downloads must not block current scoring.
-- [ ] **Frontend:** Implement origin/destination selection, the detour slider/numeric input, map overlays, route cards and loading/error/single-route states.
+- [x] **Backend/AWS:** Implement the walking-route provider client, normalize route IDs/geometry/durations, validate inputs and handle provider errors/timeouts. Enable PostGIS and apply stations/observations/cache migrations.
+- [x] **Data/model:** Implement ingestion with deduplication, unit checks, timestamps and provisional distance-weighted station interpolation.
+- [ ] **Data/model:** Fetch historical station-hour labels for validation; review actual coverage before accepting the prototype radius/window policy.
+- [x] **Frontend:** Implement coordinate/map selection, detour slider, map overlays, route cards and loading/error/single-route states. Scored-state browser/mobile verification remains below.
 
 **13:30–16:30: make one real comparison work.**
 
-- [ ] **Backend/AWS + Data/model:** Segment routes, preserve travel time, compute cumulative exposure, enforce the exact detour limit and implement comparison responses and cache versioning.
-- [ ] **Frontend:** Replace development fixtures with the comparison API; show units, source timestamps, data mode and coverage limitations.
+- [x] **Backend/AWS + Data/model:** Segment routes, preserve travel time, compute cumulative exposure, enforce the exact detour limit and implement comparison responses with snapshot/data/model versions.
+- [ ] **Backend/AWS:** Implement runtime comparison caching with versioning, expiry and freshness checks.
+- [x] **Frontend:** Consume the comparison API; show units, source timestamps in IST, explicit live/replay mode and time-weighted support limitations.
+- [ ] **Frontend:** Verify scored and limited-data states in the browser on desktop and mobile.
 - [ ] **Backend/AWS:** Configure Amplify for the frontend subdirectory and deploy the minimal FastAPI container to Lightsail. Verify the public health endpoint early so hosting problems surface before Saturday.
 
 **16:30–18:30: integration checkpoint.**
 
-- [ ] **Backend/AWS:** Add CI for frontend checks/build, backend lint/tests and container build. Configure S3 timestamped snapshots and document the basic deployment procedure.
+- [x] **Backend/AWS:** Add CI for frontend checks/build, backend lint/tests and container build.
+- [ ] **Backend/AWS:** Configure S3 timestamped snapshots and document the basic deployment procedure.
 - [ ] **All:** Run one pilot journey end to end locally, adjust its detour allowance and verify any selected alternative stays within the limit.
-- [ ] **Data/model:** Record baseline spot checks and confirm whether there are enough independent stations/time periods for Saturday's validation and optional model experiment.
+- [x] **Data/model:** Record synthetic baseline arithmetic, timing, support and ranking checks in [EXPOSURE_BASELINE.md](EXPOSURE_BASELINE.md).
+- [ ] **Data/model:** Confirm sufficient independent stations/time periods for Saturday's validation and optional model experiment.
 
 **Gate:** Real route geometry and a real-data baseline score reach the browser; the AWS backend health check works. If this gate slips, cancel optional model/weather/road-feature work and finish the core flow first.
 

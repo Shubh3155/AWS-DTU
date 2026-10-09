@@ -1,13 +1,10 @@
 import httpx
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.routes import (
-    ComparisonRequest,
-    ComparisonResponse,
-    DataQuality,
-    PilotResponse,
-    RouteCandidate,
-)
+from app.model.baseline import BaselinePolicy
+from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotResponse
+from app.services.comparison import compare_routes
+from app.services.snapshots import load_snapshot
 from app.services.walking import RoutingError, walking_routes
 
 router = APIRouter(prefix="/api")
@@ -38,27 +35,17 @@ def compare(request: ComparisonRequest, http_request: Request) -> ComparisonResp
         raise HTTPException(
             status_code=error.status, detail={"code": error.code, "message": error.message}
         ) from None
-    fastest = min(routes, key=lambda route: (route.duration, route.id)) if routes else None
-    return ComparisonResponse(
-        status="limited_data" if routes else "no_route",
-        candidates=[
-            RouteCandidate(
-                id=route.id,
-                geometry=route.geometry,
-                distance_metres=route.distance,
-                duration_seconds=route.duration,
-                within_budget=route.duration <= fastest.duration + 60 * request.max_detour_minutes,
-                coverage_percent=0,
-            )
-            for route in routes
-        ],
-        fastest_id=fastest.id if fastest else None,
-        lowest_exposure_eligible_id=None,
-        estimated_reduction_percent=None,
-        warnings=[
-            "Pollution coverage and scoring are pending; no exposure recommendation is available."
-        ]
-        if routes
-        else ["No walking route was found for these locations."],
-        data_quality=DataQuality(data_mode="unavailable"),
+    settings = http_request.app.state.settings
+    snapshot, warnings = (
+        load_snapshot(settings, request.data_mode, request.snapshot_id) if routes else (None, [])
+    )
+    return compare_routes(
+        routes,
+        request,
+        snapshot,
+        BaselinePolicy(
+            station_radius_metres=settings.baseline_station_radius_metres,
+            max_age_hours=settings.baseline_max_age_hours,
+        ),
+        warnings=warnings,
     )
