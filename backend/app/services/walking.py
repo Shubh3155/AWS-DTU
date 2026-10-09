@@ -8,6 +8,7 @@ import httpx
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.routes import Coordinate, LineString
+from app.services.route_quality import assess_alternative, filter_candidates
 
 
 class WalkingStep(BaseModel):
@@ -104,7 +105,7 @@ def walking_candidates(
     """Keep provider alternatives; probe at most two via points for a single route."""
     routes = walking_routes(client, token, origin, destination)
     if len(routes) != 1:
-        return routes[:3]
+        return filter_candidates(routes)
     latitude = (origin.lat + destination.lat) / 2
     longitude_scale = 111195 * math.cos(math.radians(latitude))
     dy = (destination.lat - origin.lat) * 111195
@@ -127,7 +128,10 @@ def walking_candidates(
             break
         for candidate in alternatives:
             geometry = json.dumps(candidate.geometry.model_dump(), sort_keys=True)
-            if geometry not in geometries:
+            if (
+                geometry not in geometries
+                and assess_alternative(candidate, routes[0], routes) is None
+            ):
                 geometries.add(geometry)
                 routes.append(candidate)
                 break

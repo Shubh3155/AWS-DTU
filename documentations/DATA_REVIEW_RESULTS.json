@@ -1,0 +1,595 @@
+{
+  "periods": [
+    {
+      "input_sha256": "02387de770350ced0210da459156641bbd90a41c14ff007fc1310f48b52c7d7b",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+      "cutoff": "2025-10-06T19:30:00+00:00",
+      "policy": {
+        "sampling_interval_metres": 100,
+        "station_radius_metres": 10000,
+        "max_age_hours": 2,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-f1214d42170f66a9",
+      "summary": {
+        "early": {
+          "targets": 231,
+          "supported": 181,
+          "unsupported": 50,
+          "coverage_percent": 78.35497835497836,
+          "mae": 10.565673652873086,
+          "rmse": 14.700351237843385,
+          "bias": 0.29711340786167734
+        },
+        "later": {
+          "targets": 231,
+          "supported": 183,
+          "unsupported": 48,
+          "coverage_percent": 79.22077922077922,
+          "mae": 10.588106959164614,
+          "rmse": 27.270504147702542,
+          "bias": 0.5962086612390389
+        }
+      },
+      "by_station": [
+        {
+          "provider_id": "openaq",
+          "station_id": 17,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 13.791868311202418,
+              "rmse": 16.10209646582188,
+              "bias": -12.903586037601563
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 8.668497894055763,
+              "rmse": 9.995728013257338,
+              "bias": -6.792035551274153
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 50,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            },
+            "later": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 235,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            },
+            "later": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5610,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 16.88231453546347,
+              "rmse": 21.157872954366997,
+              "bias": 12.835770117799807
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 21.991216119881766,
+              "rmse": 54.63865743594324,
+              "bias": -6.526486981077572
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5627,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 7.495027042953034,
+              "rmse": 9.471917052325397,
+              "bias": 6.229976056403892
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 3.752089319352667,
+              "rmse": 5.185182648742423,
+              "bias": 1.5731690492835626
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5630,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 17.36892006311528,
+              "rmse": 23.787165386982775,
+              "bias": -14.963331486287094
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 21.657345021808773,
+              "rmse": 45.898405965046535,
+              "bias": 2.327272377499324
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 6960,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 4.338327298519129,
+              "rmse": 5.582641344470037,
+              "bias": -0.0906519768279568
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 9.02487297105225,
+              "rmse": 14.615968099132129,
+              "bias": 4.9286693158074435
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 8118,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 23,
+              "unsupported": 1,
+              "coverage_percent": 95.83333333333333,
+              "mae": 8.731396647531001,
+              "rmse": 10.846927592111276,
+              "bias": 7.674109121609296
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 7.0591317667855416,
+              "rmse": 12.579260561977858,
+              "bias": 4.199039611873028
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 8239,
+          "summary": {
+            "early": {
+              "targets": 16,
+              "supported": 16,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 6.390225496746397,
+              "rmse": 8.006750754087479,
+              "bias": -2.7478297754210086
+            },
+            "later": {
+              "targets": 15,
+              "supported": 15,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 3.4510421173379267,
+              "rmse": 4.7612372696131535,
+              "bias": 0.7360056949426712
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 11607,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 22,
+              "unsupported": 1,
+              "coverage_percent": 95.65217391304348,
+              "mae": 7.831192104490596,
+              "rmse": 9.378058321769219,
+              "bias": 6.120093330408905
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 6.424261147357216,
+              "rmse": 8.104510254193833,
+              "bias": 4.376459660496868
+            }
+          }
+        }
+      ],
+      "largest_five_squared_error_share_percent": 87.64010485689481
+    },
+    {
+      "input_sha256": "c820d5ba7459754e9c91c0a6fbb871e7424ef882380b61b0e8e65fa8e1dbd8be",
+      "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a",
+      "cutoff": "2025-11-06T19:30:00+00:00",
+      "policy": {
+        "sampling_interval_metres": 100,
+        "station_radius_metres": 10000,
+        "max_age_hours": 2,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-f1214d42170f66a9",
+      "summary": {
+        "early": {
+          "targets": 230,
+          "supported": 180,
+          "unsupported": 50,
+          "coverage_percent": 78.26086956521739,
+          "mae": 55.66989590634326,
+          "rmse": 83.44830791375473,
+          "bias": -2.3014722056914567
+        },
+        "later": {
+          "targets": 235,
+          "supported": 186,
+          "unsupported": 49,
+          "coverage_percent": 79.14893617021276,
+          "mae": 63.45022004524016,
+          "rmse": 100.60484909436526,
+          "bias": -4.023650426373925
+        }
+      },
+      "by_station": [
+        {
+          "provider_id": "openaq",
+          "station_id": 17,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 22,
+              "unsupported": 1,
+              "coverage_percent": 95.65217391304348,
+              "mae": 81.02524363733563,
+              "rmse": 100.71210763022277,
+              "bias": -80.62952789384558
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 43.95962235977223,
+              "rmse": 52.3055496932431,
+              "bias": -43.95962235977223
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 50,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 0,
+              "unsupported": 23,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            },
+            "later": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 235,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 0,
+              "unsupported": 23,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            },
+            "later": {
+              "targets": 24,
+              "supported": 0,
+              "unsupported": 24,
+              "coverage_percent": 0.0,
+              "mae": null,
+              "rmse": null,
+              "bias": null
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5610,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 23,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 65.73472127514796,
+              "rmse": 88.22947518669024,
+              "bias": -59.43296417332292
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 110.43587038327065,
+              "rmse": 156.077091378103,
+              "bias": -109.53770323027597
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5627,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 23,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 23.48651297339957,
+              "rmse": 28.94002593970113,
+              "bias": -8.784520577687172
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 38.67772347468583,
+              "rmse": 52.80991656637923,
+              "bias": -37.16999831678576
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 5630,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 23,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 82.86725022202697,
+              "rmse": 113.54154851663145,
+              "bias": 80.19853431530319
+            },
+            "later": {
+              "targets": 24,
+              "supported": 23,
+              "unsupported": 1,
+              "coverage_percent": 95.83333333333333,
+              "mae": 128.77986864015836,
+              "rmse": 178.17501416393355,
+              "bias": 128.77986864015836
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 6960,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 22,
+              "unsupported": 1,
+              "coverage_percent": 95.65217391304348,
+              "mae": 19.825334640600758,
+              "rmse": 27.713264843755532,
+              "bias": -5.93865517819005
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 22.271814414401792,
+              "rmse": 31.22098361385594,
+              "bias": -19.116341582380002
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 8118,
+          "summary": {
+            "early": {
+              "targets": 24,
+              "supported": 23,
+              "unsupported": 1,
+              "coverage_percent": 95.83333333333333,
+              "mae": 56.982765223979136,
+              "rmse": 84.6700342468779,
+              "bias": -34.84889653537779
+            },
+            "later": {
+              "targets": 22,
+              "supported": 22,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 54.93645845600829,
+              "rmse": 86.04306741972641,
+              "bias": -49.12204794859135
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 8239,
+          "summary": {
+            "early": {
+              "targets": 23,
+              "supported": 22,
+              "unsupported": 1,
+              "coverage_percent": 95.65217391304348,
+              "mae": 17.772622480411684,
+              "rmse": 25.53905998673527,
+              "bias": -2.789038186244313
+            },
+            "later": {
+              "targets": 24,
+              "supported": 24,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 25.793894148131876,
+              "rmse": 35.444632919229896,
+              "bias": 23.387058318683547
+            }
+          }
+        },
+        {
+          "provider_id": "openaq",
+          "station_id": 11607,
+          "summary": {
+            "early": {
+              "targets": 22,
+              "supported": 22,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 97.37418652197248,
+              "rmse": 124.19925716690723,
+              "bias": 94.43428868148382
+            },
+            "later": {
+              "targets": 21,
+              "supported": 21,
+              "unsupported": 0,
+              "coverage_percent": 100.0,
+              "mae": 87.80322233012132,
+              "rmse": 102.06123056051904,
+              "bias": 87.80322233012132
+            }
+          }
+        }
+      ],
+      "largest_five_squared_error_share_percent": 33.77201103254011
+    }
+  ],
+  "raw_source_review": [
+    {
+      "station_id": 5610,
+      "source_sha256": "5ab8fdea65c5332f129bde2e288a5e5dd866d0b5c211442d35d855933ffa3fea",
+      "source_rows": 4,
+      "quality_flags_present": false,
+      "matches_derived_hourly_mean": true,
+      "largest_sample_share_of_hour_sum_percent": 79.23234482144447
+    },
+    {
+      "station_id": 5630,
+      "source_sha256": "7037778b86298b3eb7fe60bc27b9245b71a3855497a57706e184d8f32ee5b54e",
+      "source_rows": 4,
+      "quality_flags_present": false,
+      "matches_derived_hourly_mean": true,
+      "largest_sample_share_of_hour_sum_percent": 25.111607142857146
+    }
+  ],
+  "current_audit": {
+    "fetched_at": "2026-10-09T15:16:59.261089+00:00",
+    "input_sha256": "b594a379fd595d179c98edf4abc67182cdd9920b295ea86092b48eee9aa52037",
+    "queried_locations": 79,
+    "validated_observations": 118,
+    "fresh_distinct_stations": 1,
+    "latest_observed_at": "2026-10-09T14:30:00+00:00",
+    "snapshot_id": "openaq-live-b21f3526fe3bb48cc9963ca6386635a077f23d5f0961cfe1c9b2c5736a067956"
+  },
+  "independent_archive_attempt": {
+    "requested_dates": [
+      "2025-11-06",
+      "2025-11-07",
+      "2026-10-07",
+      "2026-10-08"
+    ],
+    "download_statuses": {
+      "200": 20,
+      "404": 20
+    }
+  }
+}

@@ -82,8 +82,12 @@ class ComparisonResponse(BaseModel):
 
 
 class PilotResponse(BaseModel):
-    status: Literal["pending_data_audit"] = "pending_data_audit"
-    boundary: None = None
+    status: Literal["historical_demo"] = "historical_demo"
+    name: str = "Central Delhi historical demo area"
+    boundary: dict
     supported_mode: Literal["walking"] = "walking"
-    data_mode: Literal["unavailable"] = "unavailable"
-    warning: str = "A Delhi pilot boundary will be selected after monitoring coverage is verified."
+    data_mode: Literal["replay"] = "replay"
+    warning: str = (
+        "Reviewed with October and November 2025 observations. Historical support does not "
+        "establish street-level accuracy or current air quality; each route is checked separately."
+    )

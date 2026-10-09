@@ -1,0 +1,272 @@
+{
+  "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a",
+  "cases": [
+    {
+      "name": "central-north",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.6517,
+          "lng": 77.2219
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "no_lower_exposure_candidate",
+      "fastest_id": "mapbox-c7658b8d11f6dc4acbd8bbbb",
+      "lowest_exposure_eligible_id": "mapbox-c7658b8d11f6dc4acbd8bbbb",
+      "candidates": [
+        {
+          "id": "mapbox-c7658b8d11f6dc4acbd8bbbb",
+          "distance_metres": 3071.536,
+          "duration_seconds": 2193.464,
+          "estimated_exposure": 6672.010293717897,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-48559206048ab7df3cc6d665",
+          "distance_metres": 3325.971,
+          "duration_seconds": 2372.706,
+          "estimated_exposure": 7222.3975558395105,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-9432f80d5c03888bf60f5f08",
+          "distance_metres": 3724.135,
+          "duration_seconds": 2691.766,
+          "estimated_exposure": 8128.970485390795,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    },
+    {
+      "name": "central-east",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.628,
+          "lng": 77.241
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "no_lower_exposure_candidate",
+      "fastest_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "lowest_exposure_eligible_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 6819.46716037521,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-edfdcf61df2e8cdf20cac35e",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 7315.062386147823,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-835079f9d27e6f229e46c4a0",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 9323.358766374155,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    },
+    {
+      "name": "central-south",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.6129,
+          "lng": 77.2295
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "no_lower_exposure_candidate",
+      "fastest_id": "via-612cb40cf3bc48a1a75863c5",
+      "lowest_exposure_eligible_id": "via-612cb40cf3bc48a1a75863c5",
+      "candidates": [
+        {
+          "id": "via-612cb40cf3bc48a1a75863c5",
+          "distance_metres": 2987.858,
+          "duration_seconds": 2103.031,
+          "estimated_exposure": 5910.304961854535,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-704ed0a13b9173b8679bd26e",
+          "distance_metres": 3058.282,
+          "duration_seconds": 2129.99,
+          "estimated_exposure": 6030.086746720337,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    },
+    {
+      "name": "central-west",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.625,
+          "lng": 77.197
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "no_lower_exposure_candidate",
+      "fastest_id": "mapbox-b14df8501f156d637a682e9b",
+      "lowest_exposure_eligible_id": "mapbox-b14df8501f156d637a682e9b",
+      "candidates": [
+        {
+          "id": "mapbox-b14df8501f156d637a682e9b",
+          "distance_metres": 3467.943,
+          "duration_seconds": 2497.338,
+          "estimated_exposure": 6817.749146738851,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-14be7369d2e32eeb84c13c94",
+          "distance_metres": 4076.677,
+          "duration_seconds": 2928.481,
+          "estimated_exposure": 8093.005720861407,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    },
+    {
+      "name": "lodhi-east",
+      "request": {
+        "origin": {
+          "lat": 28.593,
+          "lng": 77.2197
+        },
+        "destination": {
+          "lat": 28.591,
+          "lng": 77.24
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "single_candidate",
+      "fastest_id": "mapbox-a8f75666e1cad4fd5682f445",
+      "lowest_exposure_eligible_id": "mapbox-a8f75666e1cad4fd5682f445",
+      "candidates": [
+        {
+          "id": "mapbox-a8f75666e1cad4fd5682f445",
+          "distance_metres": 2836.462,
+          "duration_seconds": 1993.163,
+          "estimated_exposure": 3368.4589122451594,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    },
+    {
+      "name": "lodhi-north",
+      "request": {
+        "origin": {
+          "lat": 28.593,
+          "lng": 77.2197
+        },
+        "destination": {
+          "lat": 28.6129,
+          "lng": 77.2295
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a"
+      },
+      "status": "no_lower_exposure_candidate",
+      "fastest_id": "mapbox-18bf83eca0caf5a609b9cd89",
+      "lowest_exposure_eligible_id": "mapbox-18bf83eca0caf5a609b9cd89",
+      "candidates": [
+        {
+          "id": "mapbox-18bf83eca0caf5a609b9cd89",
+          "distance_metres": 2869.861,
+          "duration_seconds": 1990.355,
+          "estimated_exposure": 3924.5974663230986,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "via-8b82cf354d7bc8c00cc5edef",
+          "distance_metres": 3533.829,
+          "duration_seconds": 2469.038,
+          "estimated_exposure": 4805.534342387922,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Fixed pre-existing walking paths and allowances; no search or policy tuning for a positive outcome.",
+    "Current walking geometry compared to November 2025 observations.",
+    "A lower model estimate is not a validated exposure benefit."
+  ]
+}

@@ -17,10 +17,11 @@ export type HealthResponse = {
 };
 
 export type PilotResponse = {
-  status: "pending_data_audit";
-  boundary: null;
+  status: "historical_demo";
+  name: string;
+  boundary: { type: "Polygon"; coordinates: number[][][] };
   supported_mode: "walking";
-  data_mode: "unavailable";
+  data_mode: "replay";
   warning: string;
 };
 

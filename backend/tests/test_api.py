@@ -26,10 +26,15 @@ def test_health_does_not_require_provider_credentials(client):
     assert response.json()["environment"] == "test"
 
 
-def test_pilot_is_unselected_until_data_audit(client):
+def test_pilot_identifies_reviewed_historical_area_without_live_claim(client):
     response = client.get("/api/pilot")
-    assert response.json()["boundary"] is None
-    assert response.json()["data_mode"] == "unavailable"
+    data = response.json()
+    assert data["status"] == "historical_demo"
+    assert data["boundary"]["type"] == "Polygon"
+    ring = data["boundary"]["coordinates"][0]
+    assert ring[0] == ring[-1]
+    assert data["data_mode"] == "replay"
+    assert "current air quality" in data["warning"]
 
 
 def test_comparison_never_fakes_success(client):

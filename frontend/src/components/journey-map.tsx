@@ -64,8 +64,8 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
         container: container.current,
         accessToken: token,
         style: "mapbox://styles/mapbox/light-v11",
-        center: [77.209, 28.6139], // Delhi viewport only; not a selected pilot boundary.
-        zoom: 12,
+        center: [77.229, 28.631], // Reviewed historical demo area; live support is checked separately.
+        zoom: 13,
       });
       map.current = instance;
       instance.on("load", () => { if (instance) showRoutes(instance, routeRef.current, activeRouteRef.current, true); });
@@ -94,7 +94,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
           <span className="map-pin" aria-hidden="true">↗</span>
           <h2>{failed ? "Map unavailable" : "Your journey starts here"}</h2>
           <p>{failed ? "You can still enter coordinates in the journey form." : "Enter two locations to prepare your walk. The interactive map will appear when map access is configured."}</p>
-          <span className="map-caption">Delhi · pilot area pending data checks</span>
+          <span className="map-caption">Central Delhi · historical demo area</span>
         </div>
       )}
       {token && !failed && routes.length > 0 && (

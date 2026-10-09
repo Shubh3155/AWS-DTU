@@ -17,15 +17,20 @@ Local API: `http://localhost:8000`. Interactive OpenAPI documentation: `/docs`. 
 
 This does not claim that monitoring data, routing, database or AWS access is verified.
 
-`GET /api/pilot` returns the unselected pilot state:
+`GET /api/pilot` identifies the reviewed historical demo area. This does not
+approve current-air coverage or street-level accuracy:
 
 ```json
 {
-  "status": "pending_data_audit",
-  "boundary": null,
+  "status": "historical_demo",
+  "name": "Central Delhi historical demo area",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[[77.215,28.624],[77.243,28.624],[77.243,28.638],[77.215,28.638],[77.215,28.624]]]
+  },
   "supported_mode": "walking",
-  "data_mode": "unavailable",
-  "warning": "A Delhi pilot boundary will be selected after monitoring coverage is verified."
+  "data_mode": "replay",
+  "warning": "Reviewed with October and November 2025 observations. Historical support does not establish street-level accuracy or current air quality; each route is checked separately."
 }
 ```
 

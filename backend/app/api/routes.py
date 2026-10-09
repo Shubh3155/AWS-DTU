@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 import httpx
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
 
+from app.core.pilot import contains, polygon
 from app.model.baseline import BaselinePolicy
 from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotResponse
 from app.services.cache import cache_identity, read_routes, store_routes
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/api")
 
 @router.get("/pilot", response_model=PilotResponse)
 def pilot() -> PilotResponse:
-    return PilotResponse()
+    return PilotResponse(boundary=polygon())
 
 
 @router.post("/routes/compare", response_model=ComparisonResponse)
@@ -45,6 +46,9 @@ def compare(
         if loaded[0] is not None:
             snapshot_cache.put(snapshot_key, loaded, ttl=10)
     snapshot, warnings = loaded
+    warnings = list(warnings)
+    if not all(contains(point.lat, point.lng) for point in (request.origin, request.destination)):
+        warnings.append("This journey is outside the reviewed historical demo area.")
     policy = BaselinePolicy(
         station_radius_metres=settings.baseline_station_radius_metres,
         max_age_hours=settings.baseline_max_age_hours,
@@ -68,6 +72,8 @@ def compare(
             raise HTTPException(
                 status_code=error.status, detail={"code": error.code, "message": error.message}
             ) from None
+    if any(not contains(lat, lng) for route in routes for lng, lat in route.geometry.coordinates):
+        warnings.append("One or more evaluated paths leave the reviewed historical demo area.")
     result = compare_routes(
         routes,
         request,

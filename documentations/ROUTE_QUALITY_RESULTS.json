@@ -1,0 +1,71 @@
+{
+  "input_sha256": "43f4e82e5a9f0edd531c7f1c58767c6df00839c6afc4ad967bada939986de8cd",
+  "cases": [
+    {
+      "name": "central-north",
+      "before": 3,
+      "retained": 3,
+      "removed": [],
+      "fastest_retained": true
+    },
+    {
+      "name": "central-east",
+      "before": 3,
+      "retained": 3,
+      "removed": [],
+      "fastest_retained": true
+    },
+    {
+      "name": "central-south",
+      "before": 3,
+      "retained": 2,
+      "removed": [
+        {
+          "id": "via-107fa1c6b5b8e6dfa55fbd9f",
+          "reason": "backtracking"
+        }
+      ],
+      "fastest_retained": true
+    },
+    {
+      "name": "central-west",
+      "before": 3,
+      "retained": 2,
+      "removed": [
+        {
+          "id": "via-000ea784ed632e6f3594dc9e",
+          "reason": "backtracking"
+        }
+      ],
+      "fastest_retained": true
+    },
+    {
+      "name": "lodhi-east",
+      "before": 3,
+      "retained": 1,
+      "removed": [
+        {
+          "id": "via-ff48a10143b69c534da65185",
+          "reason": "backtracking"
+        },
+        {
+          "id": "via-b56e4f44a5c3cc4faeee7101",
+          "reason": "backtracking"
+        }
+      ],
+      "fastest_retained": true
+    },
+    {
+      "name": "lodhi-north",
+      "before": 3,
+      "retained": 2,
+      "removed": [
+        {
+          "id": "via-93b4b52246366afbfcdd46b9",
+          "reason": "backtracking"
+        }
+      ],
+      "fastest_retained": true
+    }
+  ]
+}
