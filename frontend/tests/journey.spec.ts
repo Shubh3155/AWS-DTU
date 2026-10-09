@@ -94,3 +94,28 @@ test("provider error is shown and comparison can be retried", async ({ page }) =
   await expect(page.getByText("Routing is rate limited; retry later.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Compare walking routes" })).toBeEnabled();
 });
+
+test("route hover previews, selection persists and a new request resets it", async ({ page }) => {
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: comparison() }));
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  const first = page.getByRole("button", { name: "Show route 1 on map" });
+  const second = page.getByRole("button", { name: "Show route 2 on map" });
+  await expect(first).toHaveAttribute("aria-pressed", "true");
+  await second.hover();
+  await expect(second.locator("..")).toHaveClass(/route-active/);
+  await expect(second).toHaveAttribute("aria-pressed", "false");
+  await second.click();
+  await page.mouse.move(0, 0);
+  await expect(second).toHaveAttribute("aria-pressed", "true");
+  await expect(second.locator("..")).toHaveClass(/route-active/);
+  await first.focus();
+  await expect(first.locator("..")).toHaveClass(/route-active/);
+  await first.press("Enter");
+  await expect(first).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("slider", { name: "Maximum extra time" }).focus();
+  await page.keyboard.press("Home");
+  await expect(page.getByText("Waiting for a journey")).toBeVisible();
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(first).toHaveAttribute("aria-pressed", "true");
+});

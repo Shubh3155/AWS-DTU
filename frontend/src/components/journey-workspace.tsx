@@ -2,7 +2,6 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { routeColor } from "@/lib/route-colors";
 import { JourneyMap } from "@/components/journey-map";
 import { checkHealth, compareJourney } from "@/lib/api";
 import type { Coordinate, ComparisonResponse } from "@/types/api";
@@ -37,10 +36,22 @@ export function JourneyWorkspace() {
 
   const [result, setResult] = useState<ComparisonResponse | null>(null);
   const requestId = useRef(0);
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [hoverRouteId, setHoverRouteId] = useState<string | null>(null);
+  const [focusRouteId, setFocusRouteId] = useState<string | null>(null);
+  const candidates = result?.candidates ?? [];
+  const selectedId = candidates.some(route => route.id === selectedRouteId) ? selectedRouteId : result?.fastest_id ?? candidates[0]?.id ?? null;
+  const previewId = hoverRouteId ?? focusRouteId ?? selectedId;
+  const activeRouteId = candidates.some(route => route.id === previewId) ? previewId : selectedId;
+
+  function resetRouteSelection() {
+    setSelectedRouteId(null); setHoverRouteId(null); setFocusRouteId(null);
+  }
 
   function invalidate() {
     requestId.current += 1;
     setResult(null);
+    resetRouteSelection();
     setBusy(false);
     setMessage("");
   }
@@ -59,6 +70,7 @@ export function JourneyWorkspace() {
     const id = ++requestId.current;
     setBusy(true);
     setResult(null);
+    resetRouteSelection();
     setMessage("");
     try {
       const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode: "walking", data_mode: useReplay ? "replay" : "live" });
@@ -117,17 +129,20 @@ export function JourneyWorkspace() {
             </form>
           </aside>
           <div className="map-and-results">
-            <JourneyMap origin={coordinate(origin)} destination={coordinate(destination)} activePoint={activePoint} onSelect={selectPoint} routes={result?.candidates ?? []} />
+            <JourneyMap origin={coordinate(origin)} destination={coordinate(destination)} activePoint={activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} />
             <div className="result-previews" aria-label="Walking route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
-                <div className="result-card" key={route.id} style={{ borderTopColor: routeColor(index) }}>
-                  <p className="eyebrow"><span className="route-swatch" aria-hidden="true" style={{ backgroundColor: routeColor(index) }} />Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
+                <div className={`result-card${route.id === activeRouteId ? " route-active" : ""}`} key={route.id}
+                  onPointerMove={event => { if (event.pointerType === "mouse") setHoverRouteId(route.id); }} onPointerLeave={() => setHoverRouteId(null)}
+                  onFocus={() => { setFocusRouteId(route.id); setHoverRouteId(null); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusRouteId(null); }}>
+                  <p className="eyebrow">Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
                   {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>
                   <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
+                  <button type="button" className="show-route" aria-label={`Show route ${index + 1} on map`} aria-pressed={route.id === selectedId} onClick={() => { setSelectedRouteId(route.id); setHoverRouteId(null); setFocusRouteId(route.id); }}>{route.id === activeRouteId ? "Showing on map" : "Show on map"}<span aria-hidden="true">↗</span></button>
                 </div>
               )) : <div className="result-card"><h3>No walking route found</h3><p>Try different starting and destination points.</p></div> : (
                 <div className="result-card"><p className="eyebrow">Walking candidates</p><h3>Waiting for a journey</h3><p>Route distance, duration and time-budget eligibility will appear here.</p></div>
