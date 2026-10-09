@@ -5,13 +5,14 @@ import json
 from datetime import UTC, datetime, timedelta
 
 import psycopg
-from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
+from psycopg_pool import ConnectionPool
 
 from app.core.config import Settings
+from app.core.database import database_connection
 from app.model.baseline import BaselinePolicy
 from app.schemas.routes import ComparisonRequest, ComparisonResponse
-from app.services.snapshots import CA, PollutionSnapshot
+from app.services.snapshots import PollutionSnapshot
 from app.services.walking import WalkingRoute
 
 CONTRACT = "walking-steps-v2-via"
@@ -41,19 +42,13 @@ def read_routes(
     snapshot: PollutionSnapshot,
     policy: BaselinePolicy,
     now: datetime,
+    pool: ConnectionPool | None = None,
 ) -> list[WalkingRoute] | None:
     if settings.database_url is None:
         return None
     key, _ = cache_identity(request, snapshot, policy, now)
     try:
-        with psycopg.connect(
-            settings.database_url.get_secret_value(),
-            connect_timeout=3,
-            sslmode="verify-full",
-            sslrootcert=str(CA),
-            row_factory=dict_row,
-        ) as conn:
-            conn.read_only = True
+        with database_connection(settings, pool, read_only=True) as conn:
             conn.execute("SET LOCAL statement_timeout = 3000")
             row = conn.execute(
                 "SELECT response FROM aeroroute.route_comparison_cache "
@@ -79,6 +74,7 @@ def store_routes(
     routes: list[WalkingRoute],
     response: ComparisonResponse,
     now: datetime,
+    pool: ConnectionPool | None = None,
 ) -> None:
     if settings.database_url is None or not routes:
         return
@@ -89,12 +85,7 @@ def store_routes(
         "comparison": response.model_dump(mode="json"),
     }
     try:
-        with psycopg.connect(
-            settings.database_url.get_secret_value(),
-            connect_timeout=3,
-            sslmode="verify-full",
-            sslrootcert=str(CA),
-        ) as conn:
+        with database_connection(settings, pool) as conn:
             conn.execute("SET LOCAL statement_timeout = 3000")
             conn.execute(
                 "DELETE FROM aeroroute.route_comparison_cache WHERE expires_at<=%s", (now,)

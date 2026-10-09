@@ -2,17 +2,16 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
 from typing import Literal
 
 import psycopg
-from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 from app.core.config import Settings
+from app.core.database import CA as CA
+from app.core.database import database_connection
 from app.model.contracts import StationObservation
 from app.schemas.routes import Coordinate
-
-CA = Path(__file__).resolve().parents[2] / "certs" / "supabase-ca.crt"
 
 
 @dataclass(frozen=True)
@@ -26,19 +25,15 @@ class PollutionSnapshot:
 
 
 def load_snapshot(
-    settings: Settings, mode: Literal["live", "replay"], identity: str | None
+    settings: Settings,
+    mode: Literal["live", "replay"],
+    identity: str | None,
+    pool: ConnectionPool | None = None,
 ) -> tuple[PollutionSnapshot | None, list[str]]:
     if settings.database_url is None:
         return None, ["Pollution snapshot access is not configured; exposure is unavailable."]
     try:
-        with psycopg.connect(
-            settings.database_url.get_secret_value(),
-            connect_timeout=3,
-            sslmode="verify-full",
-            sslrootcert=str(CA),
-            row_factory=dict_row,
-        ) as connection:
-            connection.read_only = True
+        with database_connection(settings, pool, read_only=True) as connection:
             connection.execute("SET LOCAL statement_timeout = 3000")
             snapshot = connection.execute(
                 "SELECT snapshot_id,data_version,data_mode,observed_to,fetched_at "
