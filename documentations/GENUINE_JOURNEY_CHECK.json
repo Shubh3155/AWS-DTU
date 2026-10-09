@@ -1,0 +1,141 @@
+{
+  "request": {
+    "origin": {
+      "lat": 28.6139,
+      "lng": 77.209
+    },
+    "destination": {
+      "lat": 28.62,
+      "lng": 77.22
+    },
+    "max_detour_minutes": 5.0,
+    "mode": "walking",
+    "data_mode": "replay",
+    "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+  },
+  "samples": [
+    {
+      "seconds": 6.415146541025024,
+      "cache": "miss",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 12.021394750045147,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.849068542011082,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.56418066698825,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.494483000016771,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.840598374954425,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.715634124993812,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 5.807665708009154,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 5.170521416992415,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    },
+    {
+      "seconds": 4.986165874986909,
+      "cache": "hit",
+      "status": "single_candidate",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+    }
+  ],
+  "latency_by_cache": {
+    "hit": {
+      "count": 9,
+      "median_seconds": 4.849068542011082,
+      "p95_seconds": 12.021394750045147
+    },
+    "miss": {
+      "count": 1,
+      "median_seconds": 6.415146541025024,
+      "p95_seconds": 6.415146541025024
+    }
+  },
+  "comparison": {
+    "status": "single_candidate",
+    "candidates": [
+      {
+        "duration_seconds": 2540.128,
+        "distance_metres": 3462.667,
+        "coverage_percent": 100.0,
+        "estimated_exposure": 1245.6333225753372,
+        "within_budget": true
+      }
+    ],
+    "data_quality": {
+      "data_mode": "replay",
+      "observed_from": "2025-10-07T18:00:00Z",
+      "observed_to": "2025-10-07T18:30:00Z",
+      "fetched_at": "2026-10-09T14:11:54.592542Z",
+      "source_ids": [
+        "openaq:sensor:12234678",
+        "openaq:sensor:12234690",
+        "openaq:sensor:12234726",
+        "openaq:sensor:12234787",
+        "openaq:sensor:12234796",
+        "openaq:sensor:12235074",
+        "openaq:sensor:12235101",
+        "openaq:sensor:12235610",
+        "openaq:sensor:12236376",
+        "openaq:sensor:23534"
+      ],
+      "provider_ids": [
+        "openaq"
+      ],
+      "data_version": "openaq-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+      "model_version": "idw-v1-9764e82f4ebab922",
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+      "reference_time": "2025-10-07T18:30:00Z",
+      "station_count": 10,
+      "model_parameters": {
+        "sampling_interval_metres": 100,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      }
+    },
+    "estimated_reduction_percent": null
+  },
+  "limitations": [
+    "Exploratory Delhi journey; pilot boundary not approved.",
+    "One actual walking candidate; alternative-route ranking not exercised.",
+    "Local service with remote database; small sample, not AWS load testing."
+  ]
+}
