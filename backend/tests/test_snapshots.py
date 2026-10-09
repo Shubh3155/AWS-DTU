@@ -150,7 +150,7 @@ def test_api_consumes_explicit_snapshot_mode_and_serializes_scoring(monkeypatch,
         distance=15.0,
         steps=[WalkingStep(geometry=geometry, duration=1200.0, distance=15.0)],
     )
-    monkeypatch.setattr("app.api.routes.walking_routes", lambda *args: [route])
+    monkeypatch.setattr("app.api.routes.walking_candidates", lambda *args: [route])
     calls = []
 
     def snapshot(settings, requested_mode, identity):
