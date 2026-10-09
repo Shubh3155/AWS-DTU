@@ -40,4 +40,4 @@ The recreated snapshot was atomically ingested into Supabase. A real Mapbox jour
 
 Ten repeated API requests verified exact time-budget eligibility: one cache miss and nine hits. Cache-hit median was 4.85 seconds and p95 was 12.02 seconds; the miss took 6.42 seconds. The five-second response target is not established. See [measured evidence](GENUINE_JOURNEY_CHECK.json). Remote database connection latency remains a performance investigation.
 
-Frontend lint, type checking and production build pass. Local automated browser tests could not launch Chromium because the macOS sandbox denied its Mach-port registration; the hosted CI browser checks must pass before merging.
+Frontend lint, type checking and production build pass. Local automated browser tests could not launch Chromium because the macOS sandbox denied its Mach-port registration; the hosted CI browser checks must pass before merging. The in-app browser separately verified the genuine replay page, map, 1245.6 µg·min/m³ estimate, 100% modeled-time support and historical timestamps.
