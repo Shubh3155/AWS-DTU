@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from psycopg_pool import PoolTimeout
 
 from app.api.routes import router
 from app.core.config import Settings, get_settings
@@ -16,9 +17,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(instance: FastAPI):
         pool = create_pool(configuration)
         instance.state.database_pool = pool
-        if pool is not None:
-            pool.open()
         try:
+            if pool is not None:
+                pool.open()
+                try:
+                    pool.wait(timeout=10)
+                except PoolTimeout:
+                    # Preserve walking access during an outage; reads still fail safely.
+                    pass
             yield
         finally:
             if pool is not None:

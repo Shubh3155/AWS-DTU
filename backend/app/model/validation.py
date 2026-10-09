@@ -22,7 +22,11 @@ def metrics(rows: list[dict]) -> dict:
 
 
 def evaluate(
-    observations: list[StationObservation], cutoff: datetime, policy: BaselinePolicy
+    observations: list[StationObservation],
+    cutoff: datetime,
+    policy: BaselinePolicy,
+    *,
+    estimator=None,
 ) -> dict:
     if cutoff.tzinfo is None:
         raise ValueError("The temporal cutoff must include a timezone.")
@@ -38,7 +42,7 @@ def evaluate(
             observed,
             policy,
         )
-        estimate = interpolate(targets[0].location, donors, policy)
+        estimate = (estimator or interpolate)(targets[0].location, donors, policy)
         actual = math.fsum(t.pm25_micrograms_per_m3 / len(targets) for t in targets)
         predicted = estimate.pm25_micrograms_per_m3
         rows.append(
