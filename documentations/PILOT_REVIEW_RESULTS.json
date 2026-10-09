@@ -1,0 +1,294 @@
+{
+  "reviewed_at": "2026-10-09T15:20:13.291925+00:00",
+  "bounds": {
+    "south": 28.624,
+    "north": 28.638,
+    "west": 77.215,
+    "east": 77.243
+  },
+  "periods": [
+    {
+      "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+      "policy": {
+        "sampling_interval_metres": 100,
+        "station_radius_metres": 10000,
+        "max_age_hours": 2,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "grid_points": 121,
+      "historical_references": 107,
+      "fully_supported_historical_references": 106,
+      "latest_recorded_reference": {
+        "reference_time": "2025-10-07T18:30:00+00:00",
+        "minimum_nearby_stations": 7,
+        "supported_grid_points": 121
+      },
+      "current_reference": {
+        "reference_time": "2026-10-09T15:20:13.291925+00:00",
+        "minimum_nearby_stations": 0,
+        "supported_grid_points": 0
+      },
+      "sources": [
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=10/location-8118-20251006.csv.gz",
+          "sha256": "f9c5dc91a03d08db1152cff36cda2fcb9e042bb1c35248212afe0ee8122dd172",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=10/location-8118-20251007.csv.gz",
+          "sha256": "e5cbd8a965346bb6baf114923db53222bd9bef80e80ef49291a2c7c842eff0c8",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=10/location-11607-20251006.csv.gz",
+          "sha256": "d412350857056de44a79295984eac8753a0a5d1c2999871033c75fe3f0344173",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=10/location-11607-20251007.csv.gz",
+          "sha256": "b8f18be69d7e35ec1eea283c6518bccf4cae1d5ba2d1c765d575269b98de107e",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=10/location-17-20251006.csv.gz",
+          "sha256": "16e1a2d808d9e6ca9c85ad66cefa63669b5f34e564528c71f1e5d1a5815647ad",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=10/location-17-20251007.csv.gz",
+          "sha256": "524b5e48af5f53efa71941df903b494a38daee576cd09d388e19ff628255ea39",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=10/location-235-20251006.csv.gz",
+          "sha256": "28875957d3b91ebc7a7354da4d34f7c677a2c56c13b3b4ab96933122bc5ec90e",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=10/location-235-20251007.csv.gz",
+          "sha256": "490dfdec3de30cb51eafb4e56811e8a9ba8fcc2219948b07fcf82eabf82fa2ea",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=10/location-5610-20251006.csv.gz",
+          "sha256": "de095264a5fce40a54f883f10ffe7333d369594bba168daa98585d2722592b7b",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=10/location-5610-20251007.csv.gz",
+          "sha256": "5ab8fdea65c5332f129bde2e288a5e5dd866d0b5c211442d35d855933ffa3fea",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=10/location-5630-20251006.csv.gz",
+          "sha256": "bfabd504744ba07f6d831cb02b3558070dfbbf692f8fd1aef7a77d26ca35f0c5",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=10/location-5630-20251007.csv.gz",
+          "sha256": "7037778b86298b3eb7fe60bc27b9245b71a3855497a57706e184d8f32ee5b54e",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=10/location-6960-20251006.csv.gz",
+          "sha256": "3b078ccdaf14e91945a887001797877eebe2a8afc46ea4738c41bcc28000812d",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=10/location-6960-20251007.csv.gz",
+          "sha256": "be5ea6c0fb5e74c878dabc25ae0ae19da1bc3c0769311b6d695eca11f792876b",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=10/location-50-20251006.csv.gz",
+          "sha256": "85d8f43fc7a6fdd7337e811807ad0d64e8b5e832343c9cd7ba0d499757380f3e",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=10/location-50-20251007.csv.gz",
+          "sha256": "9d00b63f4ba15ae65bb1307f82b9102a538e89fd4ddaa9a2fdcc8a155ef5603c",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=10/location-8239-20251006.csv.gz",
+          "sha256": "17a351117abe225943a5674213817ea62586c889b627be9a68595cf3a70d2d61",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=10/location-8239-20251007.csv.gz",
+          "sha256": "fb9e3509260a7e4c3e69830dc353f73f2aba16b2ea7d867498e4ccbd7baa5642",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=10/location-5627-20251006.csv.gz",
+          "sha256": "138e0d85a6009ad4ac35fa7c5af7fd63673d3e8cffefc128b84192be21d1305e",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=10/location-5627-20251007.csv.gz",
+          "sha256": "433e5cbb8a16fc005f01322bb97847d908dd09ba95391d36902f2f8154619a8a",
+          "included_pm25_station": true
+        }
+      ],
+      "download_statuses": {
+        "200": 20
+      },
+      "limitations": [
+        "A sampled grid does not guarantee support between grid points.",
+        "Station availability is not street-level accuracy.",
+        "Each route is independently checked when scored."
+      ],
+      "input_sha256": "02387de770350ced0210da459156641bbd90a41c14ff007fc1310f48b52c7d7b",
+      "unsupported_historical_references": [
+        {
+          "reference_time": "2025-10-05T19:30:00+00:00",
+          "minimum_nearby_stations": 2,
+          "supported_grid_points": 0
+        }
+      ]
+    },
+    {
+      "snapshot_id": "openaq-replay-ef3fc91258e34e126632a119986c2353fd2e50956672a566225a88b39e05ce6a",
+      "policy": {
+        "sampling_interval_metres": 100,
+        "station_radius_metres": 10000,
+        "max_age_hours": 2,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "grid_points": 121,
+      "historical_references": 102,
+      "fully_supported_historical_references": 101,
+      "latest_recorded_reference": {
+        "reference_time": "2025-11-07T18:30:00+00:00",
+        "minimum_nearby_stations": 7,
+        "supported_grid_points": 121
+      },
+      "current_reference": {
+        "reference_time": "2026-10-09T15:20:13.291925+00:00",
+        "minimum_nearby_stations": 0,
+        "supported_grid_points": 0
+      },
+      "sources": [
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=11/location-8118-20251106.csv.gz",
+          "sha256": "87d2e0c45e58c15d95aca6a0dcfae32daa966752bab5c330dfdb4c2eb9fbc6ce",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=11/location-8118-20251107.csv.gz",
+          "sha256": "bd34144bb097a23c0117c99ef0c6ca2576fd86f1e8f23d6372b04c976b5fae36",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=11/location-11607-20251106.csv.gz",
+          "sha256": "d1c6ffe69a67d0181cbcd143a0971a7fbd5cbc953a67c48d3a6cc3e9f883ce8a",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=11/location-11607-20251107.csv.gz",
+          "sha256": "604a348fe2f30510e8912b3b2f0730ead4e9ddf5f090bb41456932fa3e5e0f1c",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=11/location-17-20251106.csv.gz",
+          "sha256": "9d15ccffe10dc9941cf2799cf196ec2ac93b7015f45511b35705585b27e986d5",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=11/location-17-20251107.csv.gz",
+          "sha256": "5df37c27a117d8aac2bac071d3b9617f0034ccd976dd44c97a88a1c59ceffd47",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=11/location-235-20251106.csv.gz",
+          "sha256": "59b06de7a0425e5c048570e84b880e678e2b091dcfbbc3e23456428407449be8",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=11/location-235-20251107.csv.gz",
+          "sha256": "fc44918bb37163c0ba0c9be6e98c4016e288b8091fad913c177e0bf95a26783d",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=11/location-5610-20251106.csv.gz",
+          "sha256": "6321527bd0fd823b1cd0cf87c29627490e1eb713d84f17a1796fe4f68d071779",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=11/location-5610-20251107.csv.gz",
+          "sha256": "abf922bcfb26ab3d981a5b13c2f35f938120a97deaae4448bf1f0268e066b63a",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=11/location-5630-20251106.csv.gz",
+          "sha256": "e40f68063e3de73644c507fe01a63f20a267884d3bbd8d382c279ba92a151c9b",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=11/location-5630-20251107.csv.gz",
+          "sha256": "983fa68c5c892d4668e665d37657a740d078ca836b4c0e09b2ea8a1c96228e94",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=11/location-6960-20251106.csv.gz",
+          "sha256": "4461104e04adec43aff8ea660eec6aec237a2832076cd6d5c4a3bcda5d9a273d",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=11/location-6960-20251107.csv.gz",
+          "sha256": "946d418a2ddd1da2445e1ec83430d10eab1af2bbb2b035182fc8b2db00cf7fd6",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=11/location-50-20251106.csv.gz",
+          "sha256": "2ebcef0ffc1ee317d849c8e42de0793bd70e13650048967c915b41e06705ebb3",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=11/location-50-20251107.csv.gz",
+          "sha256": "c10eca798e95832de4264d6d4f28ced1aac1897f82b9e282250bcde95c711bd6",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=11/location-8239-20251106.csv.gz",
+          "sha256": "f9c1896b53927be47b7bb1f8c553898c9b4aa391f882a6919ac1372bbf4285f1",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=11/location-8239-20251107.csv.gz",
+          "sha256": "ea62b2e926781a172ccfcf586a52641e92863788f0e7d9a0a96e25a3b0bd4a2d",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=11/location-5627-20251106.csv.gz",
+          "sha256": "332cef1ca3aee91f141b77352b2441adda711d27b2596c2c7e6c6eee26dbee6b",
+          "included_pm25_station": true
+        },
+        {
+          "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=11/location-5627-20251107.csv.gz",
+          "sha256": "f9af2e9f77428cf2840dfb8be04c970369f49d818d9d567ef5e16275b13640fc",
+          "included_pm25_station": true
+        }
+      ],
+      "download_statuses": {
+        "200": 20,
+        "404": 20
+      },
+      "limitations": [
+        "A sampled grid does not guarantee support between grid points.",
+        "Station availability is not street-level accuracy.",
+        "Each route is independently checked when scored."
+      ],
+      "input_sha256": "c820d5ba7459754e9c91c0a6fbb871e7424ef882380b61b0e8e65fa8e1dbd8be",
+      "unsupported_historical_references": [
+        {
+          "reference_time": "2025-11-05T19:30:00+00:00",
+          "minimum_nearby_stations": 1,
+          "supported_grid_points": 0
+        }
+      ]
+    }
+  ]
+}

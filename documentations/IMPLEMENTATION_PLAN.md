@@ -4,7 +4,15 @@
 
 **Source:** [AeroRoute revised proposal](AeroRoute_Revised_Proposal%20%281%29.pdf), pages 1–2.
 
-**Current status — Friday, 9 October:** **11/14 Friday checklist items are complete (79%)**; the required Sunday MVP is approximately **65% complete**. Walking routes, ingestion, scoring, versioned cache and desktop/mobile browser states are implemented and checked. Genuine historical labels were fetched and their coverage reviewed. Deployment configuration and S3 publication tools are ready, but AWS deployment/upload and a genuine scored browser journey still need access. Station/time capacity is reviewed; error metrics and sensitivity remain Saturday work. See [FRIDAY_HANDOFF.md](FRIDAY_HANDOFF.md) for evidence and the estimate, [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md) for real data, and [DEPLOYMENT.md](DEPLOYMENT.md) for cloud steps. Earlier Thursday access findings are historical; bundled unchecked items include completed portions.
+**Current status — Friday, 9 October:** The local genuine replay flow, validation,
+ranking sensitivity, route-quality screening and runtime caching are implemented.
+The historical demo area has a reviewed boundary. A separate November period
+shows much larger validation errors; the latest audit finds one usable fresh
+station, below the three-station requirement. See [DATA_CREDIBILITY.md](DATA_CREDIBILITY.md),
+[ROUTE_QUALITY.md](ROUTE_QUALITY.md) and [DATABASE_PERFORMANCE.md](DATABASE_PERFORMANCE.md).
+Actual AWS deployment and the final recorded demo remain pending. AWS work is
+deferred at the user's request. The original daily checklists below are historical
+planning records; their bundled unchecked items can include completed portions.
 
 ## 1. Sunday delivery target
 

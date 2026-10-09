@@ -2,11 +2,16 @@
 
 ## Latest progress — 9 October 2026
 
-The later route-preview, validation and database work supersedes the original
-Friday checklist below. Database pooling and bounded runtime caches now pass
-102 backend tests; the genuine repeated replay measurement is documented in
-[DATABASE_PERFORMANCE.md](DATABASE_PERFORMANCE.md). AWS deployment remains pending.
+Current local checks: **110 backend tests pass, two optional database checks skip**;
+frontend lint, types and build pass. Genuine multi-route replay and current live
+limited-data behavior are verified. Path screening removes five backtracking
+alternatives from eighteen saved candidates. A Central Delhi historical demo area
+is reviewed across two periods. November station errors are substantially worse;
+only one station is fresh in the new live audit. See [DATA_CREDIBILITY.md](DATA_CREDIBILITY.md),
+[ROUTE_QUALITY.md](ROUTE_QUALITY.md) and [DATABASE_PERFORMANCE.md](DATABASE_PERFORMANCE.md).
+AWS work is deferred; hosting and the final recording remain unfinished.
 
+### Earlier Friday checkpoint (superseded)
 - Implemented time-preserving segmentation, provisional interpolation, exact-detour exposure ranking, read-only snapshot loading and frontend scores/IST/replay notices. Missing support withholds full scores; reduction percentages remain unavailable pending validation.
 - Added versioned runtime cache, bounded hourly/public archive downloads, coverage assessment, immutable S3 publication, exact-version Lightsail deployment helper/workflow, infrastructure template and Amplify build spec.
 - Downloaded 462 genuine derived station-hour labels from ten Delhi locations, dated 6–7 October 2025 IST. Coverage review and limitations are in [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md). They are historical replay, with zero live support.

@@ -1,5 +1,9 @@
 # Data audit — live pilot verification pending
 
+The newer [data credibility review](DATA_CREDIBILITY.md) supersedes the following
+checkpoint: a historical demo boundary is reviewed, November validation is
+complete, and the new live audit has one fresh station, insufficient for scores.
+
 Genuine recorded observations have been retrieved. The latest Friday download contains 462 derived station-hour labels from ten Delhi locations for 6–7 October 2025 IST; radius/window and split prerequisites are reviewed in [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md). It has no live support and is restricted to replay. Earlier Thursday findings are retained below. No live pilot boundary is approved; the map's Delhi viewport is an initial view.
 
 From `backend/`, with its virtual environment active and `AEROROUTE_OPENAQ_API_KEY` configured in `.env`:

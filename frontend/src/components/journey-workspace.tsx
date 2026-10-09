@@ -161,7 +161,7 @@ export function JourneyWorkspace() {
             {result.status === "single_candidate" && <p>Only one walking candidate is available; no alternative-route improvement is claimed.</p>}
             {result.status === "no_lower_exposure_candidate" && <p>No eligible candidate has a lower estimated exposure than the fastest evaluated route.</p>}
             {result.status === "limited_data" && <p>Data support is insufficient to compare full-route exposures.</p>}
-            {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. Sampling support is not measured street-level accuracy.</p>}
+            {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. Historical validation errors vary substantially between periods; station support does not establish street-level accuracy.</p>}
           </> : <p>Walking routes come from Mapbox. Station interpolation is a provisional model; source times and coverage appear with results. No improvement percentages are claimed before validation.</p>}
         </div></section>
       </main>

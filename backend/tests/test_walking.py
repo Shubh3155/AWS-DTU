@@ -10,8 +10,10 @@ from app.schemas.routes import Coordinate
 from app.services.walking import RoutingError, walking_routes
 
 
-def route(duration):
+def route(duration, bend=0):
     geometry = {"type": "LineString", "coordinates": [[77.2, 28.6], [77.21, 28.61]]}
+    if bend:
+        geometry["coordinates"].insert(1, [77.205 + bend, 28.605 - bend])
     return {
         "geometry": geometry,
         "duration": duration,
@@ -23,7 +25,11 @@ def route(duration):
 def test_api_fastest_not_provider_order_and_exact_detour(monkeypatch):
     transport = httpx.MockTransport(
         lambda request: httpx.Response(
-            200, json={"code": "Ok", "routes": [route(900.0), route(600.0), route(900.01)]}
+            200,
+            json={
+                "code": "Ok",
+                "routes": [route(900.0, 0.002), route(600.0), route(900.01, -0.002)],
+            },
         )
     )
     original = httpx.Client
@@ -40,7 +46,7 @@ def test_api_fastest_not_provider_order_and_exact_detour(monkeypatch):
     assert response.status_code == 200
     result = response.json()
     assert result["status"] == "limited_data"
-    assert result["fastest_id"] == result["candidates"][1]["id"]
+    assert result["fastest_id"] == result["candidates"][0]["id"]
     assert [r["within_budget"] for r in result["candidates"]] == [True, True, False]
     assert all(r["estimated_exposure"] is None for r in result["candidates"])
     assert result["lowest_exposure_eligible_id"] is None
@@ -159,7 +165,9 @@ def test_existing_provider_alternatives_do_not_trigger_probes():
 
     def provider(request):
         calls.append(request)
-        return httpx.Response(200, json={"code": "Ok", "routes": [route(600.0), route(650.0)]})
+        return httpx.Response(
+            200, json={"code": "Ok", "routes": [route(600.0), route(650.0, 0.002)]}
+        )
 
     with httpx.Client(
         base_url="https://api.mapbox.com", transport=httpx.MockTransport(provider)
