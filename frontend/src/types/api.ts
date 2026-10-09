@@ -33,6 +33,7 @@ export type RouteCandidate = {
   exposure_unit: "µg·min/m³";
   within_budget: boolean;
   coverage_percent: number;
+  via?: Coordinate | null;
 };
 export type ComparisonResponse = {
   status: "comparison_available" | "uncertain_difference" | "no_lower_exposure_candidate" | "single_candidate" | "limited_data" | "no_route";

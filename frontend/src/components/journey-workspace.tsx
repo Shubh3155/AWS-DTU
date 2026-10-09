@@ -123,6 +123,7 @@ export function JourneyWorkspace() {
                   <p className="eyebrow">{route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
+                  {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>
                   <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
