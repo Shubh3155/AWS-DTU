@@ -14,7 +14,11 @@ Health: `http://localhost:8000/health`. API documentation: `http://localhost:800
 
 Checks: `ruff check .`, `ruff format --check .`, `pytest -q`.
 
-Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Database connectivity and versioned migrations are available; see [migrations/README.md](migrations/README.md). OpenAQ report ingestion is available; see [INGESTION.md](../documentations/INGESTION.md). The [baseline handoff](../documentations/EXPOSURE_BASELINE.md) documents provisional parameters and validation limits. Caching, S3 and AWS deployment remain pending.
+Run the [OpenAQ audit](../documentations/DATA_AUDIT.md) after configuring its key. Keep raw reports in ignored `data/`. Database connectivity and versioned migrations are available; see [migrations/README.md](migrations/README.md). OpenAQ report ingestion is available; see [INGESTION.md](../documentations/INGESTION.md). The [baseline handoff](../documentations/EXPOSURE_BASELINE.md) documents provisional parameters and validation limits. Runtime caching reuses walking steps and re-scores freshness on every hit; TTL defaults to 120 seconds.
+
+For bounded history and public archive downloads, follow [HISTORICAL_COVERAGE.md](../documentations/HISTORICAL_COVERAGE.md). Period/coverage/aggregation metadata and source-file hashes survive ingestion. Archive-derived reports are restricted to replay.
+
+Deployment helpers, infrastructure configuration, immutable S3 publication and rollback commands are documented in [DEPLOYMENT.md](../documentations/DEPLOYMENT.md). Actual cache database operations, AWS deployment, snapshot upload and genuine journey latency remain unverified until access is configured. Current local checks: 83 tests passed, 2 opt-in database checks skipped.
 
 From the repository root, build with `docker build -t aeroroute-api backend`. The image listens on port 8000 and runs as a non-root user. Use `/health` as the Lightsail health-check path.
 

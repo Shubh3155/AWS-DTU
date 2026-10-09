@@ -23,7 +23,11 @@ matching CORS. Configure these before the frontend build. Provider and database 
 remain on the backend.
 
 The API uses validated step geometry/durations for time-weighted scoring. It reads snapshots
-with verified TLS in a read-only transaction; runtime route caching remains unimplemented.
+with verified TLS in a read-only transaction. Runtime cache retains walking steps and
+comparison metadata, but every hit re-scores current observation support. Exact journey,
+allowance/mode, actual snapshot/data/model versions and five-minute bucket identify entries;
+default TTL is 120 seconds. Cache failure falls back to genuine routing. Actual database
+cache operations remain unverified without access.
 
 ## Obtain and ingest actual observations
 
@@ -39,7 +43,8 @@ Choose `live` only deliberately; selecting it does not validate freshness or geo
 coverage. Old observations keep their original timestamps in either mode. The command
 first validates locally; database writes require `--apply`. It accepts measured PM2.5 in
 recognized microgram-per-cubic-metre spellings, stores normalized `µg/m³`, and retains the
-source spelling, provider/license metadata and per-observation coordinates. Unknown units,
+source spelling, provider/license metadata, per-observation coordinates and available period,
+coverage/aggregation/source-count metadata. Unknown units,
 missing/negative/non-finite readings, invalid coordinates/timestamps and future observations
 are excluded. A report with no usable readings is rejected. Conflicting readings for one
 sensor/time reject the snapshot. Identical readings deduplicate.
@@ -47,7 +52,8 @@ sensor/time reject the snapshot. Identical readings deduplicate.
 A content hash identifies the report; explicit mode is part of snapshot identity. Station,
 snapshot and observation writes commit together. Reingesting the same report/mode does not
 change rows. Reports remain in ignored `backend/data`; do not commit provider keys or raw
-reports. The manifest stores the report hash, search, limitations and rejected-row counts.
+reports. The manifest stores the report hash, source-file hashes, interval, search, caps,
+limitations and rejected-row counts.
 Snapshots are genuine inputs, not an approved pilot or evidence of exposure reduction.
 
 ## Verified 8 October 2026
@@ -66,11 +72,14 @@ Snapshots are genuine inputs, not an approved pilot or evidence of exposure redu
   genuine route (42.3 min, 3.46 km), clears old results when detour changes, and
   confirms backend health through the same-origin proxy. Exposure remains unavailable.
 
-Friday update: segmentation, interpolation, exposure ranking and snapshot loading are now
-implemented and fixture-tested. This checkout has no current provider/database credentials,
-so the historical snapshot and real-data scoring were not reverified. Next: choose a pilot,
-review the provisional freshness/radius policy using actual coverage, run a supported
-comparison, and configure AWS hosting. S3 upload and historical downloads remain pending.
+Friday update: segmentation, interpolation, exposure ranking, snapshot loading and caching
+are implemented and fixture-tested. Historical archive labels were downloaded and their
+coverage reviewed; see [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md). Ingestion accepts
+OpenAQ v3 audits/hourly reports and explicit replay-only archive-derived labels. Original
+period/coverage/derivation metadata is retained. This checkout has no provider/database
+credentials, so current database rows, actual cache operations and real-data route scoring
+were not reverified. S3 publication tools and deployment instructions are ready; actual
+upload/hosting remain pending. See [FRIDAY_HANDOFF.md](FRIDAY_HANDOFF.md).
 
 References: [Mapbox Directions](https://docs.mapbox.com/api/navigation/directions/),
 [OpenAQ latest](https://docs.openaq.org/resources/latest).

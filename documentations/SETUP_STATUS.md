@@ -2,14 +2,13 @@
 
 ## Latest progress — 9 October 2026
 
-- Reviewed the completed walking-route and recorded-ingestion work; implemented the next Friday scoring slice.
-- Added time-preserving route samples, provisional inverse-distance station interpolation, full-route exposure and exact-detour ranking. Missing support withholds full scores; old readings never become live evidence through a new fetch.
-- Added read-only snapshot selection with verified TLS, explicit replay, original observation times and policy-derived model versions. The container now includes the database CA certificate.
-- Frontend cards show scores/units and supported travel time. Quality notices show observation/fetch times, sources and replay reference in IST. Lower estimates remain uncertain; percentage reductions stay unavailable pending validation.
-- Local backend checks pass: 65 tests passed, 2 opt-in database tests skipped. Frontend lint, types and production build pass.
-- Current provider/database credentials are absent from this checkout; genuine-data scoring and deployed AWS behavior were not verified in this slice. Pilot selection, runtime caching, validation, S3 and Amplify/Lightsail remain open.
+- Implemented time-preserving segmentation, provisional interpolation, exact-detour exposure ranking, read-only snapshot loading and frontend scores/IST/replay notices. Missing support withholds full scores; reduction percentages remain unavailable pending validation.
+- Added versioned runtime cache, bounded hourly/public archive downloads, coverage assessment, immutable S3 publication, exact-version Lightsail deployment helper/workflow, infrastructure template and Amplify build spec.
+- Downloaded 462 genuine derived station-hour labels from ten Delhi locations, dated 6–7 October 2025 IST. Coverage review and limitations are in [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md). They are historical replay, with zero live support.
+- Backend Ruff checks pass: **83 tests passed, 2 opt-in database tests skipped**. Frontend lint/types/production build and **10 desktop/mobile Playwright tests** pass. Browser responses are synthetic fixtures. Ingestion and S3-manifest dry runs passed for the real archive report.
+- **Friday: 11/14 items complete (79%); required Sunday MVP: approximately 65% complete.** Provider/database/AWS credentials and deployment targets remain unavailable. Real scored browser journey, deployed health and S3 upload remain open. Retrospective station/time capacity is reviewed; executing validation/sensitivity remains Saturday's work.
 
-See [EXPOSURE_BASELINE.md](EXPOSURE_BASELINE.md) for policy, API replay example and next Friday tasks.
+See [FRIDAY_HANDOFF.md](FRIDAY_HANDOFF.md) for current evidence/remaining work and [DEPLOYMENT.md](DEPLOYMENT.md) for cloud and rollback instructions. Earlier sections below are historical setup records.
 
 ## Previous progress — 8 October 2026
 

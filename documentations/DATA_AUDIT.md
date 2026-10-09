@@ -1,6 +1,6 @@
-# Data audit — prepared, live verification pending
+# Data audit — live pilot verification pending
 
-No Delhi station counts, freshness claims or pilot boundary have been established. No genuine monitoring snapshot has been fetched. The map's Delhi viewport is only an initial view.
+Genuine recorded observations have been retrieved. The latest Friday download contains 462 derived station-hour labels from ten Delhi locations for 6–7 October 2025 IST; radius/window and split prerequisites are reviewed in [HISTORICAL_COVERAGE.md](HISTORICAL_COVERAGE.md). It has no live support and is restricted to replay. Earlier Thursday findings are retained below. No live pilot boundary is approved; the map's Delhi viewport is an initial view.
 
 From `backend/`, with its virtual environment active and `AEROROUTE_OPENAQ_API_KEY` configured in `.env`:
 
@@ -43,7 +43,7 @@ or enable the comparison API. [Mapbox Directions reference](https://docs.mapbox.
 
 ### Access status
 
-Keys are configured locally in the ignored backend environment. On 8 October 2026:
+On 8 October 2026, keys were configured locally in the ignored backend environment. That environment is absent in the current Friday checkout. Historical findings:
 
 - Mapbox returned one genuine walking candidate for the illustrative journey above:
   3,462.667 metres, 2,540.128 seconds, 167 geometry points and 38 steps.
@@ -64,11 +64,13 @@ behavior separately and provide no evidence about Delhi monitoring coverage.
 - [ ] Count usable PM2.5 sensors and verify units, values and coordinates.
 - [ ] Inspect observation ages and missingness; agree a freshness policy.
 - [ ] Check spatial support for walking journeys and justify the pilot boundary.
-- [ ] Query historical station-hour labels and record time ranges, missingness and independent stations available for evaluation.
+- [x] Query historical station-hour labels and record time ranges, missingness and geographically separate stations available for limited retrospective evaluation.
 - [ ] Save a genuine versioned snapshot with original times and source/license attribution.
 - [ ] Confirm Mapbox walking access, alternatives and step timings.
 
 Record findings here after checking them. Synthetic stations appear only in automated tests and are not pilot evidence.
+
+Friday follow-up: historical download/coverage checks are recorded in the linked review. Public station classification/provider metadata and target/time split capacity are reviewed; historical calibration/license details, fresh coverage, actual route support and evaluation metrics remain pending. Use `scripts.assess_coverage` for live/replay point support; a passing point/count check does not approve a pilot.
 
 ## Resumed audit — 8 October 2026
 

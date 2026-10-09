@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     s3_bucket: str | None = None
     baseline_station_radius_metres: float = Field(default=10000, ge=500, le=25000)
     baseline_max_age_hours: float = Field(default=2, ge=0.25, le=24)
+    cache_ttl_seconds: int = Field(default=120, ge=1, le=600)
 
     @field_validator(
         "openaq_api_key", "mapbox_token", "database_url", "aws_region", "s3_bucket", mode="before"

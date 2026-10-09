@@ -1,0 +1,68 @@
+name: Deploy backend
+
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: AWS region containing the provisioned service
+        required: true
+        type: string
+      service:
+        description: Existing Lightsail container service name
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: backend-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DEPLOY_REGION: ${{ inputs.region }}
+      DEPLOY_SERVICE: ${{ inputs.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r backend/requirements.lock
+      - name: Verify backend
+        working-directory: backend
+        run: |
+          ruff check .
+          ruff format --check .
+          pytest -q
+      - name: Verify deployment inputs
+        working-directory: backend
+        env:
+          AEROROUTE_MAPBOX_TOKEN: ${{ secrets.AEROROUTE_MAPBOX_TOKEN }}
+          AEROROUTE_DATABASE_URL: ${{ secrets.AEROROUTE_DATABASE_URL }}
+          AEROROUTE_CORS_ORIGINS: ${{ vars.AEROROUTE_CORS_ORIGINS }}
+        run: |
+          python -c 'import os; from scripts.deploy_lightsail import deployment; from app.core.config import get_settings; deployment(get_settings(), os.environ["DEPLOY_SERVICE"], ":" + os.environ["DEPLOY_SERVICE"] + ".preflight.1", os.environ["GITHUB_SHA"])'
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ inputs.region }}
+      - name: Build and register exact image
+        run: |
+          curl --fail --silent --show-error https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl -o /usr/local/bin/lightsailctl
+          chmod +x /usr/local/bin/lightsailctl
+          docker build --tag aeroroute-api:release backend
+          aws lightsail push-container-image --region "$DEPLOY_REGION" --service-name "$DEPLOY_SERVICE" --image aeroroute-api:release --label "api-${GITHUB_SHA:0:12}" --query containerImage.image --output text > "$RUNNER_TEMP/aeroroute-image.txt"
+      - name: Deploy and verify HTTPS health
+        working-directory: backend
+        env:
+          AEROROUTE_MAPBOX_TOKEN: ${{ secrets.AEROROUTE_MAPBOX_TOKEN }}
+          AEROROUTE_DATABASE_URL: ${{ secrets.AEROROUTE_DATABASE_URL }}
+          AEROROUTE_OPENAQ_API_KEY: ${{ secrets.AEROROUTE_OPENAQ_API_KEY }}
+          AEROROUTE_CORS_ORIGINS: ${{ vars.AEROROUTE_CORS_ORIGINS }}
+        run: python -m scripts.deploy_lightsail --region "$DEPLOY_REGION" --service "$DEPLOY_SERVICE" --image "$(cat "$RUNNER_TEMP/aeroroute-image.txt")" --version "$GITHUB_SHA"

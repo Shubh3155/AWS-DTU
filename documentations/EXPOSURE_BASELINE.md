@@ -24,7 +24,7 @@ The next Friday implementation slice is complete: route segmentation, provisiona
 | Stations used per sample | Nearest 5 within radius | Versioned `BaselinePolicy` |
 | Weight | `1 / max(distance_metres, 1)²` | Baseline implementation |
 
-These parameters are prototype choices awaiting coverage review and sensitivity testing. Model IDs hash the policy (`idw-v1-…`); responses include parameters, snapshot/data version, observation range, fetch time, reference time, provider/sensor IDs and time-filtered station count. At most 10,000 observations and 10,000 route samples are accepted; larger inputs withhold scoring. There is no runtime comparison cache yet.
+These parameters remain provisional after the [historical point/radius review](HISTORICAL_COVERAGE.md); actual route coverage and sensitivity testing remain open. Model IDs hash the policy (`idw-v1-…`); responses include parameters, snapshot/data version, observation range, fetch time, reference time, provider/sensor IDs and time-filtered station count. At most 10,000 observations and 10,000 route samples are accepted; larger inputs withhold scoring. Runtime caching retains steps and re-scores freshness on every hit; see [API_CONTRACT.md](API_CONTRACT.md).
 
 ## Run against stored data
 
@@ -47,15 +47,17 @@ Walking directions remain current in replay; only pollution observations are rec
 
 ## Verification and remaining Friday work
 
-- Local backend checks: Ruff lint and formatting; **65 tests passed, 2 opt-in database tests skipped**. New tests cover constant/mixed concentration arithmetic, step-time preservation, station counts, partial support, freshness versus fetch time, replay isolation, exact detour boundaries, ties, the longer-route counterexample, read-only snapshot reads, safe database errors and API serialization.
+- Local backend checks: Ruff lint and formatting; **83 tests passed, 2 opt-in database tests skipped**. Tests cover exposure arithmetic, timing, support, freshness/replay, exact detour/ranking, snapshot reads, cache invalidation/TTL/re-scoring, hourly/archive conversion, provenance and deployment/S3 contracts. Cloud/provider tests use controlled responses.
 - Synthetic arithmetic: 20 minutes at 80 gives 1,600; 25 minutes at 70 gives 1,750; 25 minutes at 50 gives 1,250 µg·min/m³. These are fixtures, not measured reductions.
-- Frontend lint, TypeScript and production build pass. Hosted CI also checks the backend container build; Docker is unavailable locally.
+- Frontend lint, TypeScript, production build and **10 desktop/mobile browser tests** pass. Browser tests use explicitly synthetic responses and screenshots were inspected. Hosted CI also checks the backend container build; Docker is unavailable locally.
 - This checkout has no provider/database credentials configured. No current database rows, real-data exposure score, map rendering or deployed AWS endpoint were reverified in this work. The 8 October snapshot report remains historical evidence in [INGESTION.md](INGESTION.md).
 
 Next tasks:
 
 1. Review the surviving stations and their geographic spread, choose a pilot, and run a supported journey end to end with genuine observations. Keep live coverage open if no fresh observations qualify.
 2. Evaluate held-out stations/time periods; test radius/window and spatially varying concentration perturbations. Record results before accepting any improvement claim.
-3. Implement versioned comparison caching, then measure latency and freshness behavior.
-4. Configure Amplify/Lightsail, verify deployed `/health` and database reads, and add S3 snapshots/deployment documentation.
-5. Check the scored and limited-data UI in a browser at desktop and mobile widths.
+3. Measure actual database cache hit/miss latency and freshness behavior with the repeatable journey checker; cache implementation/tests are complete.
+4. Apply the prepared Amplify/Lightsail/S3 configuration and verify deployed health, genuine database reads and upload. Instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
+5. Verify genuine map/provider/scored browser integration; scored/limited fixture states already pass at desktop/mobile widths.
+
+See [FRIDAY_HANDOFF.md](FRIDAY_HANDOFF.md) for the current checklist percentage and external access requirements.
