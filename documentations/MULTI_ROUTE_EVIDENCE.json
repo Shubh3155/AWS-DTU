@@ -1,0 +1,304 @@
+{
+  "historical_only": true,
+  "pilot_approved": false,
+  "candidate_search_exhaustive": false,
+  "checks": [
+    {
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.628,
+          "lng": 77.241
+        },
+        "max_detour_minutes": 0.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "response": {
+        "status": "no_lower_exposure_candidate",
+        "candidates": [
+          {
+            "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+            "distance_metres": 3151.556,
+            "duration_seconds": 2248.653,
+            "estimated_exposure": 1351.765822961577,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": null
+          },
+          {
+            "id": "mapbox-0242199d9277c20b987ea1b2",
+            "distance_metres": 3339.928,
+            "duration_seconds": 2431.684,
+            "estimated_exposure": 1449.001126250265,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": false,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.62620019233936,
+              "lng": 77.22818634793542
+            }
+          },
+          {
+            "id": "mapbox-968e33ae254649f2bcb93f3e",
+            "distance_metres": 4270.428,
+            "duration_seconds": 3050.845,
+            "estimated_exposure": 1832.9432160879985,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": false,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.63329980766064,
+              "lng": 77.22951365206457
+            }
+          }
+        ],
+        "fastest_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "lowest_exposure_eligible_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "estimated_reduction_percent": null,
+        "warnings": [
+          "Recorded-data replay: estimates use historical observations, not current air.",
+          "Older or duplicate station readings were excluded from the reference window.",
+          "Interpolation parameters and street-level estimates are not field-validated.",
+          "Waypoint candidates are real walking routes requested through nearby points; they are not exhaustive alternatives or validated cleaner routes."
+        ],
+        "data_quality": {
+          "data_mode": "replay",
+          "observed_from": "2025-10-07T18:00:00Z",
+          "observed_to": "2025-10-07T18:30:00Z",
+          "fetched_at": "2026-10-09T14:11:54.592542Z",
+          "source_ids": [
+            "openaq:sensor:12234678",
+            "openaq:sensor:12234690",
+            "openaq:sensor:12234726",
+            "openaq:sensor:12234787",
+            "openaq:sensor:12234796",
+            "openaq:sensor:12235074",
+            "openaq:sensor:12235101",
+            "openaq:sensor:12235610",
+            "openaq:sensor:12236376",
+            "openaq:sensor:23534"
+          ],
+          "provider_ids": [
+            "openaq"
+          ],
+          "data_version": "openaq-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "model_version": "idw-v1-9764e82f4ebab922",
+          "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "reference_time": "2025-10-07T18:30:00Z",
+          "station_count": 10,
+          "model_parameters": {
+            "sampling_interval_metres": 100,
+            "station_radius_metres": 10000.0,
+            "max_age_hours": 2.0,
+            "minimum_stations": 3,
+            "nearest_stations": 5
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.628,
+          "lng": 77.241
+        },
+        "max_detour_minutes": 5.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "response": {
+        "status": "no_lower_exposure_candidate",
+        "candidates": [
+          {
+            "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+            "distance_metres": 3151.556,
+            "duration_seconds": 2248.653,
+            "estimated_exposure": 1351.765822961577,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": null
+          },
+          {
+            "id": "mapbox-0242199d9277c20b987ea1b2",
+            "distance_metres": 3339.928,
+            "duration_seconds": 2431.684,
+            "estimated_exposure": 1449.001126250265,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.62620019233936,
+              "lng": 77.22818634793542
+            }
+          },
+          {
+            "id": "mapbox-968e33ae254649f2bcb93f3e",
+            "distance_metres": 4270.428,
+            "duration_seconds": 3050.845,
+            "estimated_exposure": 1832.9432160879985,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": false,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.63329980766064,
+              "lng": 77.22951365206457
+            }
+          }
+        ],
+        "fastest_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "lowest_exposure_eligible_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "estimated_reduction_percent": null,
+        "warnings": [
+          "Recorded-data replay: estimates use historical observations, not current air.",
+          "Older or duplicate station readings were excluded from the reference window.",
+          "Interpolation parameters and street-level estimates are not field-validated.",
+          "Waypoint candidates are real walking routes requested through nearby points; they are not exhaustive alternatives or validated cleaner routes."
+        ],
+        "data_quality": {
+          "data_mode": "replay",
+          "observed_from": "2025-10-07T18:00:00Z",
+          "observed_to": "2025-10-07T18:30:00Z",
+          "fetched_at": "2026-10-09T14:11:54.592542Z",
+          "source_ids": [
+            "openaq:sensor:12234678",
+            "openaq:sensor:12234690",
+            "openaq:sensor:12234726",
+            "openaq:sensor:12234787",
+            "openaq:sensor:12234796",
+            "openaq:sensor:12235074",
+            "openaq:sensor:12235101",
+            "openaq:sensor:12235610",
+            "openaq:sensor:12236376",
+            "openaq:sensor:23534"
+          ],
+          "provider_ids": [
+            "openaq"
+          ],
+          "data_version": "openaq-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "model_version": "idw-v1-9764e82f4ebab922",
+          "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "reference_time": "2025-10-07T18:30:00Z",
+          "station_count": 10,
+          "model_parameters": {
+            "sampling_interval_metres": 100,
+            "station_radius_metres": 10000.0,
+            "max_age_hours": 2.0,
+            "minimum_stations": 3,
+            "nearest_stations": 5
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.628,
+          "lng": 77.241
+        },
+        "max_detour_minutes": 15.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "response": {
+        "status": "no_lower_exposure_candidate",
+        "candidates": [
+          {
+            "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+            "distance_metres": 3151.556,
+            "duration_seconds": 2248.653,
+            "estimated_exposure": 1351.765822961577,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": null
+          },
+          {
+            "id": "mapbox-0242199d9277c20b987ea1b2",
+            "distance_metres": 3339.928,
+            "duration_seconds": 2431.684,
+            "estimated_exposure": 1449.001126250265,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.62620019233936,
+              "lng": 77.22818634793542
+            }
+          },
+          {
+            "id": "mapbox-968e33ae254649f2bcb93f3e",
+            "distance_metres": 4270.428,
+            "duration_seconds": 3050.845,
+            "estimated_exposure": 1832.9432160879985,
+            "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+            "within_budget": true,
+            "coverage_percent": 100.0,
+            "via": {
+              "lat": 28.63329980766064,
+              "lng": 77.22951365206457
+            }
+          }
+        ],
+        "fastest_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "lowest_exposure_eligible_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+        "estimated_reduction_percent": null,
+        "warnings": [
+          "Recorded-data replay: estimates use historical observations, not current air.",
+          "Older or duplicate station readings were excluded from the reference window.",
+          "Interpolation parameters and street-level estimates are not field-validated.",
+          "Waypoint candidates are real walking routes requested through nearby points; they are not exhaustive alternatives or validated cleaner routes."
+        ],
+        "data_quality": {
+          "data_mode": "replay",
+          "observed_from": "2025-10-07T18:00:00Z",
+          "observed_to": "2025-10-07T18:30:00Z",
+          "fetched_at": "2026-10-09T14:11:54.592542Z",
+          "source_ids": [
+            "openaq:sensor:12234678",
+            "openaq:sensor:12234690",
+            "openaq:sensor:12234726",
+            "openaq:sensor:12234787",
+            "openaq:sensor:12234796",
+            "openaq:sensor:12235074",
+            "openaq:sensor:12235101",
+            "openaq:sensor:12235610",
+            "openaq:sensor:12236376",
+            "openaq:sensor:23534"
+          ],
+          "provider_ids": [
+            "openaq"
+          ],
+          "data_version": "openaq-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "model_version": "idw-v1-9764e82f4ebab922",
+          "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+          "reference_time": "2025-10-07T18:30:00Z",
+          "station_count": 10,
+          "model_parameters": {
+            "sampling_interval_metres": 100,
+            "station_radius_metres": 10000.0,
+            "max_age_hours": 2.0,
+            "minimum_stations": 3,
+            "nearest_stations": 5
+          }
+        }
+      }
+    }
+  ]
+}

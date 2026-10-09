@@ -14,6 +14,7 @@ The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**,
 - [Friday completion and remaining checks](documentations/FRIDAY_HANDOFF.md)
 - [Genuine historical coverage review](documentations/HISTORICAL_COVERAGE.md)
 - [Retrospective baseline validation](documentations/BASELINE_VALIDATION.md)
+- [Genuine multi-route demonstration](documentations/MULTI_ROUTE_DEMO.md)
 - [AWS deployment, snapshots and rollback](documentations/DEPLOYMENT.md)
 
 ```text
