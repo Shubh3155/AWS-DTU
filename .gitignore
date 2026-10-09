@@ -18,3 +18,5 @@ htmlcov/
 *.tsbuildinfo
 *.egg-info/
 backend/data/
+frontend/test-results/
+frontend/playwright-report/
