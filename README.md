@@ -5,7 +5,7 @@ Walking-route comparisons using estimated PM2.5 exposure and a user-defined time
 The local comparison flow is implemented: genuine walking routes, detour limits,
 Supabase snapshots, historical exposure estimates, green route previews and bounded
 caching. Route-quality screening and a Central Delhi historical demo boundary are
-reviewed. Backend checks pass with 110 tests; desktop/mobile checks run in CI.
+reviewed. Backend checks pass with 115 tests; desktop/mobile checks run in CI.
 Separate November evaluation reveals substantially larger station errors than
 October, and the latest live audit has only one usable fresh station. Estimates
 remain provisional; no validated cleaner-detour benefit is claimed. AWS deployment
@@ -13,6 +13,9 @@ and the final recorded demonstration remain pending. See the
 [data credibility review](documentations/DATA_CREDIBILITY.md) and
 [path-quality review](documentations/ROUTE_QUALITY.md).
 
+- [Release readiness and deployment handoff](documentations/RELEASE_HANDOFF.md)
+- [Three-minute demo script](documentations/DEMO_SCRIPT.md)
+- [Robust estimator experiment](documentations/ESTIMATOR_EXPERIMENT.md)
 - [Implementation plan and daily checklist](documentations/IMPLEMENTATION_PLAN.md)
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
 - [Setup handoff and remaining work](documentations/SETUP_STATUS.md)

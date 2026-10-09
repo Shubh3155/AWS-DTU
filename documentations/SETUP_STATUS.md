@@ -2,7 +2,12 @@
 
 ## Latest progress — 9 October 2026
 
-Current local checks: **110 backend tests pass, two optional database checks skip**;
+The historical MVP now has a demo preset, a genuine local release check at 0/5/15
+minute allowances, and a [deployment handoff](RELEASE_HANDOFF.md). A fixed median
+challenger was checked across 1,400 labels in three periods and failed its strict
+adoption gate; production remains unchanged. See [ESTIMATOR_EXPERIMENT.md](ESTIMATOR_EXPERIMENT.md).
+
+Current local checks: **115 backend tests pass, two optional database checks skip**;
 frontend lint, types and build pass. Genuine multi-route replay and current live
 limited-data behavior are verified. Path screening removes five backtracking
 alternatives from eighteen saved candidates. A Central Delhi historical demo area

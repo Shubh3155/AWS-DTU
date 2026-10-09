@@ -56,6 +56,15 @@ export function JourneyWorkspace() {
     setMessage("");
   }
 
+  function loadDemo() {
+    invalidate();
+    setOrigin({ lat: "28.6315", lng: "77.2167" });
+    setDestination({ lat: "28.6280", lng: "77.2410" });
+    setDetour(5);
+    setUseReplay(true);
+    setActivePoint("origin");
+  }
+
   function selectPoint(point: Coordinate) {
     const fields = { lat: point.lat.toFixed(5), lng: point.lng.toFixed(5) };
     if (activePoint === "origin") { setOrigin(fields); setActivePoint("destination"); }
@@ -102,6 +111,7 @@ export function JourneyWorkspace() {
         <div className="workspace">
           <aside className="journey-panel">
             <div className="panel-title"><h2>Plan a journey</h2><span>Walking</span></div>
+            <button className="demo-button" type="button" onClick={loadDemo} disabled={busy}>Try recorded Delhi journey</button>
             <form onSubmit={submit}>
               {(["origin", "destination"] as const).map((name) => {
                 const fields = name === "origin" ? origin : destination;

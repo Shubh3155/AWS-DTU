@@ -33,6 +33,24 @@ async function journey(page: Page) {
   await page.getByRole("spinbutton", { name: "destination longitude" }).fill("77.21");
 }
 
+test("recorded demo preset fills the verified journey and explicitly selects replay", async ({ page }) => {
+  let request: Record<string, unknown> = {};
+  await page.route("**/api/routes/compare", async route => {
+    request = route.request().postDataJSON();
+    await route.fulfill({ json: comparison() });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
+  await expect(page.getByRole("spinbutton", { name: "origin latitude" })).toHaveValue("28.6315");
+  await expect(page.getByRole("spinbutton", { name: "destination longitude" })).toHaveValue("77.2410");
+  await expect(page.getByRole("checkbox", { name: "Use recorded pollution observations" })).toBeChecked();
+  await expect(page.getByRole("slider", { name: "Maximum extra time" })).toHaveValue("5");
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Estimated exposure: 1250.0 µg·min/m³")).toBeVisible();
+  expect(request).toMatchObject({ origin: { lat: 28.6315, lng: 77.2167 },
+    destination: { lat: 28.628, lng: 77.241 }, data_mode: "replay", max_detour_minutes: 5 });
+});
+
 test("explicit replay shows scores, source times and uncertainty without overflow", async ({ page }) => {
   let mode = "";
   await page.route("**/api/routes/compare", async route => {

@@ -110,9 +110,9 @@ def usable_observations(
     ]
 
 
-def interpolate(
+def nearby_stations(
     point: Coordinate, observations: list[StationObservation], policy: BaselinePolicy
-) -> ConcentrationEstimate:
+) -> list:
     stations: dict[tuple[str, int], list[StationObservation]] = defaultdict(list)
     for observation in observations:
         stations[(observation.provider_id, observation.station_id)].append(observation)
@@ -125,7 +125,13 @@ def interpolate(
             concentration = math.fsum(r.pm25_micrograms_per_m3 / len(readings) for r in readings)
             nearby.append((distance, identity, concentration, readings))
     nearby.sort(key=lambda station: (station[0], station[1]))
-    nearby = nearby[: policy.nearest_stations]
+    return nearby[: policy.nearest_stations]
+
+
+def interpolate(
+    point: Coordinate, observations: list[StationObservation], policy: BaselinePolicy
+) -> ConcentrationEstimate:
+    nearby = nearby_stations(point, observations, policy)
     if len(nearby) < policy.minimum_stations:
         return ConcentrationEstimate(
             warnings=["Too few distinct nearby stations for interpolation."]
