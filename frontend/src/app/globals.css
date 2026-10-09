@@ -35,6 +35,11 @@ legend { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
 .detour-heading output { color: var(--accent); background: #edf4ee; padding: 5px 7px; border-radius: 5px; }
 input[type=range] { width: 100%; margin: 14px 0 6px; accent-color: var(--accent); }
 .range-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+.replay-option { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.replay-option label { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1.5; }
+.replay-option input { accent-color: var(--accent); }
+.replay-option p { font-size: 11px; color: var(--muted); line-height: 1.6; margin: 8px 0 0; }
+.estimate-label { font-size: 11px; color: var(--accent); margin: 0 0 10px; }
 .primary-button { width: 100%; display: flex; justify-content: space-between; background: var(--accent); color: #fff; border: 0; padding: 14px; border-radius: 7px; margin-top: 24px; font-size: 13px; font-weight: 600; }
 .primary-button:hover:not(:disabled) { background: #1e513d; }
 .form-message { margin: 12px 0 0; font-size: 11px; color: var(--muted); line-height: 1.6; min-height: 35px; }
@@ -55,6 +60,9 @@ input[type=range] { width: 100%; margin: 14px 0 6px; accent-color: var(--accent)
 .notice-dot { width: 8px; height: 8px; border-radius: 50%; background: #819268; margin-top: 5px; flex: none; }
 .data-notice h2 { font-size: 13px; font-weight: 600; margin: 0 0 6px; }
 .data-notice p { font-size: 12px; line-height: 1.65; color: var(--muted); margin: 0; }
+.data-notice p + p { margin-top: 5px; }
+.data-notice .uncertainty-notice { color: #866039; font-weight: 600; }
+.data-notice .model-caption { font-size: 10px; overflow-wrap: anywhere; }
 footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 28px; border-top: 1px solid var(--line); font-size: 10px; color: var(--muted); }
 footer p { margin: 0; }
 footer > div { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }

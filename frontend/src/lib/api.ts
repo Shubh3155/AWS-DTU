@@ -16,7 +16,7 @@ export async function compareJourney(request: ComparisonRequest): Promise<Compar
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(20000),
   });
   if (!response.ok) {
     const body = await response.json().catch(() => null);

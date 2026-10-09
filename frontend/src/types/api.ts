@@ -5,6 +5,8 @@ export type ComparisonRequest = {
   destination: Coordinate;
   max_detour_minutes: number;
   mode: "walking";
+  data_mode: "live" | "replay";
+  snapshot_id?: string;
 };
 
 export type HealthResponse = {
@@ -48,5 +50,9 @@ export type ComparisonResponse = {
     provider_ids: string[];
     data_version: string | null;
     model_version: string | null;
+    snapshot_id: string | null;
+    reference_time: string | null;
+    station_count: number;
+    model_parameters: Record<string, number>;
   };
 };

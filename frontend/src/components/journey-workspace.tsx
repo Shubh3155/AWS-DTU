@@ -16,11 +16,19 @@ function coordinate(fields: PointFields): Coordinate | null {
     ? { lat, lng } : null;
 }
 
+function observationTime(value: string | null) {
+  if (!value) return "Unavailable";
+  return new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata",
+  }).format(new Date(value)) + " IST";
+}
+
 export function JourneyWorkspace() {
   const [origin, setOrigin] = useState<PointFields>(blankPoint);
   const [destination, setDestination] = useState<PointFields>(blankPoint);
   const [activePoint, setActivePoint] = useState<"origin" | "destination">("origin");
   const [detour, setDetour] = useState(5);
+  const [useReplay, setUseReplay] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [connection, setConnection] = useState("Connection not checked");
@@ -52,7 +60,7 @@ export function JourneyWorkspace() {
     setResult(null);
     setMessage("");
     try {
-      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode: "walking" });
+      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode: "walking", data_mode: useReplay ? "replay" : "live" });
       if (id === requestId.current) { setResult(response); setMessage(response.warnings.join(" ")); }
     } catch (error) {
       if (id === requestId.current) setMessage(error instanceof TypeError ? "Could not connect to the route service. Start it and try again." : error instanceof Error ? error.message : "Please try again.");
@@ -70,7 +78,7 @@ export function JourneyWorkspace() {
     <div className="app-shell">
       <header className="topbar">
         <Link href="/" className="brand"><span className="brand-mark" aria-hidden="true">↗</span>AeroRoute</Link>
-        <span className="preview-badge">Walking route preview</span>
+        <span className="preview-badge">Exposure baseline preview</span>
       </header>
       <main>
         <div className="page-intro">
@@ -99,8 +107,12 @@ export function JourneyWorkspace() {
               <div className="detour-heading"><label htmlFor="detour">Maximum extra time</label><output htmlFor="detour">{detour} min</output></div>
               <input id="detour" type="range" min="0" max="30" step="1" value={detour} disabled={busy} onChange={(event) => { setDetour(Number(event.target.value)); invalidate(); }} />
               <div className="range-labels"><span>No detour</span><span>30 minutes</span></div>
+              <div className="replay-option">
+                <label><input type="checkbox" checked={useReplay} disabled={busy} onChange={(event) => { setUseReplay(event.target.checked); invalidate(); }} />Use recorded pollution observations</label>
+                <p>{useReplay ? "Historical estimates only. This does not describe current air quality." : "Live mode accepts recent observations only; stale data stays unavailable."}</p>
+              </div>
               <button className="primary-button" disabled={busy} type="submit">{busy ? "Checking journey…" : "Compare walking routes"}<span aria-hidden="true">→</span></button>
-              <p className="form-message" role="status" aria-live="polite">{message || "Find walking routes within your allowance. Pollution estimates are pending data validation."}</p>
+              <p className="form-message" role="status" aria-live="polite">{message || "Compare evaluated walking routes. Estimates require sufficient nearby station support."}</p>
             </form>
           </aside>
           <div className="map-and-results">
@@ -109,9 +121,11 @@ export function JourneyWorkspace() {
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
                 <div className="result-card" key={route.id}>
                   <p className="eyebrow">{route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
+                  {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>
+                  <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
                 </div>
               )) : <div className="result-card"><h3>No walking route found</h3><p>Try different starting and destination points.</p></div> : (
                 <div className="result-card"><p className="eyebrow">Walking candidates</p><h3>Waiting for a journey</h3><p>Route distance, duration and time-budget eligibility will appear here.</p></div>
@@ -119,7 +133,20 @@ export function JourneyWorkspace() {
             </div>
           </div>
         </div>
-        <section className="data-notice"><span className="notice-dot" aria-hidden="true" /><div><h2>Data quality comes with the comparison.</h2><p>Walking routes come from Mapbox. Pollution coverage and scoring are still being verified, so this preview does not recommend a lower-exposure route.</p></div></section>
+        <section className="data-notice"><span className="notice-dot" aria-hidden="true" /><div>
+          <h2>{result?.data_quality.data_mode === "replay" ? "Recorded-data replay · historical air observations" : "Data quality comes with the comparison."}</h2>
+          {result ? <>
+            <p>Observations: {observationTime(result.data_quality.observed_from)} to {observationTime(result.data_quality.observed_to)}.</p>
+            <p>Snapshot fetched: {observationTime(result.data_quality.fetched_at)}. Time-filtered stations: {result.data_quality.station_count}.</p>
+            {result.data_quality.provider_ids.length > 0 && <p>Observation sources: {result.data_quality.provider_ids.join(", ")}.</p>}
+            {result.data_quality.data_mode === "replay" && <p>Historical reference: {observationTime(result.data_quality.reference_time)}. Walking directions are current; pollution observations are recorded.</p>}
+            {result.status === "uncertain_difference" && <p className="uncertainty-notice">The difference is uncertain. A lower model estimate is not a reliable improvement recommendation.</p>}
+            {result.status === "single_candidate" && <p>Only one walking candidate is available; no alternative-route improvement is claimed.</p>}
+            {result.status === "no_lower_exposure_candidate" && <p>No eligible candidate has a lower estimated exposure than the fastest evaluated route.</p>}
+            {result.status === "limited_data" && <p>Data support is insufficient to compare full-route exposures.</p>}
+            {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. Sampling support is not measured street-level accuracy.</p>}
+          </> : <p>Walking routes come from Mapbox. Station interpolation is a provisional model; source times and coverage appear with results. No improvement percentages are claimed before validation.</p>}
+        </div></section>
       </main>
       <footer><p>Ambient exposure estimates · walking only · field validation still needed</p><div><span role="status">{connection}</span><button onClick={testConnection} disabled={checking}>{checking ? "Checking…" : "Check connection"}</button></div></footer>
     </div>
