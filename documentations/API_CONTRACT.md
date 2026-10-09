@@ -74,3 +74,19 @@ GeoJSON uses `[longitude, latitude]`; request objects use named `lat` and `lng` 
 `coverage_percent` is the percentage of route travel time with sufficient station support at sampled midpoints. It does not measure street-level accuracy. All eligible candidates require full scores before `lowest_exposure_eligible_id` is selected. A lower alternative model estimate returns `uncertain_difference`; `estimated_reduction_percent` is always `null` until validation and ranking sensitivity are implemented.
 
 `backend/app/model/contracts.py` defines normalized station observations with location, provenance and timezone-aware timestamps. `backend/app/model/baseline.py` implements segmentation, time filtering, interpolation and exposure arithmetic. The frontend displays timestamps in IST and historical replay explicitly.
+
+## Runtime cache
+
+Successful comparison responses include `X-AeroRoute-Cache: hit`, `miss` or `bypass`.
+`bypass` means no usable database snapshot was selected; it does not imply cached scoring.
+The cache key includes exact coordinates, allowance, walking/data mode, actual snapshot and
+data/model versions, five-minute time bucket and routing contract. TTL defaults to 120 seconds
+and is configurable from 1–600 with `AEROROUTE_CACHE_TTL_SECONDS`. Equivalent explicit/default
+selection of the same snapshot shares a key.
+
+Cached walking routes retain step geometry/timing. Every hit recomputes exposure and quality
+using the freshly loaded snapshot and current live time (or explicit historical replay
+reference). Stored comparison JSON is diagnostic metadata and is never returned as a stale
+score. Failed/expired/invalid cache entries fall back to the provider; writes occur after
+the response and are optional. Real database hit/miss and latency measurements remain
+pending. Use the journey checker in [DEPLOYMENT.md](DEPLOYMENT.md) to record them.

@@ -1,0 +1,116 @@
+{
+  "source": "OpenAQ public archive, derived UTC station-hour means",
+  "data_mode": "replay",
+  "snapshot_id": "openaq-replay-67c76fa2c987a9f36d9e9afda5a8cb3a87d743d18ab66366563b260c19f29890",
+  "data_version": "openaq-67c76fa2c987a9f36d9e9afda5a8cb3a87d743d18ab66366563b260c19f29890",
+  "fetched_at": "2026-10-09T09:23:19.525166+00:00",
+  "report_sha256": "e34c89b668452b46758b8506e5d516f6f2060623e49b19a56b18325c6a54fafe",
+  "source_files": [
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=10/location-8118-20251006.csv.gz",
+      "sha256": "f9c5dc91a03d08db1152cff36cda2fcb9e042bb1c35248212afe0ee8122dd172",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8118/year=2025/month=10/location-8118-20251007.csv.gz",
+      "sha256": "e5cbd8a965346bb6baf114923db53222bd9bef80e80ef49291a2c7c842eff0c8",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=10/location-11607-20251006.csv.gz",
+      "sha256": "d412350857056de44a79295984eac8753a0a5d1c2999871033c75fe3f0344173",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=11607/year=2025/month=10/location-11607-20251007.csv.gz",
+      "sha256": "b8f18be69d7e35ec1eea283c6518bccf4cae1d5ba2d1c765d575269b98de107e",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=10/location-17-20251006.csv.gz",
+      "sha256": "16e1a2d808d9e6ca9c85ad66cefa63669b5f34e564528c71f1e5d1a5815647ad",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=17/year=2025/month=10/location-17-20251007.csv.gz",
+      "sha256": "524b5e48af5f53efa71941df903b494a38daee576cd09d388e19ff628255ea39",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=10/location-235-20251006.csv.gz",
+      "sha256": "28875957d3b91ebc7a7354da4d34f7c677a2c56c13b3b4ab96933122bc5ec90e",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=235/year=2025/month=10/location-235-20251007.csv.gz",
+      "sha256": "490dfdec3de30cb51eafb4e56811e8a9ba8fcc2219948b07fcf82eabf82fa2ea",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=10/location-5610-20251006.csv.gz",
+      "sha256": "de095264a5fce40a54f883f10ffe7333d369594bba168daa98585d2722592b7b",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5610/year=2025/month=10/location-5610-20251007.csv.gz",
+      "sha256": "5ab8fdea65c5332f129bde2e288a5e5dd866d0b5c211442d35d855933ffa3fea",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=10/location-5630-20251006.csv.gz",
+      "sha256": "bfabd504744ba07f6d831cb02b3558070dfbbf692f8fd1aef7a77d26ca35f0c5",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5630/year=2025/month=10/location-5630-20251007.csv.gz",
+      "sha256": "7037778b86298b3eb7fe60bc27b9245b71a3855497a57706e184d8f32ee5b54e",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=10/location-6960-20251006.csv.gz",
+      "sha256": "3b078ccdaf14e91945a887001797877eebe2a8afc46ea4738c41bcc28000812d",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=6960/year=2025/month=10/location-6960-20251007.csv.gz",
+      "sha256": "be5ea6c0fb5e74c878dabc25ae0ae19da1bc3c0769311b6d695eca11f792876b",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=10/location-50-20251006.csv.gz",
+      "sha256": "85d8f43fc7a6fdd7337e811807ad0d64e8b5e832343c9cd7ba0d499757380f3e",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=50/year=2025/month=10/location-50-20251007.csv.gz",
+      "sha256": "9d00b63f4ba15ae65bb1307f82b9102a538e89fd4ddaa9a2fdcc8a155ef5603c",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=10/location-8239-20251006.csv.gz",
+      "sha256": "17a351117abe225943a5674213817ea62586c889b627be9a68595cf3a70d2d61",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=8239/year=2025/month=10/location-8239-20251007.csv.gz",
+      "sha256": "fb9e3509260a7e4c3e69830dc353f73f2aba16b2ea7d867498e4ccbd7baa5642",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=10/location-5627-20251006.csv.gz",
+      "sha256": "138e0d85a6009ad4ac35fa7c5af7fd63673d3e8cffefc128b84192be21d1305e",
+      "included_pm25_station": true
+    },
+    {
+      "url": "https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=5627/year=2025/month=10/location-5627-20251007.csv.gz",
+      "sha256": "433e5cbb8a16fc005f01322bb97847d908dd09ba95391d36902f2f8154619a8a",
+      "included_pm25_station": true
+    }
+  ],
+  "limitations": [
+    "Recorded observations do not describe current air.",
+    "Means use available samples; complete-hour coverage is not assumed.",
+    "Original provider/license metadata is absent from CSV and requires review.",
+    "Search bounds are exploratory and do not approve a pilot."
+  ]
+}

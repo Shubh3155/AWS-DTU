@@ -1,0 +1,62 @@
+{
+  "snapshot_id": "openaq-replay-67c76fa2c987a9f36d9e9afda5a8cb3a87d743d18ab66366563b260c19f29890",
+  "temporal_cut": "2025-10-06T19:30:00+00:00",
+  "early_labels": 231,
+  "later_labels": 231,
+  "station_holdout_support": {
+    "8118": {
+      "labels": 48,
+      "supported_asof_donors": 47
+    },
+    "11607": {
+      "labels": 47,
+      "supported_asof_donors": 46
+    },
+    "17": {
+      "labels": 48,
+      "supported_asof_donors": 48
+    },
+    "235": {
+      "labels": 48,
+      "supported_asof_donors": 0
+    },
+    "5610": {
+      "labels": 48,
+      "supported_asof_donors": 48
+    },
+    "5630": {
+      "labels": 48,
+      "supported_asof_donors": 48
+    },
+    "6960": {
+      "labels": 48,
+      "supported_asof_donors": 48
+    },
+    "50": {
+      "labels": 48,
+      "supported_asof_donors": 0
+    },
+    "8239": {
+      "labels": 31,
+      "supported_asof_donors": 31
+    },
+    "5627": {
+      "labels": 48,
+      "supported_asof_donors": 48
+    }
+  },
+  "limitations": [
+    "Count/support review only; no error metric or accuracy validation.",
+    "Target station excluded for all times; donors are at or before target time.",
+    "Contemporaneous donor input is interpolation, not a pollution forecast."
+  ],
+  "policy": {
+    "sampling_interval_metres": 100,
+    "station_radius_metres": 10000,
+    "max_age_hours": 2,
+    "minimum_stations": 3,
+    "nearest_stations": 5
+  },
+  "supported_labels": 364,
+  "supported_station_count": 8
+}
