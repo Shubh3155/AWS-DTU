@@ -13,14 +13,18 @@ from app.services.snapshots import load_snapshot
 
 def test_application_opens_pool_once_and_closes_on_shutdown(monkeypatch):
     events = []
-    pool = SimpleNamespace(open=lambda: events.append("open"), close=lambda: events.append("close"))
+    pool = SimpleNamespace(
+        open=lambda: events.append("open"),
+        wait=lambda timeout: events.append(("wait", timeout)),
+        close=lambda: events.append("close"),
+    )
     monkeypatch.setattr("app.main.create_pool", lambda settings: pool)
     application = create_app(Settings(_env_file=None))
     with TestClient(application) as client:
         assert application.state.database_pool is pool
         assert client.get("/health").status_code == 200
-        assert events == ["open"]
-    assert events == ["open", "close"]
+        assert events == ["open", ("wait", 10)]
+    assert events == ["open", ("wait", 10), "close"]
     assert application.state.database_pool is None
 
 
@@ -69,3 +73,19 @@ def test_unconfigured_application_starts_without_a_database():
     with TestClient(application) as client:
         assert application.state.database_pool is None
         assert client.get("/health").status_code == 200
+
+
+def test_initial_pool_timeout_keeps_service_available_and_closes_pool(monkeypatch):
+    closed = []
+
+    def wait(timeout):
+        assert timeout == 10
+        raise PoolTimeout("private connection details")
+
+    pool = SimpleNamespace(open=lambda: None, wait=wait, close=lambda: closed.append(True))
+    monkeypatch.setattr("app.main.create_pool", lambda settings: pool)
+    with TestClient(create_app(Settings(_env_file=None))) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert "private" not in response.text
+    assert closed == [True]

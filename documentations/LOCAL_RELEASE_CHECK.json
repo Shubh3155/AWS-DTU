@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-09T15:50:18.150278+00:00",
+  "checked_at": "2026-10-09T16:26:07.386031+00:00",
   "health": {
     "status": "ok",
     "service": "aeroroute-api",
@@ -44,7 +44,7 @@
     {
       "mode": "replay",
       "allowance_minutes": 0,
-      "seconds": 11.596688874997199,
+      "seconds": 12.403394167020451,
       "cache": "miss",
       "result": {
         "status": "no_lower_exposure_candidate",
@@ -133,7 +133,7 @@
     {
       "mode": "replay",
       "allowance_minutes": 5,
-      "seconds": 6.056240250007249,
+      "seconds": 5.8219758329796605,
       "cache": "miss",
       "result": {
         "status": "no_lower_exposure_candidate",
@@ -222,7 +222,7 @@
     {
       "mode": "replay",
       "allowance_minutes": 15,
-      "seconds": 9.235257667023689,
+      "seconds": 3.1112833339720964,
       "cache": "miss",
       "result": {
         "status": "no_lower_exposure_candidate",
@@ -311,7 +311,7 @@
     {
       "mode": "live",
       "allowance_minutes": 5,
-      "seconds": 4.3410895409761,
+      "seconds": 5.137212415982503,
       "cache": "miss",
       "result": {
         "status": "limited_data",
@@ -377,7 +377,7 @@
           "data_version": "openaq-b21f3526fe3bb48cc9963ca6386635a077f23d5f0961cfe1c9b2c5736a067956",
           "model_version": "idw-v1-9764e82f4ebab922",
           "snapshot_id": "openaq-live-b21f3526fe3bb48cc9963ca6386635a077f23d5f0961cfe1c9b2c5736a067956",
-          "reference_time": "2026-10-09T15:50:18.138348Z",
+          "reference_time": "2026-10-09T16:26:07.371966Z",
           "station_count": 1,
           "model_parameters": {
             "sampling_interval_metres": 100,

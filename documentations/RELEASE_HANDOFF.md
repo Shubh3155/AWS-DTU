@@ -10,8 +10,10 @@
   without silently replacing production or dropping inconvenient observations.
 - Read-only release checker, demo script, deployment/container scaffold and CI.
 
-Backend: **115 tests pass**, two optional database tests skip, Ruff lint/format pass.
+Backend: **116 tests pass**, two optional database tests skip, Ruff lint/format pass.
 Frontend lint/types/build pass; desktop/mobile browser checks run in hosted CI.
+Startup now waits up to ten seconds for its first pooled connection. The genuine
+release check was repeated after a restart and passed all four cases.
 The [genuine local release check](LOCAL_RELEASE_CHECK.json) verifies recorded
 allowances 0/5/15 and live insufficient-data behavior. It reports local process
 version `0.1.0`; it is not evidence of a public deployment or a deployed Git SHA.

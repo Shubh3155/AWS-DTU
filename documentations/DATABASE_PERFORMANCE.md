@@ -3,6 +3,9 @@
 ## Implementation — 9 October 2026
 
 FastAPI opens a process-local Psycopg pool at startup and closes it at shutdown.
+Startup waits up to ten seconds for the initial connection, reducing a race where
+the first comparison can arrive before the pool is ready. If this expires, the
+walking service still starts and database reads retain their safe fallback.
 Each worker has one initial connection, at most four connections and eight queued
 leases. Lease acquisition waits up to three seconds; this is not a deadline for
 the complete request. Background connection establishment uses a ten-second
