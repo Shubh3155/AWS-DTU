@@ -15,6 +15,8 @@ class ComparisonRequest(BaseModel):
     destination: Coordinate
     max_detour_minutes: float = Field(ge=0, strict=True)
     mode: Literal["walking"] = "walking"
+    data_mode: Literal["live", "replay"] = "live"
+    snapshot_id: str | None = Field(default=None, min_length=1, max_length=200)
 
 
 class LineString(BaseModel):
@@ -53,10 +55,14 @@ class DataQuality(BaseModel):
     provider_ids: list[str] = Field(default_factory=list)
     data_version: str | None = None
     model_version: str | None = None
+    snapshot_id: str | None = None
+    reference_time: AwareDatetime | None = None
+    station_count: int = Field(default=0, ge=0)
+    model_parameters: dict[str, float | int] = Field(default_factory=dict)
 
 
 class ComparisonResponse(BaseModel):
-    """Contract for the next step; the setup API never fabricates this result."""
+    """Evaluated walking routes, model estimates and explicit data-quality metadata."""
 
     status: Literal[
         "comparison_available",
