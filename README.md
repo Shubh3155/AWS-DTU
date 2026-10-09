@@ -2,7 +2,7 @@
 
 Walking-route comparisons using estimated PM2.5 exposure and a user-defined time budget.
 
-The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. Walking routes, recorded OpenAQ ingestion, Supabase/PostGIS migrations, exposure scoring and versioned routing cache are implemented. Desktop/mobile browser checks pass; genuine historical labels and AWS deployment configuration are ready. Friday is **11/14 items complete (79%)**; the required Sunday MVP is approximately **65% complete**. Retrospective station holdout validation now has reproducible results. Genuine journey verification, route-level validation and actual AWS deployment remain open.
+The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**, in India Standard Time. Walking routes, recorded OpenAQ ingestion, Supabase/PostGIS migrations, exposure scoring and versioned routing cache are implemented. Desktop/mobile browser checks pass; genuine historical labels and AWS deployment configuration are ready. Friday is **11/14 items complete (79%)**; the required Sunday MVP is approximately **65% complete**. Retrospective station holdout validation, genuine multi-route replay and route-selection sensitivity now have reproducible results. Route-level field validation and actual AWS deployment remain open.
 
 - [Implementation plan and daily checklist](documentations/IMPLEMENTATION_PLAN.md)
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
@@ -15,6 +15,7 @@ The implementation window is **Thursday, 8 October to Sunday, 11 October 2026**,
 - [Genuine historical coverage review](documentations/HISTORICAL_COVERAGE.md)
 - [Retrospective baseline validation](documentations/BASELINE_VALIDATION.md)
 - [Genuine multi-route demonstration](documentations/MULTI_ROUTE_DEMO.md)
+- [Route-selection sensitivity checks](documentations/RANKING_SENSITIVITY.md)
 - [AWS deployment, snapshots and rollback](documentations/DEPLOYMENT.md)
 
 ```text

@@ -1,0 +1,1564 @@
+{
+  "request": {
+    "origin": {
+      "lat": 28.6315,
+      "lng": 77.2167
+    },
+    "destination": {
+      "lat": 28.628,
+      "lng": 77.241
+    },
+    "max_detour_minutes": 5.0,
+    "mode": "walking",
+    "data_mode": "replay",
+    "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+  },
+  "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4",
+  "reference_time": "2025-10-07T18:30:00+00:00",
+  "candidate_ids": [
+    "mapbox-2b06b7d85fc0dd1e13d2e605",
+    "mapbox-0242199d9277c20b987ea1b2",
+    "mapbox-968e33ae254649f2bcb93f3e"
+  ],
+  "baseline_selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+  "summary": {
+    "configurations": 27,
+    "ranking_available": 18,
+    "ranking_unavailable": 9,
+    "selection_changes_from_baseline": 0,
+    "stable_across_all_tested_policies": false
+  },
+  "limitations": [
+    "Geometry, candidate set, step timing and historical snapshot are held fixed.",
+    "A missing ranking is not counted as agreement.",
+    "Policy stability does not validate pollution estimates or measured exposure benefits.",
+    "This checks a finite policy grid, not all plausible settings or route candidates."
+  ],
+  "results": [
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-99489e63758fb166",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.507635294169337,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 13.252514832475265,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-375b3259fa740a3d",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.808220353052214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 14.34407210129723,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-e3b25847d882a31e",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 19.70412494087214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 12.160957563653294,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-69f31aaf2d3ca73a",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.507635294169337,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 13.252514832475265,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-342fbc3c73e7734e",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.808220353052214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 14.34407210129723,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-fca31c18ca905e9c",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 19.70412494087214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 12.160957563653294,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-c301faa87d62119d",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.507635294169337,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 13.252514832475265,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-9c76e2c000833310",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.808220353052214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 14.34407210129723,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 5000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-40550a01b90328e6",
+      "status": "limited_data",
+      "selected_id": null,
+      "agrees_with_baseline": null,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 21.01103238740367,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 19.70412494087214,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": null,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 12.160957563653294,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-82a64b8276e9fd1b",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-6da64ca9c0741d26",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-dee42a3615234de9",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-0343fe884616c9c5",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-a78ca49ce1b552f0",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-4cdaed4d8d6359f3",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-b90afd3b95de8a81",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-6999d196c1a1f0cd",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 10000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-31a1586d8ae3e169",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-3c81ac454a1896f3",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-da724a206c0566ce",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 1.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-712324baa3e6f638",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-5706d420bbd72ed7",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-6c41b6525e564bda",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 2.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-8164e64b65cf8123",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 50.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-1e1b7c4f5a2fa1d3",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1352.055644342625,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.2249233310797,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.813766092414,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 100.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-c5f61765cc2bc081",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.765822961577,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.001126250265,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.9432160879985,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    },
+    {
+      "policy": {
+        "sampling_interval_metres": 200.0,
+        "station_radius_metres": 15000.0,
+        "max_age_hours": 4.0,
+        "minimum_stations": 3,
+        "nearest_stations": 5
+      },
+      "model_version": "idw-v1-845fa0daec2b6f12",
+      "status": "no_lower_exposure_candidate",
+      "selected_id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+      "agrees_with_baseline": true,
+      "candidates": [
+        {
+          "id": "mapbox-2b06b7d85fc0dd1e13d2e605",
+          "distance_metres": 3151.556,
+          "duration_seconds": 2248.653,
+          "estimated_exposure": 1351.5809006126456,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": null
+        },
+        {
+          "id": "mapbox-0242199d9277c20b987ea1b2",
+          "distance_metres": 3339.928,
+          "duration_seconds": 2431.684,
+          "estimated_exposure": 1449.282332076459,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": true,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.62620019233936,
+            "lng": 77.22818634793542
+          }
+        },
+        {
+          "id": "mapbox-968e33ae254649f2bcb93f3e",
+          "distance_metres": 4270.428,
+          "duration_seconds": 3050.845,
+          "estimated_exposure": 1832.6417823766699,
+          "exposure_unit": "\u00b5g\u00b7min/m\u00b3",
+          "within_budget": false,
+          "coverage_percent": 100.0,
+          "via": {
+            "lat": 28.63329980766064,
+            "lng": 77.22951365206457
+          }
+        }
+      ]
+    }
+  ],
+  "snapshot_input_sha256": "02387de770350ced0210da459156641bbd90a41c14ff007fc1310f48b52c7d7b",
+  "journey_input_sha256": "e1c90e7a9bdef4e3415ec8e05b68677bd504e31ed6114f3fb64a9ce30b6b980d",
+  "exploratory_journey_summaries": [
+    {
+      "name": "central-north",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.6517,
+          "lng": 77.2219
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    },
+    {
+      "name": "central-east",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.628,
+          "lng": 77.241
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    },
+    {
+      "name": "central-south",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.6129,
+          "lng": 77.2295
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    },
+    {
+      "name": "central-west",
+      "request": {
+        "origin": {
+          "lat": 28.6315,
+          "lng": 77.2167
+        },
+        "destination": {
+          "lat": 28.625,
+          "lng": 77.197
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    },
+    {
+      "name": "lodhi-east",
+      "request": {
+        "origin": {
+          "lat": 28.593,
+          "lng": 77.2197
+        },
+        "destination": {
+          "lat": 28.591,
+          "lng": 77.24
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    },
+    {
+      "name": "lodhi-north",
+      "request": {
+        "origin": {
+          "lat": 28.593,
+          "lng": 77.2197
+        },
+        "destination": {
+          "lat": 28.6129,
+          "lng": 77.2295
+        },
+        "max_detour_minutes": 10.0,
+        "mode": "walking",
+        "data_mode": "replay",
+        "snapshot_id": "openaq-replay-14990a04a352f6863d374d9146bf50a9edb212a650b4c705a71fe42463852cf4"
+      },
+      "summary": {
+        "configurations": 27,
+        "ranking_available": 18,
+        "ranking_unavailable": 9,
+        "selection_changes_from_baseline": 0,
+        "stable_across_all_tested_policies": false
+      }
+    }
+  ]
+}

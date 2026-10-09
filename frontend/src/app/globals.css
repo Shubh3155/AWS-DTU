@@ -73,4 +73,10 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .route-legend { position: absolute; top: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 12px; max-width: calc(100% - 76px); padding: 9px 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; box-shadow: 0 2px 8px #00000012; }
 .route-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .route-legend i { width: 18px; height: 4px; border-radius: 2px; }
-.route-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+
+.result-card { border-top-color: #c7d4bf; transition: background-color 160ms, border-color 160ms, box-shadow 160ms; }
+.result-card.route-active { border-top-color: #25614b; background: #e5eddf; box-shadow: inset 0 0 0 1px #25614b18; }
+.show-route { display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%; margin-top: 13px; padding: 9px 11px; border: 1px solid #bed0b7; border-radius: 6px; background: #f6f8f1; color: #25614b; font: inherit; font-size: 12px; cursor: pointer; }
+.show-route:hover, .show-route[aria-pressed="true"] { background: #dce8d5; border-color: #82a080; }
+.show-route:focus-visible { outline: 2px solid #25614b; outline-offset: 3px; }
+.route-preview-hint { color: var(--muted); font-size: 10px; }

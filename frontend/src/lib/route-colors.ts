@@ -1,6 +1,2 @@
-// The API returns at most three candidates. Share their colours across map and cards.
-const ROUTE_COLORS = ["#0072b2", "#8b3fb0", "#d55e00"] as const;
-
-export function routeColor(index: number): string {
-  return ROUTE_COLORS[index % ROUTE_COLORS.length];
-}
+// One shared forest-green stroke for the route currently previewed on the map.
+export const ROUTE_COLOR = "#25614b";
