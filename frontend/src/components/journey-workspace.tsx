@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LocationPicker, type JourneyLocation } from "@/components/location-picker";
 import { JourneyMap } from "@/components/journey-map";
 import { checkHealth, compareJourney } from "@/lib/api";
-import type { Coordinate, ComparisonResponse } from "@/types/api";
+import type { Coordinate, ComparisonResponse, TravelMode } from "@/types/api";
 
 const blankPoint: JourneyLocation = { label: "", coordinate: null };
 
@@ -20,6 +20,8 @@ export function JourneyWorkspace() {
   const [origin, setOrigin] = useState<JourneyLocation>(blankPoint);
   const [destination, setDestination] = useState<JourneyLocation>(blankPoint);
   const [activePoint, setActivePoint] = useState<"origin" | "destination" | null>(null);
+  const [mode, setMode] = useState<TravelMode>("walking");
+  const modeLabel = mode === "walking" ? "walking" : mode === "driving" ? "car" : "motorcycle";
   const [detour, setDetour] = useState(5);
   const [useReplay, setUseReplay] = useState(false);
   const [message, setMessage] = useState("");
@@ -53,6 +55,7 @@ export function JourneyWorkspace() {
     invalidate();
     setOrigin({ label: "Recorded Delhi start", coordinate: { lat: 28.6315, lng: 77.2167 } });
     setDestination({ label: "Recorded Delhi destination", coordinate: { lat: 28.6280, lng: 77.2410 } });
+    setMode("walking");
     setDetour(5);
     setUseReplay(true);
     setActivePoint(null);
@@ -77,7 +80,7 @@ export function JourneyWorkspace() {
     resetRouteSelection();
     setMessage("");
     try {
-      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode: "walking", data_mode: useReplay ? "replay" : "live" });
+      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode, data_mode: useReplay ? "replay" : "live" });
       if (id === requestId.current) { setResult(response); setMessage(response.warnings.join(" ")); }
     } catch (error) {
       if (id === requestId.current) setMessage(error instanceof TypeError ? "Could not connect to the route service. Start it and try again." : error instanceof Error ? error.message : "Please try again.");
@@ -99,15 +102,27 @@ export function JourneyWorkspace() {
       </header>
       <main>
         <div className="page-intro">
-          <p className="eyebrow">A little more time. A more informed walk.</p>
-          <h1>Choose your walk<br /><span>within your time budget.</span></h1>
+          <p className="eyebrow">A little more time. A more informed journey.</p>
+          <h1>Choose your journey<br /><span>within your time budget.</span></h1>
           <p>Compare journey time and estimated air-pollution exposure, with room for a detour that works for you.</p>
         </div>
         <div className="workspace">
           <aside className="journey-panel">
-            <div className="panel-title"><h2>Plan a journey</h2><span>Walking</span></div>
+            <div className="panel-title"><h2>Plan a journey</h2><span>{modeLabel === "car" ? "Car" : modeLabel === "motorcycle" ? "Motorcycle" : "Walking"}</span></div>
             <button className="demo-button" type="button" onClick={loadDemo} disabled={busy}>Try recorded Delhi journey</button>
             <form onSubmit={submit}>
+              <fieldset className="travel-mode" disabled={busy}>
+                <legend>How are you travelling?</legend>
+                <div role="group" aria-label="Travel mode">
+                  {(["walking", "driving", "motorcycle"] as const).map(option => <button key={option} type="button"
+                    aria-pressed={mode === option} onClick={() => { setMode(option); invalidate(); }}>
+                    {option === "walking" ? "Walk" : option === "driving" ? "Car" : "Motorcycle"}
+                  </button>)}
+                </div>
+                {mode !== "walking" && <p className="mode-note">{mode === "motorcycle"
+                  ? "Car routing estimate · motorcycle restrictions and speeds are not modeled."
+                  : "Outdoor air along your route · cabin filtration is not modeled."} Times exclude live traffic.</p>}
+              </fieldset>
               {(["origin", "destination"] as const).map((name) => {
                 return <LocationPicker key={name} name={name} value={name === "origin" ? origin : destination}
                   disabled={busy} picking={activePoint === name}
@@ -127,18 +142,18 @@ export function JourneyWorkspace() {
                 <label><input type="checkbox" checked={useReplay} disabled={busy} onChange={(event) => { setUseReplay(event.target.checked); invalidate(); }} />Use recorded pollution observations</label>
                 <p>{useReplay ? "Historical estimates only. This does not describe current air quality." : "Live mode accepts recent observations only; stale data stays unavailable."}</p>
               </div>
-              <button className="primary-button" disabled={busy} type="submit">{busy ? "Checking journey…" : "Compare walking routes"}<span aria-hidden="true">→</span></button>
-              <p className="form-message" role="status" aria-live="polite">{message || "Compare evaluated walking routes. Estimates require sufficient nearby station support."}</p>
+              <button className="primary-button" disabled={busy} type="submit">{busy ? "Checking journey…" : `Compare ${modeLabel} routes`}<span aria-hidden="true">→</span></button>
+              <p className="form-message" role="status" aria-live="polite">{message || "Compare evaluated routes. Estimates require sufficient nearby station support."}</p>
             </form>
           </aside>
           <div className="map-and-results">
             <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} />
-            <div className="result-previews" aria-label="Walking route results" aria-live="polite">
+            <div className="result-previews" aria-label="Travel route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
                 <div className={`result-card${route.id === activeRouteId ? " route-active" : ""}`} key={route.id}
                   onPointerMove={event => { if (event.pointerType === "mouse") setHoverRouteId(route.id); }} onPointerLeave={() => setHoverRouteId(null)}
                   onFocus={() => { setFocusRouteId(route.id); setHoverRouteId(null); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusRouteId(null); }}>
-                  <p className="eyebrow">Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Walking alternative ${index + 1}`}</p>
+                  <p className="eyebrow">Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
                   {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
@@ -147,8 +162,8 @@ export function JourneyWorkspace() {
                   <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
                   <button type="button" className="show-route" aria-label={`Show route ${index + 1} on map`} aria-pressed={route.id === selectedId} onClick={() => { setSelectedRouteId(route.id); setHoverRouteId(null); setFocusRouteId(route.id); }}>{route.id === activeRouteId ? "Showing on map" : "Show on map"}<span aria-hidden="true">↗</span></button>
                 </div>
-              )) : <div className="result-card"><h3>No walking route found</h3><p>Try different starting and destination points.</p></div> : (
-                <div className="result-card"><p className="eyebrow">Walking candidates</p><h3>Waiting for a journey</h3><p>Route distance, duration and time-budget eligibility will appear here.</p></div>
+              )) : <div className="result-card"><h3>No route found</h3><p>Try different starting and destination points.</p></div> : (
+                <div className="result-card"><p className="eyebrow">Route candidates</p><h3>Waiting for a journey</h3><p>Route distance, duration and time-budget eligibility will appear here.</p></div>
               )}
             </div>
           </div>
@@ -159,16 +174,16 @@ export function JourneyWorkspace() {
             <p>Observations: {observationTime(result.data_quality.observed_from)} to {observationTime(result.data_quality.observed_to)}.</p>
             <p>Snapshot fetched: {observationTime(result.data_quality.fetched_at)}. Time-filtered stations: {result.data_quality.station_count}.</p>
             {result.data_quality.provider_ids.length > 0 && <p>Observation sources: {result.data_quality.provider_ids.join(", ")}.</p>}
-            {result.data_quality.data_mode === "replay" && <p>Historical reference: {observationTime(result.data_quality.reference_time)}. Walking directions are current; pollution observations are recorded.</p>}
+            {result.data_quality.data_mode === "replay" && <p>Historical reference: {observationTime(result.data_quality.reference_time)}. Directions are current; pollution observations are recorded.</p>}
             {result.status === "uncertain_difference" && <p className="uncertainty-notice">The difference is uncertain. A lower model estimate is not a reliable improvement recommendation.</p>}
-            {result.status === "single_candidate" && <p>Only one walking candidate is available; no alternative-route improvement is claimed.</p>}
+            {result.status === "single_candidate" && <p>Only one route candidate is available; no alternative-route improvement is claimed.</p>}
             {result.status === "no_lower_exposure_candidate" && <p>No eligible candidate has a lower estimated exposure than the fastest evaluated route.</p>}
             {result.status === "limited_data" && <p>Data support is insufficient to compare full-route exposures.</p>}
             {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. Historical validation errors vary substantially between periods; station support does not establish street-level accuracy.</p>}
-          </> : <p>Walking routes come from Mapbox. Station interpolation is a provisional model; source times and coverage appear with results. No improvement percentages are claimed before validation.</p>}
+          </> : <p>Routes come from Mapbox. Station interpolation is a provisional model; source times and coverage appear with results. No improvement percentages are claimed before validation.</p>}
         </div></section>
       </main>
-      <footer><p>Ambient exposure estimates · walking only · field validation still needed</p><div><span role="status">{connection}</span><button onClick={testConnection} disabled={checking}>{checking ? "Checking…" : "Check connection"}</button></div></footer>
+      <footer><p>Ambient exposure estimates · field validation still needed</p><div><span role="status">{connection}</span><button onClick={testConnection} disabled={checking}>{checking ? "Checking…" : "Check connection"}</button></div></footer>
     </div>
   );
 }

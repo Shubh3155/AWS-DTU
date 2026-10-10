@@ -48,3 +48,7 @@ Do not run concurrently with an administrative migration.
 
 References: [Psycopg transactions](https://www.psycopg.org/psycopg3/docs/basic/transactions.html),
 [Supabase PostGIS](https://supabase.com/docs/guides/database/extensions/postgis).
+
+`002_travel_modes.sql` extends the route-cache mode constraint to walking, driving and
+motorcycle. Existing rows, RLS and browser-role privileges are preserved. Motorcycle cache
+entries contain driving-profile estimates, not dedicated motorcycle directions.

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { scheduleRouteDraw } from "@/lib/map-redraw";
 import { ROUTE_COLOR } from "@/lib/route-colors";
 import type { Coordinate, RouteCandidate } from "@/types/api";
 
@@ -46,12 +47,14 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
 
   useEffect(() => {
     routeRef.current = routes;
-    if (map.current?.isStyleLoaded()) showRoutes(map.current, routes, activeRouteRef.current, true);
+    const instance = map.current;
+    if (instance) return scheduleRouteDraw(instance, () => showRoutes(instance, routeRef.current, activeRouteRef.current, true));
   }, [routes]);
 
   useEffect(() => {
     activeRouteRef.current = activeRouteId;
-    if (map.current?.isStyleLoaded()) showRoutes(map.current, routeRef.current, activeRouteId);
+    const instance = map.current;
+    if (instance) return scheduleRouteDraw(instance, () => showRoutes(instance, routeRef.current, activeRouteRef.current));
   }, [activeRouteId]);
 
   useEffect(() => { callback.current = onSelect; }, [onSelect]);

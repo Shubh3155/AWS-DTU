@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 function comparison(status: ComparisonResponse["status"] = "uncertain_difference"): ComparisonResponse {
   const limited = status === "limited_data";
   return {
-    status, fastest_id: "fast", lowest_exposure_eligible_id: limited ? null : "slow",
+    mode: "walking", routing_profile: "walking", status, fastest_id: "fast", lowest_exposure_eligible_id: limited ? null : "slow",
     estimated_reduction_percent: null, warnings: ["Synthetic browser fixture; not Delhi observations."],
     candidates: status === "no_route" ? [] : [
       { id: "fast", geometry: { type: "LineString", coordinates: [[77.2, 28.6], [77.21, 28.61]] },
@@ -104,7 +104,7 @@ test("no-route state provides a recoverable result", async ({ page }) => {
   await page.route("**/api/routes/compare", route => route.fulfill({ json: comparison("no_route") }));
   await journey(page);
   await page.getByRole("button", { name: "Compare walking routes" }).click();
-  await expect(page.getByText("No walking route found")).toBeVisible();
+  await expect(page.getByText("No route found")).toBeVisible();
 });
 
 test("provider error is shown and comparison can be retried", async ({ page }) => {
@@ -198,4 +198,27 @@ test("search selects a matching place and sends its hidden coordinates", async (
   await page.getByRole("button", { name: "Compare walking routes" }).click();
   await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
   expect(request.origin).toEqual({ lat: 28.62, lng: 77.22 });
+});
+
+
+test("travel mode changes clear old routes and submit the selected provider mode", async ({ page }) => {
+  const modes: string[] = [];
+  await page.route("**/api/routes/compare", route => {
+    const mode = route.request().postDataJSON().mode;
+    modes.push(mode);
+    return route.fulfill({ json: { ...comparison(), mode, routing_profile: mode === "walking" ? "walking" : "driving" } });
+  });
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  for (const [button, label] of [["Car", "car"], ["Motorcycle", "motorcycle"]]) {
+    await page.getByRole("button", { name: button, exact: true }).click();
+    await expect(page.getByText("Waiting for a journey")).toBeVisible();
+    await page.getByRole("button", { name: `Compare ${label} routes` }).click();
+    await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  }
+  expect(modes).toEqual(["walking", "driving", "motorcycle"]);
+  await expect(page.getByText(/Car routing estimate/)).toBeVisible();
+  await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
+  await expect(page.getByRole("button", { name: "Walk", exact: true })).toHaveAttribute("aria-pressed", "true");
 });

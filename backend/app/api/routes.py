@@ -9,7 +9,7 @@ from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotRespo
 from app.services.cache import cache_identity, read_routes, store_routes
 from app.services.comparison import compare_routes
 from app.services.snapshots import load_snapshot
-from app.services.walking import RoutingError, walking_candidates
+from app.services.walking import RoutingError, vehicle_candidates, walking_candidates
 
 router = APIRouter(prefix="/api")
 
@@ -32,7 +32,7 @@ def compare(
             status_code=503,
             detail={
                 "code": "routing_unconfigured",
-                "message": "Walking route access is not configured.",
+                "message": "Route access is not configured.",
             },
         )
     settings = http_request.app.state.settings
@@ -65,9 +65,18 @@ def compare(
     if routes is None:
         try:
             with httpx.Client(base_url="https://api.mapbox.com", timeout=8) as client:
-                routes = walking_candidates(
-                    client, token.get_secret_value(), request.origin, request.destination
-                )
+                if request.mode == "walking":
+                    routes = walking_candidates(
+                        client, token.get_secret_value(), request.origin, request.destination
+                    )
+                else:
+                    routes = vehicle_candidates(
+                        client,
+                        token.get_secret_value(),
+                        request.origin,
+                        request.destination,
+                        request.mode,
+                    )
         except RoutingError as error:
             raise HTTPException(
                 status_code=error.status, detail={"code": error.code, "message": error.message}
