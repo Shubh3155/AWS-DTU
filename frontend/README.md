@@ -41,13 +41,24 @@ Start journey requests browser GPS permission and locks the chosen route. The ma
 fresh locations; dragging/zooming or Route overview pauses the camera, while Recenter resumes
 following. North up/Travel direction controls orientation when GPS heading is available.
 Provider maneuver text and approximate remaining distance/time are derived from actual route
-geometry. Stop, denial, arrival, route replacement and component cleanup clear the GPS watch;
-Stop also removes the live-location marker. Location fixes are kept in browser memory and are
-not stored or posted to the comparison API. Map rendering still uses Mapbox map services.
+geometry. Stop, denial, arrival and component cleanup clear the GPS watch;
+Stop also removes the live-location marker and cancels pending rerouting requests.
+
+Automatic rerouting confirms off-route movement with accurate fixes (at most ±30 m)
+separated by at least eight seconds. Returning to the path or weak GPS resets confirmation.
+Only one comparison request runs at a time, with at least 30 seconds between attempts.
+The off-route GPS coordinate is posted to the route service and Mapbox as the new origin;
+the destination, travel mode, extra-time allowance and live/replay setting are preserved.
+The lowest estimated-exposure eligible replacement is selected, with fastest as fallback;
+GPS navigation continues without another Start. Failure/no route keeps the previous route
+and retries on a later confirmed fix. The allowance applies to the remaining journey.
+The Start panel explains this location sharing. Ordinary GPS fixes stay in browser memory;
+map rendering still uses Mapbox map services. Route-service caching retains request coordinates
+according to its configured cache/storage behavior.
 
 Tracking requires a secure context (HTTPS or localhost), permission and browser/OS GPS support.
 Background tabs can suspend updates. This is foreground browser guidance with approximate
-projection/arrival logic, not field-tested navigation. No automatic rerouting, traffic-aware ETA,
+projection/arrival logic, not field-tested navigation. No traffic-aware ETA,
 voice prompts, offline navigation or vehicle-cabin exposure model is included. Off-route and
 imprecise fixes are flagged rather than treated as reliable progress.
 
