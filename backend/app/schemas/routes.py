@@ -54,6 +54,14 @@ class RouteManeuver(BaseModel):
         return value
 
 
+class TrafficInfo(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
+    fetched_at: AwareDatetime
+    typical_duration_seconds: float | None = Field(default=None, ge=0)
+    coverage_percent: float = Field(ge=0, le=100)
+    congested_percent: float = Field(ge=0, le=100)
+
+
 class RouteCandidate(BaseModel):
     id: str
     geometry: LineString
@@ -65,6 +73,7 @@ class RouteCandidate(BaseModel):
     coverage_percent: float = Field(ge=0, le=100)
     via: Coordinate | None = None
     maneuvers: list[RouteManeuver] = Field(default_factory=list)
+    traffic: TrafficInfo | None = None
 
 
 class DataQuality(BaseModel):
@@ -86,7 +95,7 @@ class ComparisonResponse(BaseModel):
     """Evaluated walking routes, model estimates and explicit data-quality metadata."""
 
     mode: TravelMode = "walking"
-    routing_profile: Literal["walking", "driving"] = "walking"
+    routing_profile: Literal["walking", "driving", "driving-traffic"] = "walking"
     status: Literal[
         "comparison_available",
         "uncertain_difference",

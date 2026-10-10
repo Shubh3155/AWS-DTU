@@ -121,3 +121,7 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .journey-navigation .navigation-note { width: 100%; font-size: 10px; color: var(--muted); margin: 0; line-height: 1.5; }
 .navigation-summary .navigation-progress { color: var(--accent); }
 @media (max-width: 680px) { .map-panel.navigation-active { height: 360px; } .journey-navigation { padding: 15px; } }
+
+.traffic-details { margin: 10px 0; padding: 10px 12px; border-left: 2px solid #6c9275; background: #edf1e8; border-radius: 0 8px 8px 0; }
+.traffic-details p { margin: 3px 0; font-size: 11px; line-height: 1.5; color: #526357; }
+.traffic-details .traffic-label { color: #25614b; font-weight: 600; font-size: 12px; }

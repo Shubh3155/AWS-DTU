@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { LocationPicker, type JourneyLocation } from "@/components/location-picker";
 import { JourneyMap } from "@/components/journey-map";
+import { TrafficDetails } from "@/components/traffic-details";
 import { checkHealth, compareJourney } from "@/lib/api";
 import type { Coordinate, ComparisonResponse, TravelMode } from "@/types/api";
 
@@ -135,7 +136,7 @@ export function JourneyWorkspace() {
                 </div>
                 {mode !== "walking" && <p className="mode-note">{mode === "motorcycle"
                   ? "Car routing estimate · motorcycle restrictions and speeds are not modeled."
-                  : "Outdoor air along your route · cabin filtration is not modeled."} Times exclude live traffic.</p>}
+                  : "Outdoor air along your route · cabin filtration is not modeled."} Uses traffic-profile travel estimates where available; missing congestion is shown as unknown.</p>}
               </fieldset>
               {(["origin", "destination"] as const).map((name) => {
                 return <LocationPicker key={name} name={name} value={name === "origin" ? origin : destination}
@@ -173,6 +174,7 @@ export function JourneyWorkspace() {
                   <p className="eyebrow">Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
+                  <TrafficDetails route={route} />
                   {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>

@@ -66,9 +66,10 @@ in this readiness session.
 ## Travel-mode extension
 
 The app now offers Walk, Car and Motorcycle. Car and Motorcycle request real Mapbox
-`driving` geometry and provider step times. Motorcycle is labelled as a car-profile
-approximation: motorcycle restrictions and speeds are not modeled. Vehicle times exclude
-live traffic. The pollution score remains outdoor ambient exposure, not cabin air or inhaled
+`driving-traffic` geometry and provider step times. Motorcycle is labelled as a car-profile
+approximation: motorcycle restrictions and speeds are not modeled. Vehicle times use available
+current/historical traffic estimates; the Delhi verification returned unknown congestion.
+See [traffic verification](TRAFFIC_VERIFICATION.md). The pollution score remains outdoor ambient exposure, not cabin air or inhaled
 dose. Existing historical route reviews and the recorded demo preset are walking only.
 Apply `python -m scripts.migrate_database --apply` from `backend/` before deploying this
 version; migration 002 preserves cache rows and extends supported cache modes. It has

@@ -3,11 +3,12 @@
 import hashlib
 import json
 import math
+from datetime import UTC, datetime
 
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.routes import Coordinate, LineString, RouteManeuver, TravelMode
+from app.schemas.routes import Coordinate, LineString, RouteManeuver, TrafficInfo, TravelMode
 from app.services.route_quality import assess_alternative, filter_candidates
 
 
@@ -27,6 +28,38 @@ class WalkingRoute(BaseModel):
     distance: float = Field(ge=0, strict=True)
     steps: list[WalkingStep]
     via: Coordinate | None = None
+    traffic: TrafficInfo | None = None
+
+
+def traffic_info(raw: dict) -> TrafficInfo:
+    """Summarize reported congestion by distance; unknown never means clear."""
+    known, congested = 0.0, 0.0
+    for leg in raw["legs"]:
+        annotation = leg.get("annotation") or {}
+        levels, distances = annotation.get("congestion", []), annotation.get("distance", [])
+        if (
+            not isinstance(levels, list)
+            or not isinstance(distances, list)
+            or len(levels) != len(distances)
+        ):
+            continue
+        for level, distance in zip(levels, distances, strict=True):
+            if type(distance) not in (int, float) or not math.isfinite(distance) or distance < 0:
+                continue
+            if level in ("low", "moderate", "heavy", "severe"):
+                known += distance
+                if level in ("heavy", "severe"):
+                    congested += distance
+    total = raw["distance"]
+    typical = raw.get("duration_typical")
+    if type(typical) not in (int, float) or not math.isfinite(typical) or typical < 0:
+        typical = None
+    return TrafficInfo(
+        fetched_at=datetime.now(UTC),
+        typical_duration_seconds=typical,
+        coverage_percent=min(100, known / total * 100) if total > 0 else 0,
+        congested_percent=min(100, congested / total * 100) if total > 0 else 0,
+    )
 
 
 class RoutingError(Exception):
@@ -54,6 +87,11 @@ def walking_routes(
                 "steps": "true",
                 "geometries": "geojson",
                 "overview": "full",
+                **(
+                    {"annotations": "congestion,distance,duration"}
+                    if profile == "driving-traffic"
+                    else {}
+                ),
                 **({"radiuses": "50;100;50"} if via is not None else {}),
             },
         )
@@ -84,6 +122,7 @@ def walking_routes(
                     distance=raw["distance"],
                     steps=steps,
                     via=via,
+                    traffic=traffic_info(raw) if profile == "driving-traffic" else None,
                 )
             )
         return list({route.id: route for route in routes}.values())
@@ -148,10 +187,10 @@ def vehicle_candidates(
     destination: Coordinate,
     mode: TravelMode,
 ) -> list[WalkingRoute]:
-    """Driving-profile estimates; no walking-only via probes or shape heuristics.
+    """Traffic-profile estimates; no walking-only via probes or shape heuristics.
 
     Motorcycle uses the same provider profile, never an invented speed adjustment.
     """
     if mode not in ("driving", "motorcycle"):
         raise ValueError("Vehicle routing requires driving or motorcycle mode")
-    return walking_routes(client, token, origin, destination, profile="driving")[:3]
+    return walking_routes(client, token, origin, destination, profile="driving-traffic")[:3]
