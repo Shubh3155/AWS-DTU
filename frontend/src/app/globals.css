@@ -82,3 +82,17 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .show-route:hover, .show-route[aria-pressed="true"] { background: #dce8d5; border-color: #82a080; }
 .show-route:focus-visible { outline: 2px solid #25614b; outline-offset: 3px; }
 .route-preview-hint { color: var(--muted); font-size: 10px; }
+
+.location-search { display: flex; border: 1px solid var(--line); border-radius: 8px; background: #fafbf8; overflow: hidden; }
+.location-search:focus-within { border-color: #91b59e; box-shadow: 0 0 0 2px #edf4ee; }
+.location-search input { min-width: 0; width: 100%; padding: 12px 10px; border: 0; background: transparent; color: var(--ink); font-size: 13px; }
+.location-search button { flex: none; border: 0; border-left: 1px solid var(--line); background: #edf4ee; color: var(--accent); padding: 0 10px; font-size: 12px; }
+.location-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.location-actions button { border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font-size: 11px; padding: 8px; }
+.location-actions button:hover, .location-actions button.selected { background: #edf4ee; border-color: #91b59e; color: var(--accent); }
+.location-status { font-size: 11px; color: var(--muted); line-height: 1.5; margin: 8px 0 0; }
+.place-results { margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.place-results button { width: 100%; display: flex; justify-content: space-between; gap: 10px; text-align: left; padding: 11px; border: 0; border-bottom: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.place-results button:hover { background: #edf4ee; }
+.place-results a { display: block; padding: 6px 11px; font-size: 9px; color: var(--muted); }
+.map-instruction { max-width: calc(100% - 28px); }

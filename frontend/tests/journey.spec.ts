@@ -1,6 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ComparisonResponse } from "../src/types/api";
 
+test.beforeEach(async ({ page }) => {
+  // Browser fixtures never contact Mapbox. Individual search tests override this route.
+  await page.route("**/api.mapbox.com/**", route => route.abort());
+});
+
 function comparison(status: ComparisonResponse["status"] = "uncertain_difference"): ComparisonResponse {
   const limited = status === "limited_data";
   return {
@@ -27,10 +32,8 @@ function comparison(status: ComparisonResponse["status"] = "uncertain_difference
 
 async function journey(page: Page) {
   await page.goto("/");
-  await page.getByRole("spinbutton", { name: "origin latitude" }).fill("28.6");
-  await page.getByRole("spinbutton", { name: "origin longitude" }).fill("77.2");
-  await page.getByRole("spinbutton", { name: "destination latitude" }).fill("28.61");
-  await page.getByRole("spinbutton", { name: "destination longitude" }).fill("77.21");
+  await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
+  await page.getByRole("checkbox", { name: "Use recorded pollution observations" }).uncheck();
 }
 
 test("recorded demo preset fills the verified journey and explicitly selects replay", async ({ page }) => {
@@ -41,8 +44,8 @@ test("recorded demo preset fills the verified journey and explicitly selects rep
   });
   await page.goto("/");
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
-  await expect(page.getByRole("spinbutton", { name: "origin latitude" })).toHaveValue("28.6315");
-  await expect(page.getByRole("spinbutton", { name: "destination longitude" })).toHaveValue("77.2410");
+  await expect(page.getByRole("textbox", { name: "origin location" })).toHaveValue("Recorded Delhi start");
+  await expect(page.getByRole("textbox", { name: "destination location" })).toHaveValue("Recorded Delhi destination");
   await expect(page.getByRole("checkbox", { name: "Use recorded pollution observations" })).toBeChecked();
   await expect(page.getByRole("slider", { name: "Maximum extra time" })).toHaveValue("5");
   await page.getByRole("button", { name: "Compare walking routes" }).click();
@@ -136,4 +139,63 @@ test("route hover previews, selection persists and a new request resets it", asy
   await expect(page.getByText("Waiting for a journey")).toBeVisible();
   await page.getByRole("button", { name: "Compare walking routes" }).click();
   await expect(first).toHaveAttribute("aria-pressed", "true");
+});
+
+
+test("editing a selected place invalidates its coordinates and previous scores", async ({ page }) => {
+  let calls = 0;
+  await page.route("**/api/routes/compare", route => { calls += 1; return route.fulfill({ json: comparison() }); });
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  await page.getByRole("textbox", { name: "origin location" }).fill("New Delhi");
+  await expect(page.getByText("Waiting for a journey")).toBeVisible();
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Choose both locations from search results, your current location, or the map.")).toBeVisible();
+  expect(calls).toBe(1);
+});
+
+test("current location uses permission and sends browser coordinates", async ({ page, context }) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 28.6, longitude: 77.2 });
+  let request: Record<string, unknown> = {};
+  await page.route("**/api/routes/compare", route => {
+    request = route.request().postDataJSON(); return route.fulfill({ json: comparison() });
+  });
+  await journey(page);
+  await page.getByRole("button", { name: "Use current location for origin" }).click();
+  await expect(page.getByRole("textbox", { name: "origin location" })).toHaveValue("Current location");
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  expect(request.origin).toEqual({ lat: 28.6, lng: 77.2 });
+});
+
+test("denied location is recoverable without discarding an existing place", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", { value: {
+      getCurrentPosition: (_success: unknown, failure: (error: { code: number }) => void) => failure({ code: 1 }),
+    } });
+  });
+  await journey(page);
+  await page.getByRole("button", { name: "Use current location for origin" }).click();
+  await expect(page.getByText("Location permission was denied. Search or choose on the map instead.")).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "origin location" })).toHaveValue("Recorded Delhi start");
+});
+
+test("search selects a matching place and sends its hidden coordinates", async ({ page }) => {
+  let request: Record<string, unknown> = {};
+  await page.route("**/api.mapbox.com/search/geocode/v6/forward?**", route => route.fulfill({ json: {
+    features: [{ id: "fixture-place", geometry: { coordinates: [77.22, 28.62] }, properties: { full_address: "Fixture street, Delhi" } }],
+  } }));
+  await page.route("**/api/routes/compare", route => {
+    request = route.request().postDataJSON(); return route.fulfill({ json: comparison() });
+  });
+  await journey(page);
+  await page.getByRole("textbox", { name: "origin location" }).fill("Fixture street");
+  await page.getByRole("textbox", { name: "origin location" }).press("Enter");
+  await page.getByRole("button", { name: /Fixture street, Delhi/ }).click();
+  await expect(page.getByRole("textbox", { name: "origin location" })).toHaveValue("Fixture street, Delhi");
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  expect(request.origin).toEqual({ lat: 28.62, lng: 77.22 });
 });

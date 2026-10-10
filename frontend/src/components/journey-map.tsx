@@ -10,7 +10,7 @@ type Props = {
   activeRouteId: string | null;
   origin: Coordinate | null;
   destination: Coordinate | null;
-  activePoint: "origin" | "destination";
+  activePoint: "origin" | "destination" | null;
   onSelect: (coordinate: Coordinate) => void;
 };
 
@@ -55,6 +55,9 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   }, [activeRouteId]);
 
   useEffect(() => { callback.current = onSelect; }, [onSelect]);
+  useEffect(() => {
+    if (map.current) map.current.getCanvas().style.cursor = activePoint ? "crosshair" : "";
+  }, [activePoint]);
 
   useEffect(() => {
     if (!token || !container.current) return;
@@ -83,17 +86,26 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
     const markers: mapboxgl.Marker[] = [];
     if (origin) markers.push(new mapboxgl.Marker({ color: "#25614b" }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
     if (destination) markers.push(new mapboxgl.Marker({ color: "#65846e" }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
+    if (!routeRef.current.length) {
+      const points = [origin, destination].filter((point): point is Coordinate => point !== null);
+      if (points.length === 1) map.current.flyTo({ center: [points[0].lng, points[0].lat], zoom: 14 });
+      else if (points.length === 2) {
+        const bounds = new mapboxgl.LngLatBounds();
+        points.forEach(point => bounds.extend([point.lng, point.lat]));
+        map.current.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+      }
+    }
     return () => { markers.forEach((marker) => marker.remove()); };
   }, [origin, destination]);
 
   return (
-    <section className="map-panel" aria-label="Journey map">
+    <section id="journey-map" className="map-panel" aria-label="Journey map">
       {token && <div ref={container} className="map-canvas" />}
       {(!token || failed) && (
         <div className="map-placeholder">
           <span className="map-pin" aria-hidden="true">↗</span>
           <h2>{failed ? "Map unavailable" : "Your journey starts here"}</h2>
-          <p>{failed ? "You can still enter coordinates in the journey form." : "Enter two locations to prepare your walk. The interactive map will appear when map access is configured."}</p>
+          <p>{failed ? "Search for a location or use your current location in the journey form." : "Enter two locations to prepare your walk. The interactive map will appear when map access is configured."}</p>
           <span className="map-caption">Central Delhi · historical demo area</span>
         </div>
       )}
@@ -103,7 +115,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
           <span className="route-preview-hint">Hover a card to preview · tap to select</span>
         </div>
       )}
-      {token && !failed && <div className="map-instruction">Click the map to set your {activePoint}.</div>}
+      {token && !failed && <div className="map-instruction" role="status">{activePoint ? `Tap the map to set your ${activePoint}.` : "Explore the map · choose a location in the journey panel"}</div>}
     </section>
   );
 }
