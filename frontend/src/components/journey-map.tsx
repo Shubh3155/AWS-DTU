@@ -13,6 +13,7 @@ type Props = {
   activeRouteId: string | null;
   selectedRouteId: string | null;
   onNavigationChange: (active: boolean) => void;
+  onReroute: (coordinate: Coordinate, signal: AbortSignal) => Promise<void>;
   selectionReason: string;
   origin: Coordinate | null;
   destination: Coordinate | null;
@@ -20,7 +21,7 @@ type Props = {
   onSelect: (coordinate: Coordinate) => void;
 };
 
-export function JourneyMap({ origin, destination, activePoint, onSelect, routes, activeRouteId, selectedRouteId, onNavigationChange, selectionReason }: Props) {
+export function JourneyMap({ origin, destination, activePoint, onSelect, routes, activeRouteId, selectedRouteId, onNavigationChange, onReroute, selectionReason }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const callback = useRef(onSelect);
@@ -29,7 +30,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   const [following, setFollowing] = useState(true);
   const [headingUp, setHeadingUp] = useState(false);
   const chosenRoute = routes.find(route => route.id === selectedRouteId);
-  const navigation = useJourneyNavigation(chosenRoute, onNavigationChange);
+  const navigation = useJourneyNavigation(chosenRoute, onNavigationChange, onReroute);
   const { running, fix, progress } = navigation;
   const [failed, setFailed] = useState(false);
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -152,7 +153,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   const guidance = navigation.arrived ? "You have reached your destination"
     : navigation.message || (!fix ? "Waiting for your GPS location…"
       : !progress?.reliable ? `Weak GPS signal · accuracy ±${Math.round(fix.accuracy)} m`
-      : progress.offRoute ? "You are away from the selected route · stop to plan a new route"
+      : progress.offRoute ? "Off route · checking your location before rerouting"
       : progress.instruction);
 
   return (
@@ -185,7 +186,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
     {chosenRoute && <section className={`journey-navigation${running ? " is-running" : ""}`} aria-label="Journey navigation">
       <div className="navigation-summary">
         <p className="eyebrow">{running ? (following ? "Following your location" : "Map paused · recenter to follow") : `Selected route ${routes.findIndex(route => route.id === selectedRouteId) + 1}`}</p>
-        <h2>{running || navigation.arrived ? guidance : `${(chosenRoute.duration_seconds / 60).toFixed(0)} min · ${(chosenRoute.distance_metres / 1000).toFixed(2)} km`}</h2>
+        <h2 aria-live="polite">{running || navigation.arrived ? guidance : `${(chosenRoute.duration_seconds / 60).toFixed(0)} min · ${(chosenRoute.distance_metres / 1000).toFixed(2)} km`}</h2>
         {running && progress?.reliable && !progress.offRoute && !navigation.message && <p className="navigation-progress">
           {progress.turnMetres !== null && <span>Next instruction in {Math.round(progress.turnMetres)} m · </span>}
           ~{Math.ceil(progress.remainingSeconds / 60)} min · {(progress.remainingMetres / 1000).toFixed(2)} km remaining
@@ -196,7 +197,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       </div>
       {running ? <button type="button" className="navigation-stop" onClick={navigation.stop}>Stop journey</button>
         : <button type="button" className="navigation-start" onClick={() => { setFollowing(true); navigation.start(); }}>Start journey <span aria-hidden="true">↗</span></button>}
-      <p className="navigation-note">{running ? "Location is used while this journey is running. Stop ends tracking. No automatic rerouting." : "Start to follow your location with GPS. Location permission is required."}</p>
+      <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox when rerouting. Stop ends tracking and cancels rerouting." : "Start follows GPS and automatically reroutes when you leave the path. Rerouting shares your GPS position with the route service and Mapbox. Location permission is required."}</p>
     </section>}
     </div>
   );

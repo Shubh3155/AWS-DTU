@@ -11,12 +11,12 @@ export async function checkHealth(): Promise<HealthResponse> {
   return response.json();
 }
 
-export async function compareJourney(request: ComparisonRequest): Promise<ComparisonResponse> {
+export async function compareJourney(request: ComparisonRequest, signal?: AbortSignal): Promise<ComparisonResponse> {
   const response = await fetch(`${baseUrl}/api/routes/compare`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
-    signal: AbortSignal.timeout(20000),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000),
   });
   if (!response.ok) {
     const body = await response.json().catch(() => null);

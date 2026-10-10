@@ -63,7 +63,7 @@ export function JourneyWorkspace() {
   }
 
   function selectPoint(point: Coordinate) {
-    if (!activePoint || busy) return;
+    if (!activePoint || busy || navigating) return;
     const location = { label: activePoint === "origin" ? "Pinned starting point" : "Pinned destination", coordinate: point };
     if (activePoint === "origin") setOrigin(location);
     else setDestination(location);
@@ -93,6 +93,19 @@ export function JourneyWorkspace() {
     try { await checkHealth(); setConnection("Service connected"); }
     catch { setConnection("Service unavailable — start the backend and retry"); }
     finally { setChecking(false); }
+  }
+
+  async function reroute(from: Coordinate, signal: AbortSignal) {
+    const to = destination.coordinate;
+    if (!to) throw new Error("Choose a destination before rerouting.");
+    const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour,
+      mode, data_mode: useReplay ? "replay" : "live" }, signal);
+    if (signal.aborted) return;
+    if (!response.candidates.length) throw new Error("No replacement route found.");
+    setOrigin({ label: "Rerouted from GPS position", coordinate: from });
+    setResult(response);
+    resetRouteSelection();
+    setMessage(response.warnings.join(" "));
   }
 
   return (
@@ -149,6 +162,7 @@ export function JourneyWorkspace() {
           </aside>
           <div className="map-and-results">
             <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy || navigating ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} selectedRouteId={selectedId}
+              onReroute={reroute}
               onNavigationChange={active => { setNavigating(active); setHoverRouteId(null); setFocusRouteId(null); }}
               selectionReason={selectedId === result?.lowest_exposure_eligible_id ? "Lowest model estimate within your allowance" : selectedId === result?.fastest_id ? result.lowest_exposure_eligible_id ? "Fastest evaluated route" : "Fastest evaluated route · exposure unavailable" : "Manually selected route"} />
             <div className="result-previews" aria-label="Travel route results" aria-live="polite">
