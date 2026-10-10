@@ -26,6 +26,7 @@ export function JourneyWorkspace() {
   const [useReplay, setUseReplay] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [connection, setConnection] = useState("Connection not checked");
   const [checking, setChecking] = useState(false);
 
@@ -35,8 +36,8 @@ export function JourneyWorkspace() {
   const [hoverRouteId, setHoverRouteId] = useState<string | null>(null);
   const [focusRouteId, setFocusRouteId] = useState<string | null>(null);
   const candidates = result?.candidates ?? [];
-  const selectedId = candidates.some(route => route.id === selectedRouteId) ? selectedRouteId : result?.fastest_id ?? candidates[0]?.id ?? null;
-  const previewId = hoverRouteId ?? focusRouteId ?? selectedId;
+  const selectedId = candidates.some(route => route.id === selectedRouteId) ? selectedRouteId : result?.lowest_exposure_eligible_id ?? result?.fastest_id ?? candidates[0]?.id ?? null;
+  const previewId = navigating ? selectedId : hoverRouteId ?? focusRouteId ?? selectedId;
   const activeRouteId = candidates.some(route => route.id === previewId) ? previewId : selectedId;
 
   function resetRouteSelection() {
@@ -109,9 +110,9 @@ export function JourneyWorkspace() {
         <div className="workspace">
           <aside className="journey-panel">
             <div className="panel-title"><h2>Plan a journey</h2><span>{modeLabel === "car" ? "Car" : modeLabel === "motorcycle" ? "Motorcycle" : "Walking"}</span></div>
-            <button className="demo-button" type="button" onClick={loadDemo} disabled={busy}>Try recorded Delhi journey</button>
+            <button className="demo-button" type="button" onClick={loadDemo} disabled={busy || navigating}>Try recorded Delhi journey</button>
             <form onSubmit={submit}>
-              <fieldset className="travel-mode" disabled={busy}>
+              <fieldset className="travel-mode" disabled={busy || navigating}>
                 <legend>How are you travelling?</legend>
                 <div role="group" aria-label="Travel mode">
                   {(["walking", "driving", "motorcycle"] as const).map(option => <button key={option} type="button"
@@ -125,7 +126,7 @@ export function JourneyWorkspace() {
               </fieldset>
               {(["origin", "destination"] as const).map((name) => {
                 return <LocationPicker key={name} name={name} value={name === "origin" ? origin : destination}
-                  disabled={busy} picking={activePoint === name}
+                  disabled={busy || navigating} picking={activePoint === name}
                   onPick={() => {
                     setActivePoint(activePoint === name ? null : name);
                     if (activePoint !== name) document.getElementById("journey-map")?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -136,23 +137,25 @@ export function JourneyWorkspace() {
                   }} />;
               })}
               <div className="detour-heading"><label htmlFor="detour">Maximum extra time</label><output htmlFor="detour">{detour} min</output></div>
-              <input id="detour" type="range" min="0" max="30" step="1" value={detour} disabled={busy} onChange={(event) => { setDetour(Number(event.target.value)); invalidate(); }} />
+              <input id="detour" type="range" min="0" max="30" step="1" value={detour} disabled={busy || navigating} onChange={(event) => { setDetour(Number(event.target.value)); invalidate(); }} />
               <div className="range-labels"><span>No detour</span><span>30 minutes</span></div>
               <div className="replay-option">
-                <label><input type="checkbox" checked={useReplay} disabled={busy} onChange={(event) => { setUseReplay(event.target.checked); invalidate(); }} />Use recorded pollution observations</label>
+                <label><input type="checkbox" checked={useReplay} disabled={busy || navigating} onChange={(event) => { setUseReplay(event.target.checked); invalidate(); }} />Use recorded pollution observations</label>
                 <p>{useReplay ? "Historical estimates only. This does not describe current air quality." : "Live mode accepts recent observations only; stale data stays unavailable."}</p>
               </div>
-              <button className="primary-button" disabled={busy} type="submit">{busy ? "Checking journey…" : `Compare ${modeLabel} routes`}<span aria-hidden="true">→</span></button>
+              <button className="primary-button" disabled={busy || navigating} type="submit">{busy ? "Checking journey…" : `Compare ${modeLabel} routes`}<span aria-hidden="true">→</span></button>
               <p className="form-message" role="status" aria-live="polite">{message || "Compare evaluated routes. Estimates require sufficient nearby station support."}</p>
             </form>
           </aside>
           <div className="map-and-results">
-            <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} />
+            <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy || navigating ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} selectedRouteId={selectedId}
+              onNavigationChange={active => { setNavigating(active); setHoverRouteId(null); setFocusRouteId(null); }}
+              selectionReason={selectedId === result?.lowest_exposure_eligible_id ? "Lowest model estimate within your allowance" : selectedId === result?.fastest_id ? result.lowest_exposure_eligible_id ? "Fastest evaluated route" : "Fastest evaluated route · exposure unavailable" : "Manually selected route"} />
             <div className="result-previews" aria-label="Travel route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
                 <div className={`result-card${route.id === activeRouteId ? " route-active" : ""}`} key={route.id}
-                  onPointerMove={event => { if (event.pointerType === "mouse") setHoverRouteId(route.id); }} onPointerLeave={() => setHoverRouteId(null)}
-                  onFocus={() => { setFocusRouteId(route.id); setHoverRouteId(null); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusRouteId(null); }}>
+                  onPointerMove={event => { if (!navigating && event.pointerType === "mouse") setHoverRouteId(route.id); }} onPointerLeave={() => setHoverRouteId(null)}
+                  onFocus={() => { if (navigating) return; setFocusRouteId(route.id); setHoverRouteId(null); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusRouteId(null); }}>
                   <p className="eyebrow">Route {index + 1} · {route.id === result.fastest_id ? "Fastest evaluated route" : `Alternative ${index + 1}`}</p>
                   {route.id === result.lowest_exposure_eligible_id && <p className="estimate-label">Lowest model estimate within your allowance</p>}
                   <h3>{(route.duration_seconds / 60).toFixed(1)} min · {(route.distance_metres / 1000).toFixed(2)} km</h3>
@@ -160,7 +163,7 @@ export function JourneyWorkspace() {
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>
                   <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
-                  <button type="button" className="show-route" aria-label={`Show route ${index + 1} on map`} aria-pressed={route.id === selectedId} onClick={() => { setSelectedRouteId(route.id); setHoverRouteId(null); setFocusRouteId(route.id); }}>{route.id === activeRouteId ? "Showing on map" : "Show on map"}<span aria-hidden="true">↗</span></button>
+                  <button type="button" disabled={navigating} className="show-route" aria-label={`Show route ${index + 1} on map`} aria-pressed={route.id === selectedId} onClick={() => { setSelectedRouteId(route.id); setHoverRouteId(null); setFocusRouteId(route.id); }}>{route.id === activeRouteId ? "Showing on map" : "Show on map"}<span aria-hidden="true">↗</span></button>
                 </div>
               )) : <div className="result-card"><h3>No route found</h3><p>Try different starting and destination points.</p></div> : (
                 <div className="result-card"><p className="eyebrow">Route candidates</p><h3>Waiting for a journey</h3><p>Route distance, duration and time-budget eligibility will appear here.</p></div>

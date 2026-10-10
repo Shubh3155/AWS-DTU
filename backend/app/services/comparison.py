@@ -86,6 +86,7 @@ def compare_routes(
                 within_budget=route.duration <= fastest.duration + 60 * request.max_detour_minutes,
                 coverage_percent=score.coverage_percent,
                 via=route.via,
+                maneuvers=[step.maneuver for step in route.steps if step.maneuver is not None],
             )
         )
     eligible = [candidate for candidate in candidates if candidate.within_budget]
