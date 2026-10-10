@@ -33,6 +33,12 @@ export type RouteManeuver = {
   modifier: string | null;
   location: [number, number];
 };
+export type TrafficInfo = {
+  fetched_at: string;
+  typical_duration_seconds: number | null;
+  coverage_percent: number;
+  congested_percent: number;
+};
 export type RouteCandidate = {
   id: string;
   geometry: { type: "LineString"; coordinates: [number, number][] };
@@ -44,10 +50,11 @@ export type RouteCandidate = {
   coverage_percent: number;
   via?: Coordinate | null;
   maneuvers?: RouteManeuver[];
+  traffic?: TrafficInfo | null;
 };
 export type ComparisonResponse = {
   mode: TravelMode;
-  routing_profile: "walking" | "driving";
+  routing_profile: "walking" | "driving" | "driving-traffic";
   status: "comparison_available" | "uncertain_difference" | "no_lower_exposure_candidate" | "single_candidate" | "limited_data" | "no_route";
   candidates: RouteCandidate[];
   fastest_id: string | null;

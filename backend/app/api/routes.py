@@ -6,7 +6,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
 from app.core.pilot import contains, polygon
 from app.model.baseline import BaselinePolicy
 from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotResponse
-from app.services.cache import cache_identity, read_routes, store_routes
+from app.services.cache import cache_identity, read_routes, route_cache_ttl, store_routes
 from app.services.comparison import compare_routes
 from app.services.snapshots import load_snapshot
 from app.services.walking import RoutingError, vehicle_candidates, walking_candidates
@@ -93,7 +93,7 @@ def compare(
     )
     http_response.headers["X-AeroRoute-Cache"] = "hit" if hit else "miss" if snapshot else "bypass"
     if snapshot and not hit:
-        route_cache.put(route_key, routes, ttl=settings.cache_ttl_seconds)
+        route_cache.put(route_key, routes, ttl=route_cache_ttl(settings, request))
         background_tasks.add_task(
             store_routes,
             settings,

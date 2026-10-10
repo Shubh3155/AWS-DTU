@@ -19,11 +19,11 @@ Browser fixtures run at desktop (1440 px) and mobile (390 px) widths: explicit r
 ## Travel modes
 
 Walk uses Mapbox walking directions and the reviewed local walking-alternative policy.
-Car uses Mapbox driving directions and native provider alternatives, with preserved step times.
-Motorcycle currently uses the same driving profile and car travel-time estimates, clearly labelled
+Car uses Mapbox driving-traffic directions and native provider alternatives, with preserved step times.
+Motorcycle currently uses the same traffic profile and car travel-time estimates, clearly labelled
 in the UI and API warnings. Mapbox has no motorcycle profile: two-wheeler-only access rules,
 restrictions and speeds are not modeled. No cycling profile or fabricated speed multiplier is used.
-Vehicle times exclude live traffic. Scores represent time-integrated outdoor ambient PM2.5,
+Vehicle times use available current/historical traffic estimates. Scores represent time-integrated outdoor ambient PM2.5,
 not cabin air, ventilation, inhaled dose, emissions or an accuracy/safety guarantee.
 The recorded preset resets to the reviewed walking journey. Switching travel modes clears old
 results; each mode has a separate cache key. Apply backend migration `002_travel_modes.sql`
@@ -58,9 +58,29 @@ according to its configured cache/storage behavior.
 
 Tracking requires a secure context (HTTPS or localhost), permission and browser/OS GPS support.
 Background tabs can suspend updates. This is foreground browser guidance with approximate
-projection/arrival logic, not field-tested navigation. No traffic-aware ETA,
-voice prompts, offline navigation or vehicle-cabin exposure model is included. Off-route and
+projection/arrival logic, not field-tested navigation. No voice prompts, offline navigation
+or vehicle-cabin exposure model is included. Off-route and
 imprecise fixes are flagged rather than treated as reliable progress.
 
 Sources: [browser GPS watching](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/watchPosition),
 [Mapbox maneuver data](https://docs.mapbox.com/api/navigation/directions/).
+
+## Traffic estimates
+
+Vehicle requests use `driving-traffic` with distance/congestion annotations. Provider route and
+step durations drive route ranking, time allowances and modeled exposure; typical durations
+are only a comparison label. Reported congestion coverage and heavy/severe share are weighted
+by route distance. Missing/unknown annotations never mean clear roads. The requested timestamp
+is a local fetch time, not the provider's traffic-observation timestamp.
+
+With accurate GPS (±30 m or better), active vehicle journeys refresh their remaining routes
+approximately every two minutes. A refresh can select a different eligible replacement; it uses
+the same route-update cancellation and error handling as off-route rerouting. The extra-time
+allowance applies to the remaining journey. No reliable GPS means no traffic refresh; Stop
+cancels updates. Between refreshes, remaining time is still a geometric approximation.
+Vehicle cache entries expire within 60 seconds, and use one-minute identity buckets.
+
+The Delhi demo returned traffic-profile times but only unknown congestion segments during
+verification. This does not establish live traffic coverage in Delhi. See
+[verification evidence](../documentations/TRAFFIC_VERIFICATION.md). Route/map indicators
+explicitly show unknown congestion while keeping the selected route green and alternatives grey.

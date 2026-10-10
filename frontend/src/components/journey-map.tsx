@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { useJourneyNavigation } from "@/components/use-journey-navigation";
+import { TrafficDetails } from "@/components/traffic-details";
 import { routeFeatures } from "@/lib/navigation";
 import { scheduleRouteDraw } from "@/lib/map-redraw";
 import { ROUTE_COLOR } from "@/lib/route-colors";
@@ -174,6 +175,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
           {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f", border: "3px solid #25614b" }} />Start</span>}
           {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b", border: "3px solid #a1ce8f" }} />Destination</span>}
           {routes.length > 1 && <span className="route-preview-hint">Hover a card to preview · tap to select</span>}
+          {chosenRoute?.traffic && <span className="route-preview-hint">{chosenRoute.traffic.coverage_percent === 0 ? "Traffic unknown" : "Traffic-profile routing"}</span>}
         </div>
       )}
       {token && !failed && chosenRoute && <div className="map-actions">
@@ -192,12 +194,13 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
           ~{Math.ceil(progress.remainingSeconds / 60)} min · {(progress.remainingMetres / 1000).toFixed(2)} km remaining
         </p>}
         {!running && !navigation.arrived && <p>{selectionReason}. Model differences remain uncertain.</p>}
+        <TrafficDetails route={chosenRoute} />
         {!running && navigation.message && <p role="status">{navigation.message}</p>}
         {running && <p className="gps-caption">GPS ±{fix ? Math.round(fix.accuracy) : "—"} m · time remaining is approximate</p>}
       </div>
       {running ? <button type="button" className="navigation-stop" onClick={navigation.stop}>Stop journey</button>
         : <button type="button" className="navigation-start" onClick={() => { setFollowing(true); navigation.start(); }}>Start journey <span aria-hidden="true">↗</span></button>}
-      <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox when rerouting. Stop ends tracking and cancels rerouting." : "Start follows GPS and automatically reroutes when you leave the path. Rerouting shares your GPS position with the route service and Mapbox. Location permission is required."}</p>
+      <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox for route updates. Stop ends tracking and cancels updates." : "Start follows GPS and automatically reroutes when you leave the path. Route updates share your GPS position with the route service and Mapbox. Location permission is required."}{chosenRoute.traffic && " Vehicle routes refresh about every two minutes with accurate GPS. Traffic may change between updates."}</p>
     </section>}
     </div>
   );

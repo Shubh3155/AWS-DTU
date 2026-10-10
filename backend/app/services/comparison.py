@@ -20,15 +20,23 @@ def compare_routes(
     if request.mode == "driving":
         notes.append(
             "Car scores estimate outdoor ambient exposure along the route, not cabin air or "
-            "inhaled dose. Driving times do not include live traffic."
+            "inhaled dose. Mapbox traffic-profile times use available current/historical traffic; "
+            "live congestion coverage is not guaranteed."
         )
     elif request.mode == "motorcycle":
         notes.append(
             "Motorcycle uses Mapbox car routing and car travel-time estimates; motorcycle "
-            "access restrictions and speeds are not modeled. Driving times do not include "
-            "live traffic."
+            "access restrictions and speeds are not modeled. Traffic-profile estimates use "
+            "available current/historical traffic, with no guarantee of live congestion coverage."
         )
         notes.append("Scores estimate outdoor ambient exposure along the route, not inhaled dose.")
+    if request.mode != "walking" and any(
+        route.traffic is None or route.traffic.coverage_percent < 100 for route in routes
+    ):
+        notes.append(
+            "Congestion data is missing for part or all of the route. "
+            "Unknown traffic is not clear traffic."
+        )
     quality = DataQuality(data_mode="unavailable")
     observations = []
     if snapshot is not None:
@@ -87,6 +95,7 @@ def compare_routes(
                 coverage_percent=score.coverage_percent,
                 via=route.via,
                 maneuvers=[step.maneuver for step in route.steps if step.maneuver is not None],
+                traffic=route.traffic,
             )
         )
     eligible = [candidate for candidate in candidates if candidate.within_budget]
@@ -108,7 +117,7 @@ def compare_routes(
         notes.append("Comparable exposure is unavailable for one or more eligible candidates.")
     return ComparisonResponse(
         mode=request.mode,
-        routing_profile="walking" if request.mode == "walking" else "driving",
+        routing_profile="walking" if request.mode == "walking" else "driving-traffic",
         status=status,
         candidates=candidates,
         fastest_id=fastest.id if fastest else None,

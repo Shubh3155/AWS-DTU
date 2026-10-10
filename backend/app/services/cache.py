@@ -15,13 +15,22 @@ from app.schemas.routes import ComparisonRequest, ComparisonResponse
 from app.services.snapshots import PollutionSnapshot
 from app.services.walking import WalkingRoute
 
-CONTRACT = "travel-steps-v5-maneuvers"
+CONTRACT = "travel-steps-v6-traffic"
+
+
+def route_cache_ttl(settings: Settings, request: ComparisonRequest) -> int:
+    return (
+        min(60, settings.cache_ttl_seconds)
+        if request.mode != "walking"
+        else settings.cache_ttl_seconds
+    )
 
 
 def cache_identity(
     request: ComparisonRequest, snapshot: PollutionSnapshot, policy: BaselinePolicy, now: datetime
 ) -> tuple[str, datetime]:
-    bucket = datetime.fromtimestamp(int(now.timestamp()) // 300 * 300, UTC)
+    interval = 300 if request.mode == "walking" else 60
+    bucket = datetime.fromtimestamp(int(now.timestamp()) // interval * interval, UTC)
     identity = {
         **request.model_dump(exclude={"snapshot_id"}),
         "snapshot_id": snapshot.snapshot_id,
@@ -112,7 +121,7 @@ def store_routes(
                     policy.version,
                     Jsonb(payload),
                     now,
-                    now + timedelta(seconds=settings.cache_ttl_seconds),
+                    now + timedelta(seconds=route_cache_ttl(settings, request)),
                 ),
             )
     except psycopg.Error:

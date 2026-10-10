@@ -418,3 +418,63 @@ test("Stop cancels pending rerouting and rejects a late replacement", async ({ p
   await emitGPS(page);
   expect(requests).toBe(2);
 });
+
+function trafficComparison(coverage = 0) {
+  const data = comparison();
+  data.mode = "driving";
+  data.routing_profile = "driving-traffic";
+  data.candidates.forEach(route => { route.traffic = {
+    fetched_at: "2026-10-10T08:00:00Z", typical_duration_seconds: 1800,
+    coverage_percent: coverage, congested_percent: coverage ? 40 : 0,
+  }; });
+  return data;
+}
+
+test("vehicle traffic indicators distinguish missing coverage from clear roads", async ({ page }) => {
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: trafficComparison() }));
+  await journey(page);
+  await page.getByRole("button", { name: "Car", exact: true }).click();
+  await page.getByRole("button", { name: "Compare car routes" }).click();
+  await expect(page.getByText("Congestion data unavailable · traffic is unknown")).toHaveCount(3);
+  await expect(page.getByText(/0% heavy\/severe/)).toHaveCount(0);
+  await expect(page.getByText("5.0 min faster than typical")).toHaveCount(2);
+  await expect(page.getByText(/Vehicle routes refresh about every two minutes/)).toBeVisible();
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: trafficComparison(90) }));
+  await page.getByRole("button", { name: "Compare car routes" }).click();
+  await expect(page.getByText("90% of route has reported congestion data · 40% heavy/severe")).toHaveCount(3);
+});
+
+test("traffic navigation periodically refreshes using accurate GPS and keeps following", async ({ page }) => {
+  await syntheticGPS(page);
+  const requests: Record<string, unknown>[] = [];
+  await page.route("**/api/routes/compare", async route => {
+    requests.push(route.request().postDataJSON());
+    const data = trafficComparison();
+    if (requests.length > 1) data.candidates.forEach(candidate => {
+      candidate.id = `refreshed-${candidate.id}`;
+      candidate.geometry.coordinates = [[77.21, 28.605], [77.241, 28.628]];
+      candidate.maneuvers = [{ instruction: "Continue onto Updated Road", type: "turn", modifier: "straight", location: [77.22, 28.612] }];
+    });
+    if (requests.length > 1) { data.fastest_id = "refreshed-fast"; data.lowest_exposure_eligible_id = "refreshed-slow"; }
+    await route.fulfill({ json: data });
+  });
+  await journey(page);
+  await page.getByRole("button", { name: "Car", exact: true }).click();
+  await page.getByRole("button", { name: "Compare car routes" }).click();
+  await page.getByRole("button", { name: /Start journey/ }).click();
+  await emitGPS(page, 28.605, 77.21);
+  await page.clock.fastForward(121000);
+  await emitGPS(page, 28.605, 77.21, 100);
+  expect(requests).toHaveLength(1);
+  await emitGPS(page, 28.605, 77.21);
+  await expect(page.getByRole("textbox", { name: "origin location" })).toHaveValue("Rerouted from GPS position");
+  expect(requests).toHaveLength(2);
+  expect(requests[1]).toMatchObject({ mode: "driving", origin: { lat: 28.605, lng: 77.21 }, destination: { lat: 28.628, lng: 77.241 } });
+  await emitGPS(page, 28.605, 77.21);
+  await expect(page.getByRole("heading", { name: "Continue onto Updated Road" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Stop journey" })).toBeVisible();
+  await page.getByRole("button", { name: "Stop journey" }).click();
+  await page.clock.fastForward(121000);
+  await emitGPS(page, 28.605, 77.21);
+  expect(requests).toHaveLength(2);
+});
