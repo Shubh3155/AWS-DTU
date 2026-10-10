@@ -99,3 +99,85 @@ pending. Use the journey checker in [DEPLOYMENT.md](DEPLOYMENT.md) to record the
 ## Bounded waypoint candidates
 
 Route candidates may include optional `via: {lat, lng} | null`. A non-null value identifies a real Mapbox walking route requested through an intermediate point, rather than a native provider alternative. The page labels this provenance. Single-route results can trigger at most two bounded waypoint probes; failed probes retain the original route. All candidates use their actual step travel times and exact allowance checks. See [candidate policy and genuine demo evidence](MULTI_ROUTE_DEMO.md).
+
+## Authenticated cloud navigation
+
+Guest comparison requires no login. Each candidate now includes an opaque
+`navigation_token` for alert-session creation/rerouting. It identifies a provider
+route held in the backend's bounded cache for 30 minutes; it conveys no user
+permissions. Missing/expired receipts require a fresh comparison. Active sessions
+persist their provider route in Firestore.
+
+All endpoints below require `Authorization: Bearer <Firebase ID token>`. The
+Admin SDK verifies signature, expiry and revocation, and derives the UID. The
+client retries a 401 once with a refreshed token. Unconfigured Admin access returns
+503. Unexpected body fields, client-supplied UID or instruction text are rejected.
+
+| Endpoint | Request body | Result |
+| --- | --- | --- |
+| `PUT /api/me/devices/{device_id}` | `{"recipient":"<FID>","recipient_kind":"fid"}` | 204; binds the recipient to one account/device and invalidates its previous binding |
+| `DELETE /api/me/devices/{device_id}` | None | 204; idempotently disables the owned device and its journey |
+| `POST /api/navigation/sessions` | `{"device_id":"<registered-id>","navigation_token":"<candidate-token>"}` | Journey ID, route version and UTC expiry |
+| `POST /api/navigation/sessions/{journey_id}/progress` | Sequenced fix below | Acceptance, arrival and alert-submission status |
+| `DELETE /api/navigation/sessions/{journey_id}` | None | 204; idempotently stops an owned session |
+
+Device IDs use 10–128 ASCII letters/digits/underscores/hyphens. Route/session tokens
+are 32 lowercase hex characters. The browser generates a UUID device ID for each
+registration attempt. The backend also supports legacy recipients with
+`recipient_kind: "token"`; the pinned browser integration uses FIDs.
+
+Session creation response:
+
+```json
+{
+  "journey_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "route_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "expires_at": "2026-10-10T12:00:30Z"
+}
+```
+
+Progress request (illustrative position, not a verified journey):
+
+```json
+{
+  "sequence": 1,
+  "navigation_token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "fix": {
+    "lat": 28.6,
+    "lng": 77.2003,
+    "accuracy": 5.0,
+    "timestamp": "2026-10-10T12:00:05Z"
+  }
+}
+```
+
+`sequence` must be a strictly increasing positive integer. Duplicate/out-of-order
+updates return `accepted: false` without resending. Fresh fix timestamps must be
+within 15 seconds of server time. Accepted progress extends the session by 30
+seconds; updates are throttled to at most one per two seconds. The browser normally
+sends every five seconds. Registration is throttled per UID and session starts per
+device. Rate limits return 429.
+
+A new valid `navigation_token` atomically replaces the route on reroute and clears
+the old alert key. Ownership/binding mismatch, stopped or expired sessions cannot
+send. Another user's unknown journey returns 404; a stale session returns 410.
+An invalid registration or expired route receipt returns 409.
+
+Response:
+
+```json
+{ "accepted": true, "alert": "sent", "arrived": false }
+```
+
+`alert` is `none`, `sent`, `failed` or `suppressed`. `sent` means FCM accepted
+submission, not confirmed delivery. Transient submission failure leaves foreground
+guidance working and permits a retry on a later fresh fix while the session remains
+active. The backend derives instructions from provider maneuvers, accepts no client
+instruction text, and sends only within 80 metres with reliable on-route progress.
+Arrival deactivates the session after its final alert.
+
+Push payloads contain journey/route IDs, sequence, provider instruction and
+millisecond `issuedAt`/`expiresAt`. Messages and receiver validity expire in 15
+seconds. Stop/reroute/logout clear locally active guidance; an inactive receiver
+does not display delayed messages. See [Firebase setup](FIREBASE_SETUP.md) for
+configuration, document access, emulator checks and browser limitations.

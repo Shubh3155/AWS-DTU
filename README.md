@@ -5,13 +5,21 @@ Walking-route comparisons using estimated PM2.5 exposure and a user-defined time
 The local comparison flow is implemented: genuine walking routes, detour limits,
 Supabase snapshots, historical exposure estimates, green route previews and bounded
 caching. Route-quality screening and a Central Delhi historical demo boundary are
-reviewed. Backend checks pass with 116 tests; desktop/mobile checks run in CI.
+reviewed. Backend and desktop/mobile checks run in CI.
 Separate November evaluation reveals substantially larger station errors than
 October, and the latest live audit has only one usable fresh station. Estimates
 remain provisional; no validated cleaner-detour benefit is claimed. AWS deployment
 and the final recorded demonstration remain pending. See the
 [data credibility review](documentations/DATA_CREDIBILITY.md) and
 [path-quality review](documentations/ROUTE_QUALITY.md).
+
+Google login/logout, session restoration, Firestore recent routes and opt-in FCM
+direction alerts are implemented and tested locally with Firebase emulators.
+Google sign-in and private Firestore rules are deployed, with local development
+domains authorized. Local backend credentials and the public VAPID key are configured;
+live Auth/Firestore access and FCM validation pass. Actual OAuth/device delivery
+verification is described in
+[Firebase setup](documentations/FIREBASE_SETUP.md).
 
 - [Release readiness and deployment handoff](documentations/RELEASE_HANDOFF.md)
 - [Three-minute demo script](documentations/DEMO_SCRIPT.md)
@@ -20,6 +28,7 @@ and the final recorded demonstration remain pending. See the
 - [Original revised proposal](documentations/AeroRoute_Revised_Proposal%20%281%29.pdf)
 - [Setup handoff and remaining work](documentations/SETUP_STATUS.md)
 - [API contract](documentations/API_CONTRACT.md)
+- [Firebase configuration, user sessions and notification checks](documentations/FIREBASE_SETUP.md)
 - [Monitoring data audit](documentations/DATA_AUDIT.md)
 - [Database access setup](documentations/DATABASE_SETUP.md)
 - [Friday exposure baseline and next tasks](documentations/EXPOSURE_BASELINE.md)
@@ -74,6 +83,10 @@ With Mapbox configured, the page displays actual walking routes, durations and d
 From `frontend/`: `npm run lint`, `npm run typecheck`, `npm run build`. After the build, install Chromium with `npx playwright install chromium` and run `npm run test:e2e`. Browser checks use labelled synthetic responses at desktop/mobile widths.
 
 From `backend/`, with the virtual environment active: `ruff check .`, `ruff format --check .`, `pytest -q`.
+
+With Java 21+ installed and the backend virtual environment ready, run
+`npm run test:firebase` from `frontend/` for Auth/Firestore emulator rule, browser
+and Admin SDK integration checks. See [Firebase setup](documentations/FIREBASE_SETUP.md).
 
 GitHub Actions runs these checks, browser tests and a container build on pushes and pull requests. The manual backend deployment workflow requires a configured production environment, AWS OIDC role and service targets; see [DEPLOYMENT.md](documentations/DEPLOYMENT.md). No public AWS endpoints are verified yet.
 

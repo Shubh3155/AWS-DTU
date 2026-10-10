@@ -14,6 +14,18 @@ Actual AWS deployment and the final recorded demo remain pending. AWS work is
 deferred at the user's request. The original daily checklists below are historical
 planning records; their bundled unchecked items can include completed portions.
 
+**Firebase scope added — Saturday, 10 October:** Add Google sign-in, login/logout
+and session restoration, private recent route searches in Cloud Firestore, and
+opt-in Firebase Cloud Messaging (FCM) direction alerts. The client/Admin SDKs,
+private history UI/rules, authenticated navigation endpoints and messaging worker
+are implemented. Local rule, Auth/Firestore integration and desktop/mobile browser
+checks pass. Google sign-in and owner-only Firestore rules/indexes have been
+deployed to `aeroroute-auth-2026`; billing-dependent TTL cleanup is omitted.
+The public VAPID key and backend Admin credentials are configured; live Auth,
+Firestore read/write/delete and FCM validation checks pass. Actual Google OAuth
+and supported-device delivery still need verification. See
+[FIREBASE_SETUP.md](FIREBASE_SETUP.md) for activation and test instructions.
+
 ## 1. Sunday delivery target
 
 Ship one browser-based flow for a verified Delhi pilot area:
@@ -23,7 +35,10 @@ Ship one browser-based flow for a verified Delhi pilot area:
 3. Estimate cumulative ambient PM2.5 exposure using segment concentrations and travel times.
 4. Compare the fastest evaluated candidate with the lowest estimated exposure candidate within the time budget.
 5. Show duration, exposure units, observation timestamps, coverage and uncertainty.
-6. Demonstrate the deployed AWS backend and record a three-minute demo, including a case where a longer route has no estimated exposure benefit.
+6. Sign in with Google, restore the chosen login session on refresh, and log out with user-specific state cleared.
+7. Save signed-in users' recent route searches in Firestore; reopen or delete them from a Recent routes view.
+8. During an active journey, show the next maneuver and offer opt-in cloud direction alerts on supported browsers, with foreground guidance available when push is unavailable.
+9. Demonstrate the deployed AWS backend and record a three-minute demo, including a case where a longer route has no estimated exposure benefit and a short Firebase user-flow demonstration.
 
 Deliver a working baseline before adding model complexity. Actual exposure reduction and street-level accuracy remain unvalidated; no health guarantee is part of this prototype.
 
@@ -33,16 +48,16 @@ The three-person team works concurrently across the responsibilities below; assi
 
 | Role | Primary responsibility | Handoff |
 | --- | --- | --- |
-| Frontend | Frontend and responsive map experience | Working interface against the agreed API contract |
+| Frontend | Responsive map, Google sign-in/logout, session-aware UI, recent routes and notification permission/receiver | Working interface against the agreed API contract and Firebase user flow |
 | Data/model | Monitoring-data audit, interpolation, exposure estimates and validation | Versioned data snapshot, scorer and validation report |
-| Backend/AWS | FastAPI, routing, database, AWS, workflows and integration | Comparison API and deployed backend |
+| Backend/AWS + Firebase | FastAPI, routing, Supabase, AWS, Firebase project/Auth setup, Firestore rules and authenticated FCM sender | Comparison API, Firebase access controls, private history and direction-alert delivery |
 | All three | End-to-end checks, claims review and demo | Reproducible Sunday demonstration |
 
 | Priority | Work |
 | --- | --- |
-| Required by Sunday | Walking + PM2.5; one pilot area; origin/destination input; detour control; evaluated-route comparison; interpolation; data quality states; Supabase spatial lookup/cache; Amplify frontend; Lightsail backend; S3 snapshots; CI; validation report; recorded demo |
+| Required by Sunday | Walking + PM2.5; one pilot area; origin/destination input; detour control; evaluated-route comparison; interpolation; data quality states; Supabase spatial lookup/cache; Firebase Google sign-in and login/logout/session handling; Firestore recent searches; opt-in FCM direction alerts on supported browsers; Amplify frontend; Lightsail backend; S3 snapshots; CI; validation report; recorded demo |
 | Conditional experiment | Gradient-boosted regressor using station-hour labels, road context and weather; only after the required flow works and held-out evaluation is possible |
-| After Sunday | CNN; Sentinel-5P regional features; broader geography; field validation; additional travel modes |
+| After Sunday | CNN; Sentinel-5P regional features; broader geography; field validation; additional travel modes; native background navigation if continuous guidance with the screen locked is required |
 
 Open-Meteo weather and OSM/OSMnx feature extraction belong to the conditional model experiment. They must not block baseline exposure scoring or the demo. Satellite NO2 and aerosol index must not be substituted for measured PM2.5.
 
@@ -106,6 +121,25 @@ documentations/
 ```
 
 Root `amplify.yml` versions the frontend build spec with app root `frontend`. Configure the corresponding Amplify app/environment using [DEPLOYMENT.md](DEPLOYMENT.md).
+
+Firebase additions to this target layout:
+
+```text
+frontend/src/lib/firebase.ts                   # Client-only Firebase initialization
+frontend/src/components/auth-provider.tsx      # Auth readiness, user and session lifecycle
+frontend/src/components/recent-routes.tsx      # Private saved searches and delete controls
+frontend/src/lib/route-history.ts              # UID-scoped Firestore reads/writes
+frontend/src/lib/notifications.ts              # Permission and device registration
+frontend/public/firebase-messaging-sw.js       # Built/served messaging service worker
+backend/app/core/firebase.py                  # Admin SDK and ID-token verification
+backend/app/services/notifications.py          # Validated navigation events and FCM sending
+firestore.rules                               # User ownership and field validation
+firestore.indexes.json                        # Versioned indexes used by history queries
+firebase.json / .firebaserc                   # Firebase configuration/project selection
+```
+
+Extend the existing `use-journey-navigation.ts` and `navigation.ts` for alert events;
+reuse their maneuver/GPS progression. Keep new endpoints under `backend/app/api/`.
 
 ## 4. Daily schedule and completion gates
 
@@ -199,6 +233,21 @@ Root `amplify.yml` versions the frontend build spec with app root `frontend`. Co
 
 **Gate:** Demo video, running URLs, reproducible setup and validation/limitations documentation are ready by **18:00 IST**. This is an internal target; no external submission deadline was provided.
 
+### Firebase implementation sequence — added 10 October
+
+The existing frontend and backend owners share this additional required scope.
+Complete these steps in dependency order alongside the
+remaining baseline work. The original feature-freeze checklist predates this
+addition; record any unfinished Firebase gate explicitly in the Sunday handoff.
+
+- [x] **Backend/AWS + Firebase:** Verify project access, enable Google sign-in, authorize localhost/127.0.0.1 and deploy owner-only Firestore rules/indexes. Gate passes: rules tests reject anonymous and cross-user access. Hosted domains must be added when AWS deployment resumes.
+- [x] **Backend/AWS + Firebase:** Configure backend Admin credentials and the public VAPID key; verify live Auth lookup, Firestore read/write/delete and FCM validation without sending messages. TTL cleanup is omitted on the billing-disabled project; runtime session expiry is enforced.
+- [ ] **Backend/AWS + Firebase:** Verify actual Google OAuth and supported-device next-turn delivery through the app.
+- [x] **Frontend + Backend/AWS:** Add Firebase client/Admin SDKs, Google login/logout, persistence selection, auth readiness and protected API verification. Local gates pass: emulator login, refresh, persistence/logout and revoked-token rejection, with UID isolation. Real OAuth remains a deployment gate.
+- [x] **Frontend:** Persist completed user-initiated searches, list recent routes, reopen with a fresh comparison and implement delete/clear controls. Gate passes locally: history survives logout/login and is isolated between two emulator accounts.
+- [ ] **Frontend + Backend/AWS:** Register consenting devices, connect navigation progress to the authenticated FCM sender, add foreground/background receivers and stop/logout cleanup. Gate: a real supported device receives a valid next-turn alert; stale/duplicate alerts are suppressed and denied permission preserves in-app guidance.
+- [ ] **All:** Run the Firebase acceptance cases below, record browser/device support, update environment/setup/API documentation and include the user flow in the demo. Emulator tests alone do not prove Google OAuth or actual push delivery.
+
 ## 5. Architecture and API handoff
 
 ```mermaid
@@ -211,6 +260,15 @@ flowchart LR
     API --> DB
     AQ --> S3[S3 versioned snapshots / model artifacts]
     Score --> S3
+    UI --> Auth[Firebase Authentication / Google sign-in]
+    UI --> History[Cloud Firestore / private recent searches]
+    UI --> Nav[GPS and maneuver progression]
+    Nav -->|Authenticated progress events| API
+    API -->|Admin SDK token verification| Auth
+    API -->|Device and navigation-session records| History
+    API -->|Validated direction alerts| FCM[Firebase Cloud Messaging]
+    FCM --> SW[Browser messaging service worker]
+    SW -->|Next-turn notification| User[Signed-in user]
 ```
 
 | Endpoint to implement | Contract |
@@ -224,6 +282,72 @@ The comparison response must include route IDs, GeoJSON geometry, distance in me
 Suggested result states: `comparison_available`, `uncertain_difference`, `no_lower_exposure_candidate`, `single_candidate`, `limited_data` and `no_route`. A provider failure must not silently become a successful fixture response. Recorded replay is a visible, explicit mode.
 
 Database minimum: stations with spatial coordinates; observations with sensor/time/unit/value metadata; snapshot manifests; and route comparison cache entries with expiry and data/model version. Include origin, destination, travel mode, time bucket, data/model version and detour allowance in the comparison cache key. A cached response must be reassessed for freshness when served.
+
+### 5.1 Firebase service responsibilities
+
+| Service | AeroRoute responsibility |
+| --- | --- |
+| Firebase Authentication | Google identity, login/logout, persisted browser authentication and SDK-managed token refresh |
+| Cloud Firestore | Per-user profile, recent route searches, device registrations and short-lived navigation-session metadata |
+| Firebase Cloud Messaging | Deliver validated, opt-in direction alerts to the device running the journey |
+| FastAPI with Firebase Admin SDK | Verify Firebase ID tokens, enforce ownership for server operations and send FCM messages |
+| Supabase PostgreSQL/PostGIS | Spatial monitoring data, observations, exposure lookup and shared comparison cache |
+| AWS Amplify, Lightsail and S3 | Frontend hosting, backend execution and versioned data/model artifacts |
+
+### 5.2 Google sign-in and login/logout sessions
+
+1. Enable the Google provider and use the Firebase web SDK's Google sign-in flow. Handle cancelled/blocked popups and account errors visibly. If using redirect on mobile, configure and test the redirect flow for the Amplify/custom domain. [Google sign-in](https://firebase.google.com/docs/auth/web/google-signin), [redirect deployment guidance](https://firebase.google.com/docs/auth/web/redirect-best-practices).
+2. Put auth state in a client-side provider with explicit loading, signed-out and signed-in states. Wait for the initial auth observer before reading private history. Use session persistence by default; offer **Remember me** for local persistence across browser restarts. Let Firebase manage refresh tokens; never copy credentials into Firestore. [Authentication persistence](https://firebase.google.com/docs/auth/web/auth-state-persistence).
+3. For protected FastAPI requests, send the Firebase ID token as `Authorization: Bearer <token>`. Verify it with the Admin SDK, including revocation checks, and derive the UID from the verified token. Reject invalid/expired/revoked tokens with `401`; attempt one SDK refresh before asking the user to sign in again. [ID-token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens), [session revocation](https://firebase.google.com/docs/auth/admin/manage-sessions).
+4. On logout, stop the journey, deactivate its server session/device association while authentication is available, unregister this browser's messaging subscription, and call Firebase `signOut`. Always clear local history/profile state, Firestore listeners and pending user-specific requests, even if remote cleanup fails. Clear the service worker's active-journey state and displayed notifications; server expiry handles abandoned sessions. Account switches run the same cleanup before loading the next UID.
+5. Keep guest route comparison available; request login when the user wants synchronized history or cloud alerts. Auth sessions are managed by Firebase Auth. Firestore navigation-session records below describe a journey and do not grant login access. Ordinary logout ends this browser session; global token revocation is a separate administrative operation.
+
+### 5.3 Firestore recent routes and user data
+
+The implementation uses these document paths, with timestamps in UTC:
+
+| Path | Minimum fields and access |
+| --- | --- |
+| `users/{uid}` | `displayName`, `avatar`, `updatedAt`; owner-only access with an explicit allowed-field list |
+| `users/{uid}/recentSearches/{searchId}` | Origin/destination coordinates and labels, travel mode, detour minutes, `searchedAt`, comparison status, optional selected route ID, data mode and data/model versions; owner can read/write/delete |
+| `users/{uid}/devices/{deviceId}` | FCM recipient registration for the pinned SDK, permission/enabled state, `updatedAt`; managed through authenticated backend endpoints, no direct client writes |
+| `users/{uid}/navigationSessions/{journeyId}` | Device ID, provider `routeJson`, route ID/version, projected progress, last alert key/sequence, active state, `lastSeenAt`, `expiresAt`; backend-managed, owner-readable |
+| `users/{uid}/alertLimits/current`, `pushBindings/{recipientHash}` | Backend-only registration throttling and unique recipient ownership; direct client access denied |
+
+- Save once when a signed-in user's explicit search returns a valid comparison response, including limited-data/no-route outcomes. Use a stable search request ID for idempotent retries; do not add entries for every GPS update or automatic reroute. A Firestore failure shows **Route not saved** with retry while preserving the comparison result.
+- Load the latest 20 searches ordered by `searchedAt` descending and paginate older entries. Reopening fills the form and requests a fresh comparison; saved route IDs and estimates are historical context, not a current routing result. Support deleting an entry and clearing all history, including entries outside the first page.
+- Keep history across logout/login and across devices for the same UID. Use memory-only Firestore caching initially; cancel listeners and discard responses from an earlier UID on logout/account switch. Avoid persisting continuous GPS traces or complete comparison payloads in search documents.
+- Replace the current time-limited public rule with default-deny rules and explicit owner checks (`request.auth != null && request.auth.uid == uid`) on each permitted path. Validate fields, coordinate ranges and timestamps. Backend Admin SDK operations must enforce ownership themselves because server libraries bypass Firestore rules. [Firestore access conditions](https://firebase.google.com/docs/firestore/security/rules-conditions).
+
+### 5.4 Cloud notifications for the next direction
+
+The existing GPS/maneuver engine remains the source of immediate on-screen
+guidance. Add FCM as a supplementary delivery channel for messages such as
+**In 50 m, turn left onto the next street**, **Continue straight**, and
+**You have arrived**. FCM can delay or discard delivery, so receipt cannot serve
+as a navigation timing guarantee. [FCM message lifespan](https://firebase.google.com/docs/cloud-messaging/customize-messages/setting-message-lifespan).
+
+1. After the signed-in user selects **Enable direction alerts**, check browser support, request notification permission, register the messaging service worker and register the device with FCM using the project's public VAPID key. Serve production over HTTPS. Pin compatible web/Admin SDK versions and document the corresponding recipient registration/send API. [FCM web setup](https://firebase.google.com/docs/cloud-messaging/web/get-started).
+2. Starting a journey creates an authenticated, device-bound navigation session using the selected server-issued route and its maneuvers. Bind each browser messaging registration to one active account/journey, coordinating tabs and invalidating the previous binding on account changes. While GPS is available, send rate-limited progress events with sequence, coordinates, fix time/accuracy and route version. The backend verifies ownership, active session and fresh/reliable progress, then derives the next instruction from that route. A client cannot supply arbitrary notification text or another user's recipient.
+3. Send a maneuver alert once on entering its distance threshold; tune thresholds against actual walking traces. Deduplicate by journey, route version, maneuver and alert type. Rerouting replaces the route version and invalidates pending old-step alerts. Arrival/stop deactivates the session. Target the journey's device, not every device belonging to the account.
+4. Use data messages with journey ID, route version, maneuver/sequence, instruction, `issuedAt` and `expiresAt`. Set a short web-push TTL (initial target: 15 seconds) and a replaceable notification tag. Foreground and service-worker handlers validate expiry, sequence and locally active journey before display; reject duplicates and old routes. Notification clicks reopen the journey and recheck current progress before presenting directions. Keep local foreground guidance visible and avoid a duplicate system notification while it is already displayed. [Foreground/background handling](https://firebase.google.com/docs/cloud-messaging/web/receive-messages).
+5. Stop, logout, account switching and disabling alerts invalidate local notification state and unregister/deactivate the device association as applicable. Prune invalid registrations after send failures. Expire server navigation sessions after a short missed-heartbeat window (initial target: 30 seconds); check expiry before every send, even if Firestore cleanup has not deleted the document.
+6. Test foreground, background tab, screen lock, closed page, offline and denied-permission behavior on actual target browsers/devices. A service worker receiving push does not provide continuous GPS tracking. Suspend direction alerts when fresh progress stops; resuming the app requires a fresh fix. Continuous closed-app/locked-screen navigation remains a separate native-app requirement. Show **Keep this page open for live directions** when that limitation applies.
+
+Proposed protected API additions; publish finalized schemas in `API_CONTRACT.md`
+when implementing them:
+
+| Endpoint | Contract |
+| --- | --- |
+| `PUT /api/me/devices/{device_id}` | Register/update this browser's FCM recipient and opt-in state under the verified UID |
+| `DELETE /api/me/devices/{device_id}` | Deactivate this user's device registration and its active navigation session |
+| `POST /api/navigation/sessions` | Validate selected route/version and owned device; return journey ID and expiry |
+| `POST /api/navigation/sessions/{journey_id}/progress` | Validate sequenced progress and any server-issued replacement route on reroute; update heartbeat and dispatch eligible next-maneuver alerts |
+| `DELETE /api/navigation/sessions/{journey_id}` | Idempotently stop an owned journey and suppress further sends |
+
+History reads/writes use the Firestore client SDK with rules; these backend
+endpoints use Admin SDK authorization. Require authentication and ownership for
+every device/session operation and rate-limit registration/progress requests.
 
 ## 6. Scoring and data-quality rules
 
@@ -247,10 +371,12 @@ Database minimum: stations with spatial coordinates; observations with sensor/ti
 - Enable PostGIS in a dedicated schema and add spatial lookup for station locations. [Supabase PostGIS documentation](https://supabase.com/docs/guides/database/extensions/postgis).
 - Configure Amplify's app root as `frontend`; match any build-spec `appRoot` to `AMPLIFY_MONOREPO_APP_ROOT`. Verify the selected Next.js/runtime version with a real build on Friday. [Amplify monorepo documentation](https://docs.aws.amazon.com/amplify/latest/userguide/monorepo-configuration.html), [Next.js deployment documentation](https://docs.aws.amazon.com/amplify/latest/userguide/getting-started-next.html).
 - Bind FastAPI to the container's public port and configure Lightsail's health-check path as `/health`. Verify the public HTTPS URL. [Lightsail container deployment documentation](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-container-services-deployments.html).
-- Keep provider/database credentials on the backend; expose only the intended browser map token and API URL to the frontend. Add placeholders in `.env.example`, and document settings for pilot bounds, freshness, station radius and data mode.
+- Keep provider/database and Firebase Admin credentials on the backend. Frontend configuration includes the intended browser map token, API URL, Firebase public web configuration and public VAPID key. Add placeholders in `.env.example`, and document settings for pilot bounds, freshness, station radius and data mode.
+- Add `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID`, `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` and `NEXT_PUBLIC_FIREBASE_VAPID_KEY` to the frontend setup inventory. Provision Admin credentials securely for Lightsail; never include service-account private keys in the frontend bundle, service worker or repository.
+- Deploy and verify owner-only Firestore rules before enabling real history writes. Verify the selected Firebase project, Google provider/authorized domains, rules/indexes and FCM configuration separately from the AWS deployment. Add Auth/Firestore Emulator Suite checks to CI; verify actual Google login and push on the HTTPS deployment and a supported physical device.
 - Store timestamped data snapshots and any evaluated model artifacts in S3 with source/version manifests. Use GitHub Actions for CI and backend deployment; let Amplify handle frontend deployment from its configured branch. Document the known-good backend image so it can be redeployed.
 
-The documentation checks above were made on 8 October 2026. Credentials, Delhi coverage, service limits and actual deployment behavior still require the team's access checks.
+The original provider documentation checks were made on 8 October 2026; Firebase references were reviewed for this addition on 10 October. Credentials, Delhi coverage, service limits and actual deployment behavior still require the team's access checks.
 
 ## 8. Acceptance and validation matrix
 
@@ -271,6 +397,13 @@ The documentation checks above were made on 8 October 2026. Credentials, Delhi c
 | Deployment | Public frontend calls the AWS backend; container health check, database and snapshot read work |
 | Performance | At least ten repeated pilot comparisons logged with hit/miss and observed latency; report median and tail latency, not a promised speed |
 | Replay transparency | Recorded observations retain original timestamps; replay and synthetic examples cannot be mistaken for live evidence |
+| Google login/session | Sign-in succeeds; cancel/error states recover; refresh restores auth before history loads; session-only and Remember me persistence behave as selected |
+| Logout/account switch | Private UI/listeners clear; journey and messaging stop; a second account cannot see the first account's history or receive its queued alerts |
+| Protected API | Missing, expired, invalid and revoked tokens are rejected; UID/device/journey ownership cannot be overridden by request input |
+| Recent routes | Explicit search saves once; automatic reroutes do not flood history; newest entries load across login/devices; reopen recomputes; delete and clear include paginated entries |
+| Firestore rules/failure | Emulator proves anonymous/cross-user access and malformed writes are denied; save failure offers retry without losing the route result |
+| Direction alerts | Real device receives the correct maneuver for the active route; delayed, duplicate, out-of-order and pre-reroute events are rejected; clicks revalidate the journey |
+| Push lifecycle/fallback | Denied/unsupported push, offline state, registration changes, stop/logout and expired heartbeat are covered; foreground guidance still works; background/locked-screen limitations are recorded |
 
 Station-level MAE/RMSE do not validate street-level accuracy. If independent stations or later periods are unavailable, record that limitation and withhold unsupported validation claims. A prototype performance target of under five seconds for cached comparisons is a goal to measure, not a proposal result.
 
@@ -285,17 +418,22 @@ Station-level MAE/RMSE do not validate street-level accuracy. If independent sta
 | AWS skeleton is not healthy Friday | Treat deployment as the next priority; stop optional model work until the hosting path is proven |
 | AWS is still blocked Sunday | Record the runnable local flow and the blocker explicitly; do not mark the AWS deliverable complete |
 | Baseline cannot reliably distinguish routes | Show uncertain/no-lower-exposure result; do not force a positive demo outcome |
-| Work remains after Saturday 18:00 | Fix core failures; defer new features to the post-Sunday backlog |
+| Work remains after Saturday 18:00 | Prioritize the baseline and added Firebase gates; record unmet deliverables explicitly and defer further feature expansion |
+| Firebase project/Google provider is unavailable | Keep guest comparison usable; record sign-in/history/alerts as incomplete and continue emulator-backed development |
+| Firestore still has public test rules | Block real user-history storage until owner-only rules are deployed and verified |
+| Push permission/support or fresh GPS is unavailable | Use foreground guidance, show alert availability, and stop sending stale directions; do not claim continuous background navigation |
 
 ## 10. Three-minute demo outline
 
 | Time | Demonstration |
 | --- | --- |
-| 0:00–0:25 | Explain cumulative exposure, the walking pilot and the time budget |
-| 0:25–1:20 | Enter/select a journey, compare evaluated routes and adjust the detour allowance |
-| 1:20–1:55 | Show observation times, coverage and any uncertain/limited-data behavior |
-| 1:55–2:25 | Show the longer-route counterexample; identify any replay or synthetic illustration |
-| 2:25–2:45 | Show the AWS backend endpoint and the deployed app connection |
-| 2:45–3:00 | State validation findings, limits and what needs field validation |
+| 0:00–0:15 | Explain cumulative exposure, the walking pilot and the time budget |
+| 0:15–0:35 | Sign in with Google and reopen a recent search from Firestore |
+| 0:35–1:10 | Compare evaluated routes, adjust the detour allowance and show the new saved search |
+| 1:10–1:35 | Show observation times, coverage and uncertain/limited-data behavior |
+| 1:35–2:00 | Show the longer-route counterexample; identify any replay or synthetic illustration |
+| 2:00–2:25 | Start navigation and show an opted-in next-turn notification on a supported device; label simulated GPS if used |
+| 2:25–2:45 | Show session restoration and logout cleanup, then the deployed AWS backend connection |
+| 2:45–3:00 | State validation findings and navigation/background limitations |
 
-**Sunday handoff:** public app/backend URLs, passing checks, environment/setup instructions, pilot data audit, validation report, deployed version and snapshot identifiers, limitations/deferred work, demo script and playable recording. Update the root README to match the actual shipped state.
+**Sunday handoff:** public app/backend URLs, passing checks, environment/setup instructions, pilot data audit, validation report, deployed version and snapshot identifiers, Firebase project/provider/rules setup, session/history behavior, verified notification browser/device support, limitations/deferred work, demo script and playable recording. Update the root README to match the actual shipped state.
