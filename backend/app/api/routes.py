@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from uuid import uuid4
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
@@ -91,6 +92,14 @@ def compare(
         warnings=warnings,
         now=datetime.now(UTC),
     )
+    # Opaque, short-lived receipts bind navigation to actual provider output.
+    # Active sessions persist their route in Firestore after this receipt is used.
+    for candidate in result.candidates:
+        receipt = uuid4().hex
+        http_request.app.state.navigation_routes.put(
+            receipt, {"route": candidate.model_dump(mode="json"), "mode": request.mode}, ttl=1800
+        )
+        candidate.navigation_token = receipt
     http_response.headers["X-AeroRoute-Cache"] = "hit" if hit else "miss" if snapshot else "bypass"
     if snapshot and not hit:
         route_cache.put(route_key, routes, ttl=route_cache_ttl(settings, request))

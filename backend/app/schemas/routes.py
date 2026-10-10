@@ -64,6 +64,7 @@ class TrafficInfo(BaseModel):
 
 class RouteCandidate(BaseModel):
     id: str
+    navigation_token: str | None = None
     geometry: LineString
     distance_metres: float = Field(ge=0)
     duration_seconds: float = Field(ge=0)
