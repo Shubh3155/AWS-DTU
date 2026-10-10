@@ -17,6 +17,18 @@ def compare_routes(
     now: datetime | None = None,
 ) -> ComparisonResponse:
     notes = list(warnings or [])
+    if request.mode == "driving":
+        notes.append(
+            "Car scores estimate outdoor ambient exposure along the route, not cabin air or "
+            "inhaled dose. Driving times do not include live traffic."
+        )
+    elif request.mode == "motorcycle":
+        notes.append(
+            "Motorcycle uses Mapbox car routing and car travel-time estimates; motorcycle "
+            "access restrictions and speeds are not modeled. Driving times do not include "
+            "live traffic."
+        )
+        notes.append("Scores estimate outdoor ambient exposure along the route, not inhaled dose.")
     quality = DataQuality(data_mode="unavailable")
     observations = []
     if snapshot is not None:
@@ -81,7 +93,7 @@ def compare_routes(
     status = "limited_data"
     if not routes:
         status = "no_route"
-        notes.append("No walking route was found for these locations.")
+        notes.append("No route was found for these locations.")
     elif eligible and all(candidate.estimated_exposure is not None for candidate in eligible):
         lowest = min(eligible, key=lambda c: (c.estimated_exposure, c.duration_seconds, c.id))
         if len(candidates) == 1:
@@ -94,6 +106,8 @@ def compare_routes(
     else:
         notes.append("Comparable exposure is unavailable for one or more eligible candidates.")
     return ComparisonResponse(
+        mode=request.mode,
+        routing_profile="walking" if request.mode == "walking" else "driving",
         status=status,
         candidates=candidates,
         fastest_id=fastest.id if fastest else None,

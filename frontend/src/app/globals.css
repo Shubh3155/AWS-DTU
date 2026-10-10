@@ -96,3 +96,10 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .place-results button:hover { background: #edf4ee; }
 .place-results a { display: block; padding: 6px 11px; font-size: 9px; color: var(--muted); }
 .map-instruction { max-width: calc(100% - 28px); }
+
+.travel-mode > div { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 5px; padding: 4px; background: #f0f4ec; border-radius: 8px; }
+.travel-mode button { border: 1px solid transparent; border-radius: 6px; padding: 10px 4px; background: transparent; color: var(--muted); font-size: 12px; }
+.travel-mode button[aria-pressed="true"] { background: #fff; border-color: #bed0b7; color: var(--accent); box-shadow: 0 1px 4px #203d3410; }
+.mode-note { margin: 9px 0 0; font-size: 11px; line-height: 1.5; color: var(--muted); }
+.route-legend .point-legend { font-size: 10px; color: var(--muted); }
+.route-legend .point-legend i { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 0 0 1px #203d3420; }

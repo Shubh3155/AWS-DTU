@@ -75,6 +75,14 @@ def test_schema_constraints_spatial_lookup_and_repeat_migration():
         )
         connection.execute(cache_sql, (uuid4().hex, 5.0, snapshot))
         connection.execute(cache_sql, (uuid4().hex, 6.0, snapshot))
+        for mode in ("driving", "motorcycle"):
+            connection.execute(
+                cache_sql.replace("'walking'", f"'{mode}'"), (uuid4().hex, 5.0, snapshot)
+            )
+        with pytest.raises(psycopg.errors.CheckViolation), connection.transaction():
+            connection.execute(
+                cache_sql.replace("'walking'", "'unknown'"), (uuid4().hex, 5.0, snapshot)
+            )
         with pytest.raises(psycopg.errors.CheckViolation), connection.transaction():
             connection.execute(cache_sql, (uuid4().hex, -1.0, snapshot))
         with pytest.raises(psycopg.errors.ForeignKeyViolation), connection.transaction():

@@ -1,4 +1,4 @@
-"""Mapbox walking candidates and preserved step timing for the later scorer."""
+"""Mapbox travel candidates with preserved provider geometry and step timing."""
 
 import hashlib
 import json
@@ -7,7 +7,7 @@ import math
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.routes import Coordinate, LineString
+from app.schemas.routes import Coordinate, LineString, TravelMode
 from app.services.route_quality import assess_alternative, filter_candidates
 
 
@@ -39,12 +39,14 @@ def walking_routes(
     origin: Coordinate,
     destination: Coordinate,
     via: Coordinate | None = None,
+    *,
+    profile: str = "walking",
 ) -> list[WalkingRoute]:
     points = [origin, destination] if via is None else [origin, via, destination]
     coordinates = ";".join(f"{point.lng},{point.lat}" for point in points)
     try:
         response = client.get(
-            f"/directions/v5/mapbox/walking/{coordinates}",
+            f"/directions/v5/mapbox/{profile}/{coordinates}",
             params={
                 "access_token": token,
                 "alternatives": "true",
@@ -69,7 +71,7 @@ def walking_routes(
                 raise ValueError("Missing route steps")
             geometry = LineString.model_validate(raw["geometry"])
             identity = json.dumps(
-                [geometry.model_dump(), raw["duration"], raw["distance"]],
+                [profile, geometry.model_dump(), raw["duration"], raw["distance"]],
                 sort_keys=True,
                 allow_nan=False,
             )
@@ -136,3 +138,19 @@ def walking_candidates(
                 routes.append(candidate)
                 break
     return routes[:3]
+
+
+def vehicle_candidates(
+    client: httpx.Client,
+    token: str,
+    origin: Coordinate,
+    destination: Coordinate,
+    mode: TravelMode,
+) -> list[WalkingRoute]:
+    """Driving-profile estimates; no walking-only via probes or shape heuristics.
+
+    Motorcycle uses the same provider profile, never an invented speed adjustment.
+    """
+    if mode not in ("driving", "motorcycle"):
+        raise ValueError("Vehicle routing requires driving or motorcycle mode")
+    return walking_routes(client, token, origin, destination, profile="driving")[:3]

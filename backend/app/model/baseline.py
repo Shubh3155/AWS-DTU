@@ -50,7 +50,7 @@ def distance_metres(a: Coordinate, b: Coordinate) -> float:
 def segment_route(route: WalkingRoute, policy: BaselinePolicy) -> list[TimedSegment]:
     total_steps = math.fsum(step.duration for step in route.steps)
     if route.duration <= 0 or total_steps <= 0:
-        raise ValueError("No positive walking duration is available for exposure scoring.")
+        raise ValueError("No positive travel duration is available for exposure scoring.")
     if abs(total_steps - route.duration) > max(1.0, route.duration * 0.001):
         raise ValueError("Route and step times disagree; exposure scoring is withheld.")
     scale = route.duration / total_steps

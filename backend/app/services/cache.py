@@ -15,7 +15,7 @@ from app.schemas.routes import ComparisonRequest, ComparisonResponse
 from app.services.snapshots import PollutionSnapshot
 from app.services.walking import WalkingRoute
 
-CONTRACT = "walking-steps-v3-quality"
+CONTRACT = "travel-steps-v4-profile"
 
 
 def cache_identity(

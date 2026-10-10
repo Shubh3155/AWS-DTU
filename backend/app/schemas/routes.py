@@ -9,12 +9,15 @@ class Coordinate(BaseModel):
     lng: float = Field(ge=-180, le=180, strict=True)
 
 
+TravelMode = Literal["walking", "driving", "motorcycle"]
+
+
 class ComparisonRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     origin: Coordinate
     destination: Coordinate
     max_detour_minutes: float = Field(ge=0, strict=True)
-    mode: Literal["walking"] = "walking"
+    mode: TravelMode = "walking"
     data_mode: Literal["live", "replay"] = "live"
     snapshot_id: str | None = Field(default=None, min_length=1, max_length=200)
 
@@ -65,6 +68,8 @@ class DataQuality(BaseModel):
 class ComparisonResponse(BaseModel):
     """Evaluated walking routes, model estimates and explicit data-quality metadata."""
 
+    mode: TravelMode = "walking"
+    routing_profile: Literal["walking", "driving"] = "walking"
     status: Literal[
         "comparison_available",
         "uncertain_difference",

@@ -1,10 +1,12 @@
 export type Coordinate = { lat: number; lng: number };
 
+export type TravelMode = "walking" | "driving" | "motorcycle";
+
 export type ComparisonRequest = {
   origin: Coordinate;
   destination: Coordinate;
   max_detour_minutes: number;
-  mode: "walking";
+  mode: TravelMode;
   data_mode: "live" | "replay";
   snapshot_id?: string;
 };
@@ -37,6 +39,8 @@ export type RouteCandidate = {
   via?: Coordinate | null;
 };
 export type ComparisonResponse = {
+  mode: TravelMode;
+  routing_profile: "walking" | "driving";
   status: "comparison_available" | "uncertain_difference" | "no_lower_exposure_candidate" | "single_candidate" | "limited_data" | "no_route";
   candidates: RouteCandidate[];
   fastest_id: string | null;
