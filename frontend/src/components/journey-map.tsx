@@ -93,6 +93,7 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       const name = origin && index === 0 ? "Starting point" : "Destination";
       marker.getElement().setAttribute("aria-label", name);
       marker.getElement().setAttribute("title", name);
+      marker.getElement().querySelector("circle")?.setAttribute("fill", origin && index === 0 ? "#a1ce8f" : "#25614b");
     });
     if (!routeRef.current.length) {
       const points = [origin, destination].filter((point): point is Coordinate => point !== null);
@@ -120,8 +121,8 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       {token && !failed && (routes.length > 0 || origin || destination) && (
         <div className="route-legend" aria-label="Route preview" aria-live="polite">
           {routes.length > 0 && <span><i aria-hidden="true" style={{ backgroundColor: ROUTE_COLOR }} />Viewing route {routes.findIndex(route => route.id === activeRouteId) + 1}</span>}
-          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b" }} />Start</span>}
-          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f" }} />Destination</span>}
+          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f", border: "3px solid #25614b" }} />Start</span>}
+          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b", border: "3px solid #a1ce8f" }} />Destination</span>}
           {routes.length > 1 && <span className="route-preview-hint">Hover a card to preview · tap to select</span>}
         </div>
       )}
