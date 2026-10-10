@@ -7,7 +7,7 @@ import math
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.routes import Coordinate, LineString, TravelMode
+from app.schemas.routes import Coordinate, LineString, RouteManeuver, TravelMode
 from app.services.route_quality import assess_alternative, filter_candidates
 
 
@@ -16,6 +16,7 @@ class WalkingStep(BaseModel):
     geometry: LineString
     duration: float = Field(ge=0, strict=True)
     distance: float = Field(ge=0, strict=True)
+    maneuver: RouteManeuver | None = None
 
 
 class WalkingRoute(BaseModel):

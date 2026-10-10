@@ -103,3 +103,21 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .mode-note { margin: 9px 0 0; font-size: 11px; line-height: 1.5; color: var(--muted); }
 .route-legend .point-legend { font-size: 10px; color: var(--muted); }
 .route-legend .point-legend i { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 0 0 1px #203d3420; }
+
+.result-card:not(.route-active) { background: #f0f1ee; border-top-color: #c9cfca; }
+.map-panel.navigation-active { height: 440px; }
+.map-actions { position: absolute; right: 12px; bottom: 36px; display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 24px); }
+.map-actions button { border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--accent); padding: 9px 11px; font-size: 11px; box-shadow: 0 2px 8px #203d3412; }
+.gps-position { width: 20px; height: 20px; border: 3px solid white; border-radius: 50%; background: #28634b; box-shadow: 0 0 0 9px #28634b25, 0 1px 8px #203d3440; }
+.journey-navigation { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 12px; padding: 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+.journey-navigation.is-running { background: #edf4ee; border-color: #91b59e; }
+.navigation-summary { flex: 1; min-width: 160px; }
+.navigation-summary .eyebrow { margin: 0 0 7px; font-size: 9px; }
+.navigation-summary h2 { font-size: 16px; margin: 0 0 5px; font-weight: 600; line-height: 1.4; }
+.navigation-summary p { color: var(--muted); font-size: 11px; line-height: 1.6; margin: 0; }
+.navigation-start, .navigation-stop { flex: none; border-radius: 7px; border: 1px solid var(--accent); padding: 12px 16px; font-size: 12px; }
+.navigation-start { background: var(--accent); color: #fff; }
+.navigation-stop { background: #fff; color: var(--accent); }
+.journey-navigation .navigation-note { width: 100%; font-size: 10px; color: var(--muted); margin: 0; line-height: 1.5; }
+.navigation-summary .navigation-progress { color: var(--accent); }
+@media (max-width: 680px) { .map-panel.navigation-active { height: 360px; } .journey-navigation { padding: 15px; } }

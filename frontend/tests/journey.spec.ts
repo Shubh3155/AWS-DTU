@@ -3,7 +3,12 @@ import type { ComparisonResponse } from "../src/types/api";
 
 test.beforeEach(async ({ page }) => {
   // Browser fixtures never contact Mapbox. Individual search tests override this route.
-  await page.route("**/api.mapbox.com/**", route => route.abort());
+  await page.route("**/api.mapbox.com/**", route => {
+    if (route.request().url().includes("/styles/v1/mapbox/light-v11")) return route.fulfill({ json: {
+      version: 8, sources: {}, layers: [{ id: "background", type: "background", paint: { "background-color": "#edf1e8" } }],
+    } });
+    return route.abort();
+  });
 });
 
 function comparison(status: ComparisonResponse["status"] = "uncertain_difference"): ComparisonResponse {
@@ -122,23 +127,22 @@ test("route hover previews, selection persists and a new request resets it", asy
   await page.getByRole("button", { name: "Compare walking routes" }).click();
   const first = page.getByRole("button", { name: "Show route 1 on map" });
   const second = page.getByRole("button", { name: "Show route 2 on map" });
-  await expect(first).toHaveAttribute("aria-pressed", "true");
-  await second.hover();
-  await expect(second.locator("..")).toHaveClass(/route-active/);
-  await expect(second).toHaveAttribute("aria-pressed", "false");
-  await second.click();
-  await page.mouse.move(0, 0);
   await expect(second).toHaveAttribute("aria-pressed", "true");
-  await expect(second.locator("..")).toHaveClass(/route-active/);
-  await first.focus();
+  await first.hover();
   await expect(first.locator("..")).toHaveClass(/route-active/);
-  await first.press("Enter");
+  await expect(first).toHaveAttribute("aria-pressed", "false");
+  await first.click();
+  await page.mouse.move(0, 0);
   await expect(first).toHaveAttribute("aria-pressed", "true");
+  await second.focus();
+  await expect(second.locator("..")).toHaveClass(/route-active/);
+  await second.press("Enter");
+  await expect(second).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("slider", { name: "Maximum extra time" }).focus();
   await page.keyboard.press("Home");
   await expect(page.getByText("Waiting for a journey")).toBeVisible();
   await page.getByRole("button", { name: "Compare walking routes" }).click();
-  await expect(first).toHaveAttribute("aria-pressed", "true");
+  await expect(second).toHaveAttribute("aria-pressed", "true");
 });
 
 
@@ -221,4 +225,68 @@ test("travel mode changes clear old routes and submit the selected provider mode
   await expect(page.getByText(/Car routing estimate/)).toBeVisible();
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
   await expect(page.getByRole("button", { name: "Walk", exact: true })).toHaveAttribute("aria-pressed", "true");
+});
+
+
+test("GPS journey follows updates, supports overview/recenter, stops and unlocks planning", async ({ page, context }) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 28.6, longitude: 77.2, accuracy: 5 });
+  const data = comparison();
+  data.candidates[1].maneuvers = [
+    { instruction: "Turn left onto Example Street", type: "turn", modifier: "left", location: [77.21, 28.605] },
+    { instruction: "You have arrived", type: "arrive", modifier: null, location: [77.22, 28.61] },
+  ];
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: data }));
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await page.getByRole("button", { name: /Start journey/ }).click();
+  await expect(page.getByRole("heading", { name: "Turn left onto Example Street" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compare walking routes" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Show route 1 on map" })).toBeDisabled();
+  await page.getByRole("button", { name: /Route overview/ }).click();
+  await expect(page.getByText("Map paused · recenter to follow")).toBeVisible();
+  await page.getByRole("button", { name: /Recenter/ }).click();
+  await expect(page.getByText("Following your location")).toBeVisible();
+  await context.setGeolocation({ latitude: 28.61, longitude: 77.22, accuracy: 5 });
+  await expect(page.getByRole("heading", { name: "You have reached your destination" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compare walking routes" })).toBeEnabled();
+  await context.setGeolocation({ latitude: 28.6, longitude: 77.2, accuracy: 5 });
+  await page.getByRole("button", { name: /Start journey/ }).click();
+  await page.getByRole("button", { name: "Stop journey" }).click();
+  await expect(page.getByRole("button", { name: "Stop journey" })).toHaveCount(0);
+});
+
+test("navigation requests GPS only after Start and clears the watcher on Stop", async ({ page }) => {
+  await page.addInitScript(() => {
+    const calls = { started: 0, stopped: 0 };
+    Object.defineProperty(window, "gpsCalls", { value: calls });
+    Object.defineProperty(navigator, "geolocation", { value: {
+      watchPosition: () => { calls.started += 1; return 42; },
+      clearWatch: (id: number) => { if (id === 42) calls.stopped += 1; },
+    } });
+  });
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: comparison() }));
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  const calls = () => page.evaluate(() => (window as unknown as { gpsCalls: { started: number; stopped: number } }).gpsCalls);
+  expect((await calls()).started).toBe(0);
+  await page.getByRole("button", { name: /Start journey/ }).click();
+  await expect.poll(async () => (await calls()).started).toBe(1);
+  await page.getByRole("button", { name: "Stop journey" }).click();
+  await expect.poll(async () => (await calls()).stopped).toBe(1);
+});
+
+test("navigation handles permission denial without locking the form", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", { value: {
+      watchPosition: (_success: unknown, failure: (error: { code: number }) => void) => { failure({ code: 1 }); return 42; },
+      clearWatch: () => {},
+    } });
+  });
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: comparison() }));
+  await journey(page);
+  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await page.getByRole("button", { name: /Start journey/ }).click();
+  await expect(page.getByText("Location permission denied. Allow location access to start following this route.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compare walking routes" })).toBeEnabled();
 });

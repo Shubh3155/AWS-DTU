@@ -38,6 +38,22 @@ class LineString(BaseModel):
         return values
 
 
+class RouteManeuver(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
+    instruction: str = Field(max_length=1000)
+    type: str = Field(max_length=100)
+    modifier: str | None = None
+    location: tuple[float, float]
+
+    @field_validator("location", mode="before")
+    @classmethod
+    def valid_location(cls, value):
+        if len(value) != 2 or any(type(item) not in (int, float) for item in value):
+            raise ValueError("Maneuver location must be longitude/latitude")
+        Coordinate(lng=value[0], lat=value[1])
+        return value
+
+
 class RouteCandidate(BaseModel):
     id: str
     geometry: LineString
@@ -48,6 +64,7 @@ class RouteCandidate(BaseModel):
     within_budget: bool
     coverage_percent: float = Field(ge=0, le=100)
     via: Coordinate | None = None
+    maneuvers: list[RouteManeuver] = Field(default_factory=list)
 
 
 class DataQuality(BaseModel):

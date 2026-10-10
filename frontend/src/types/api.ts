@@ -27,6 +27,12 @@ export type PilotResponse = {
   warning: string;
 };
 
+export type RouteManeuver = {
+  instruction: string;
+  type: string;
+  modifier: string | null;
+  location: [number, number];
+};
 export type RouteCandidate = {
   id: string;
   geometry: { type: "LineString"; coordinates: [number, number][] };
@@ -37,6 +43,7 @@ export type RouteCandidate = {
   within_budget: boolean;
   coverage_percent: number;
   via?: Coordinate | null;
+  maneuvers?: RouteManeuver[];
 };
 export type ComparisonResponse = {
   mode: TravelMode;
