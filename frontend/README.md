@@ -30,3 +30,26 @@ results; each mode has a separate cache key. Apply backend migration `002_travel
 before deployment. Existing historical route-quality reviews cover walking only.
 
 Routing source: [Mapbox Directions profiles](https://docs.mapbox.com/api/navigation/directions/).
+
+## GPS journey controls
+
+After comparing, the lowest modeled-exposure eligible route is selected, with fastest as
+fallback when exposures are unavailable. Its line is green; alternative geometries stay grey.
+A model-estimated difference does not establish a cleaner or healthier route.
+
+Start journey requests browser GPS permission and locks the chosen route. The map follows
+fresh locations; dragging/zooming or Route overview pauses the camera, while Recenter resumes
+following. North up/Travel direction controls orientation when GPS heading is available.
+Provider maneuver text and approximate remaining distance/time are derived from actual route
+geometry. Stop, denial, arrival, route replacement and component cleanup clear the GPS watch;
+Stop also removes the live-location marker. Location fixes are kept in browser memory and are
+not stored or posted to the comparison API. Map rendering still uses Mapbox map services.
+
+Tracking requires a secure context (HTTPS or localhost), permission and browser/OS GPS support.
+Background tabs can suspend updates. This is foreground browser guidance with approximate
+projection/arrival logic, not field-tested navigation. No automatic rerouting, traffic-aware ETA,
+voice prompts, offline navigation or vehicle-cabin exposure model is included. Off-route and
+imprecise fixes are flagged rather than treated as reliable progress.
+
+Sources: [browser GPS watching](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/watchPosition),
+[Mapbox maneuver data](https://docs.mapbox.com/api/navigation/directions/).
