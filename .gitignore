@@ -20,3 +20,10 @@ htmlcov/
 backend/data/
 frontend/test-results/
 frontend/playwright-report/
+frontend/public/firebase-messaging-sw.js
+frontend/.next-firebase-tests/
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-service-account.json

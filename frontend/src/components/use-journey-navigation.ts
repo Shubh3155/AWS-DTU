@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { journeyProgress, type LocationFix } from "@/lib/navigation";
 import type { Coordinate, RouteCandidate } from "@/types/api";
+import { useAuth } from "@/components/auth-provider";
 
 export function useJourneyNavigation(route: RouteCandidate | undefined, onChange: (active: boolean) => void,
   onReroute: (coordinate: Coordinate, signal: AbortSignal) => Promise<void>) {
+  const { registerCleanup } = useAuth();
   const [running, setRunning] = useState(false);
   const [fix, setFix] = useState<LocationFix | null>(null);
   const [message, setMessage] = useState("");
@@ -27,6 +29,7 @@ export function useJourneyNavigation(route: RouteCandidate | undefined, onChange
     offRouteSince.current = null;
     setRunning(false); setFix(null); callback.current(false);
   }, []);
+  useEffect(() => registerCleanup(stop), [registerCleanup, stop]);
   function start() {
     if (!route) return;
     if (!navigator.geolocation) { setMessage("Location is unavailable in this browser."); return; }
@@ -66,7 +69,7 @@ export function useJourneyNavigation(route: RouteCandidate | undefined, onChange
       setFix(next);
       if (!progress.offRoute) rerouteError.current = "";
       if (!pending.current) setMessage(rerouteError.current);
-      if (progress.arrived) { setArrived(true); stop(); return; }
+      if (progress.arrived) { setArrived(true); stop(); setFix(next); return; }
       // Two accurate fixes separated by eight seconds confirm deviation. Weak GPS
       // and returning to the path reset confirmation; requests are 30 seconds apart.
       const trafficRefresh = !!route.traffic && !progress.offRoute && accuracy <= 30

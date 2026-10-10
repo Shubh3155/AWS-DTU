@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { useJourneyNavigation } from "@/components/use-journey-navigation";
+import { useDirectionAlerts } from "@/components/use-direction-alerts";
+import { useAuth } from "@/components/auth-provider";
 import { TrafficDetails } from "@/components/traffic-details";
 import { routeFeatures } from "@/lib/navigation";
 import { scheduleRouteDraw } from "@/lib/map-redraw";
@@ -33,6 +35,8 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   const chosenRoute = routes.find(route => route.id === selectedRouteId);
   const navigation = useJourneyNavigation(chosenRoute, onNavigationChange, onReroute);
   const { running, fix, progress } = navigation;
+  const auth = useAuth();
+  const alerts = useDirectionAlerts(chosenRoute, running, fix, navigation.arrived);
   const [failed, setFailed] = useState(false);
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -201,6 +205,10 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       {running ? <button type="button" className="navigation-stop" onClick={navigation.stop}>Stop journey</button>
         : <button type="button" className="navigation-start" onClick={() => { setFollowing(true); navigation.start(); }}>Start journey <span aria-hidden="true">↗</span></button>}
       <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox for route updates. Stop ends tracking and cancels updates." : "Start follows GPS and automatically reroutes when you leave the path. Route updates share your GPS position with the route service and Mapbox. Location permission is required."}{chosenRoute.traffic && " Vehicle routes refresh about every two minutes with accurate GPS. Traffic may change between updates."}</p>
+      <div className="direction-alerts">
+        <button type="button" disabled={alerts.busy || !auth.ready || auth.busy} onClick={() => void (alerts.enabled ? alerts.disable() : alerts.enable())}>{alerts.busy ? "Enabling alerts…" : alerts.enabled ? "Disable direction alerts" : "Enable direction alerts"}</button>
+        <p role="status">{alerts.message || (auth.user ? "Optional cloud alerts for the next turn. Keep this page open for live directions." : "Sign in with Google to receive cloud direction alerts. On-screen directions work as a guest.")}</p>
+      </div>
     </section>}
     </div>
   );

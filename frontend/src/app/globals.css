@@ -125,3 +125,29 @@ footer button { color: var(--accent); border: 1px solid var(--line); border-radi
 .traffic-details { margin: 10px 0; padding: 10px 12px; border-left: 2px solid #6c9275; background: #edf1e8; border-radius: 0 8px 8px 0; }
 .traffic-details p { margin: 3px 0; font-size: 11px; line-height: 1.5; color: #526357; }
 .traffic-details .traffic-label { color: #25614b; font-weight: 600; font-size: 12px; }
+
+.account-menu { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; max-width: 65%; font-size: 12px; }
+.account-menu button, .recent-routes button, .save-status button, .direction-alerts button { border: 1px solid #bed0b7; border-radius: 7px; background: #fff; color: var(--accent); padding: 9px 12px; font-size: 12px; }
+.account-menu button:hover:not(:disabled), .recent-routes button:hover:not(:disabled), .direction-alerts button:hover:not(:disabled) { background: #edf4ee; }
+.account-name { max-width: 180px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.remember-me { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.remember-me input { accent-color: var(--accent); }
+.account-note { font-size: 10px; color: var(--muted); }
+.account-error { margin: 0; width: 100%; font-size: 11px; color: #866039; line-height: 1.5; text-align: right; }
+.account-error button { margin-left: 8px; }
+.recent-routes { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.recent-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.recent-heading h2 { font-size: 14px; margin: 0; }
+.recent-heading button { padding: 5px 8px; font-size: 10px; }
+.recent-routes p, .save-status { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.recent-routes ul { list-style: none; padding: 0; margin: 12px 0; }
+.recent-routes li { display: flex; gap: 4px; border-bottom: 1px solid var(--line); padding: 5px 0; }
+.recent-routes .reopen-route { flex: 1; min-width: 0; border: 0; padding: 8px 0; text-align: left; background: transparent; }
+.reopen-route > span { display: block; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.reopen-route small { display: block; color: var(--muted); font-size: 10px; line-height: 1.5; margin-top: 4px; }
+.recent-routes .delete-route { align-self: center; flex: none; border: 0; padding: 8px; background: transparent; color: var(--muted); font-size: 18px; }
+.recent-routes .history-note { font-size: 10px; }
+.direction-alerts { width: 100%; border-top: 1px solid var(--line); padding-top: 12px; display: flex; align-items: center; gap: 12px; }
+.direction-alerts p { color: var(--muted); font-size: 11px; line-height: 1.5; flex: 1; margin: 0; }
+.direction-alerts button { flex: none; }
+@media (max-width: 680px) { .topbar { height: auto; min-height: 86px; padding: 14px 0; gap: 14px; align-items: flex-start; } .brand { font-size: 20px; } .account-menu { max-width: 62%; gap: 7px; } .account-menu button { padding: 8px 9px; font-size: 11px; } .account-name { max-width: 130px; } .direction-alerts { align-items: flex-start; flex-direction: column; gap: 8px; } }
