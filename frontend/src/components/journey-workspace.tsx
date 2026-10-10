@@ -63,7 +63,7 @@ export function JourneyWorkspace() {
   }
 
   function selectPoint(point: Coordinate) {
-    if (!activePoint || busy) return;
+    if (!activePoint || busy || navigating) return;
     const location = { label: activePoint === "origin" ? "Pinned starting point" : "Pinned destination", coordinate: point };
     if (activePoint === "origin") setOrigin(location);
     else setDestination(location);
