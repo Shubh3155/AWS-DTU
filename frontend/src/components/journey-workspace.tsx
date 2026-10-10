@@ -150,7 +150,7 @@ export function JourneyWorkspace() {
           <div className="map-and-results">
             <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy || navigating ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} selectedRouteId={selectedId}
               onNavigationChange={active => { setNavigating(active); setHoverRouteId(null); setFocusRouteId(null); }}
-              selectionReason={selectedId === result?.lowest_exposure_eligible_id ? "Lowest model estimate within your allowance" : "Fastest evaluated route · exposure unavailable"} />
+              selectionReason={selectedId === result?.lowest_exposure_eligible_id ? "Lowest model estimate within your allowance" : selectedId === result?.fastest_id ? result.lowest_exposure_eligible_id ? "Fastest evaluated route" : "Fastest evaluated route · exposure unavailable" : "Manually selected route"} />
             <div className="result-previews" aria-label="Travel route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
                 <div className={`result-card${route.id === activeRouteId ? " route-active" : ""}`} key={route.id}
