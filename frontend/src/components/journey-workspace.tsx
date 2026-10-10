@@ -2,19 +2,12 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { LocationPicker, type JourneyLocation } from "@/components/location-picker";
 import { JourneyMap } from "@/components/journey-map";
 import { checkHealth, compareJourney } from "@/lib/api";
 import type { Coordinate, ComparisonResponse } from "@/types/api";
 
-type PointFields = { lat: string; lng: string };
-const blankPoint: PointFields = { lat: "", lng: "" };
-
-function coordinate(fields: PointFields): Coordinate | null {
-  if (!fields.lat.trim() || !fields.lng.trim()) return null;
-  const lat = Number(fields.lat), lng = Number(fields.lng);
-  return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
-    ? { lat, lng } : null;
-}
+const blankPoint: JourneyLocation = { label: "", coordinate: null };
 
 function observationTime(value: string | null) {
   if (!value) return "Unavailable";
@@ -24,9 +17,9 @@ function observationTime(value: string | null) {
 }
 
 export function JourneyWorkspace() {
-  const [origin, setOrigin] = useState<PointFields>(blankPoint);
-  const [destination, setDestination] = useState<PointFields>(blankPoint);
-  const [activePoint, setActivePoint] = useState<"origin" | "destination">("origin");
+  const [origin, setOrigin] = useState<JourneyLocation>(blankPoint);
+  const [destination, setDestination] = useState<JourneyLocation>(blankPoint);
+  const [activePoint, setActivePoint] = useState<"origin" | "destination" | null>(null);
   const [detour, setDetour] = useState(5);
   const [useReplay, setUseReplay] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,24 +51,26 @@ export function JourneyWorkspace() {
 
   function loadDemo() {
     invalidate();
-    setOrigin({ lat: "28.6315", lng: "77.2167" });
-    setDestination({ lat: "28.6280", lng: "77.2410" });
+    setOrigin({ label: "Recorded Delhi start", coordinate: { lat: 28.6315, lng: 77.2167 } });
+    setDestination({ label: "Recorded Delhi destination", coordinate: { lat: 28.6280, lng: 77.2410 } });
     setDetour(5);
     setUseReplay(true);
-    setActivePoint("origin");
+    setActivePoint(null);
   }
 
   function selectPoint(point: Coordinate) {
-    const fields = { lat: point.lat.toFixed(5), lng: point.lng.toFixed(5) };
-    if (activePoint === "origin") { setOrigin(fields); setActivePoint("destination"); }
-    else setDestination(fields);
+    if (!activePoint || busy) return;
+    const location = { label: activePoint === "origin" ? "Pinned starting point" : "Pinned destination", coordinate: point };
+    if (activePoint === "origin") setOrigin(location);
+    else setDestination(location);
+    setActivePoint(null);
     invalidate();
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const from = coordinate(origin), to = coordinate(destination);
-    if (!from || !to) { setMessage("Enter valid coordinates for both locations, or select them on the map."); return; }
+    const from = origin.coordinate, to = destination.coordinate;
+    if (!from || !to) { setMessage("Choose both locations from search results, your current location, or the map."); return; }
     const id = ++requestId.current;
     setBusy(true);
     setResult(null);
@@ -114,18 +109,16 @@ export function JourneyWorkspace() {
             <button className="demo-button" type="button" onClick={loadDemo} disabled={busy}>Try recorded Delhi journey</button>
             <form onSubmit={submit}>
               {(["origin", "destination"] as const).map((name) => {
-                const fields = name === "origin" ? origin : destination;
-                const update = name === "origin" ? setOrigin : setDestination;
-                return (
-                  <fieldset key={name} disabled={busy}>
-                    <legend>{name === "origin" ? "Where are you starting?" : "Where are you going?"}</legend>
-                    <button type="button" className={`point-picker ${activePoint === name ? "selected" : ""}`} onClick={() => setActivePoint(name)} aria-pressed={activePoint === name}>Select {name} on map</button>
-                    <div className="coordinate-inputs">
-                      <label>Latitude<input required aria-label={`${name} latitude`} type="number" step="any" min="-90" max="90" placeholder="28.6139" value={fields.lat} onChange={(event) => { update({ ...fields, lat: event.target.value }); invalidate(); }} /></label>
-                      <label>Longitude<input required aria-label={`${name} longitude`} type="number" step="any" min="-180" max="180" placeholder="77.2090" value={fields.lng} onChange={(event) => { update({ ...fields, lng: event.target.value }); invalidate(); }} /></label>
-                    </div>
-                  </fieldset>
-                );
+                return <LocationPicker key={name} name={name} value={name === "origin" ? origin : destination}
+                  disabled={busy} picking={activePoint === name}
+                  onPick={() => {
+                    setActivePoint(activePoint === name ? null : name);
+                    if (activePoint !== name) document.getElementById("journey-map")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                  onChange={location => {
+                    if (name === "origin") setOrigin(location); else setDestination(location);
+                    setActivePoint(null); invalidate();
+                  }} />;
               })}
               <div className="detour-heading"><label htmlFor="detour">Maximum extra time</label><output htmlFor="detour">{detour} min</output></div>
               <input id="detour" type="range" min="0" max="30" step="1" value={detour} disabled={busy} onChange={(event) => { setDetour(Number(event.target.value)); invalidate(); }} />
@@ -139,7 +132,7 @@ export function JourneyWorkspace() {
             </form>
           </aside>
           <div className="map-and-results">
-            <JourneyMap origin={coordinate(origin)} destination={coordinate(destination)} activePoint={activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} />
+            <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} />
             <div className="result-previews" aria-label="Walking route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (
                 <div className={`result-card${route.id === activeRouteId ? " route-active" : ""}`} key={route.id}
