@@ -41,6 +41,7 @@ export type TrafficInfo = {
 };
 export type RouteCandidate = {
   id: string;
+  navigation_token?: string | null;
   geometry: { type: "LineString"; coordinates: [number, number][] };
   distance_metres: number;
   duration_seconds: number;

@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function coordinate(point) {
+      return point is map && point.keys().hasAll(['lat', 'lng', 'label'])
+        && point.keys().hasOnly(['lat', 'lng', 'label'])
+        && point.lat is number && point.lat >= -90 && point.lat <= 90
+        && point.lng is number && point.lng >= -180 && point.lng <= 180
+        && point.label is string && point.label.size() <= 500;
+    }
+    function optionalText(value) { return value == null || (value is string && value.size() <= 200); }
+    function validSearch() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['origin', 'destination', 'mode', 'detourMinutes',
+          'dataMode', 'status', 'selectedRouteId', 'dataVersion', 'modelVersion', 'searchedAt'])
+        && data.keys().hasOnly(['origin', 'destination', 'mode', 'detourMinutes',
+          'dataMode', 'status', 'selectedRouteId', 'dataVersion', 'modelVersion', 'searchedAt'])
+        && coordinate(data.origin) && coordinate(data.destination)
+        && data.mode in ['walking', 'driving', 'motorcycle']
+        && data.detourMinutes is number && data.detourMinutes >= 0 && data.detourMinutes <= 30
+        && data.dataMode in ['live', 'replay']
+        && data.status in ['comparison_available', 'uncertain_difference', 'no_lower_exposure_candidate',
+            'single_candidate', 'limited_data', 'no_route']
+        && optionalText(data.selectedRouteId) && optionalText(data.dataVersion)
+        && optionalText(data.modelVersion) && data.searchedAt == request.time;
+    }
+    match /users/{uid} {
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'avatar', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['displayName', 'avatar', 'updatedAt'])
+        && request.resource.data.displayName is string && request.resource.data.displayName.size() <= 200
+        && request.resource.data.avatar is string && request.resource.data.avatar.size() <= 2048
+        && request.resource.data.updatedAt == request.time;
+      match /recentSearches/{searchId} {
+        allow read, delete: if owner(uid);
+        allow create: if owner(uid) && searchId.size() <= 128 && validSearch();
+        // Immutable history: retries reuse a request ID; reopening creates a fresh search.
+        allow update: if false;
+      }
+      match /devices/{deviceId} { allow read: if owner(uid); allow write: if false; }
+      match /navigationSessions/{journeyId} { allow read: if owner(uid); allow write: if false; }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

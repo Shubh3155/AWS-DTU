@@ -1,0 +1,8 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "navigationSessions", "fieldPath": "routeJson", "indexes": [] },
+    { "collectionGroup": "navigationSessions", "fieldPath": "expiresAt", "indexes": [] },
+    { "collectionGroup": "devices", "fieldPath": "recipient", "indexes": [] }
+  ]
+}

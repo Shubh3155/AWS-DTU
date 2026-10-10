@@ -1,10 +1,14 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { LocationPicker, type JourneyLocation } from "@/components/location-picker";
 import { JourneyMap } from "@/components/journey-map";
 import { TrafficDetails } from "@/components/traffic-details";
+import { AccountMenu } from "@/components/account-menu";
+import { useAuth } from "@/components/auth-provider";
+import { RecentRoutes } from "@/components/recent-routes";
+import { saveSearch, type SavedSearch } from "@/lib/route-history";
 import { checkHealth, compareJourney } from "@/lib/api";
 import type { Coordinate, ComparisonResponse, TravelMode } from "@/types/api";
 
@@ -18,6 +22,11 @@ function observationTime(value: string | null) {
 }
 
 export function JourneyWorkspace() {
+  const auth = useAuth();
+  const { registerCleanup } = auth;
+  const currentUser = useRef(auth.user);
+  currentUser.current = auth.user;
+  const [saving, setSaving] = useState<{ uid: string; search: SavedSearch; error: boolean } | null>(null);
   const [origin, setOrigin] = useState<JourneyLocation>(blankPoint);
   const [destination, setDestination] = useState<JourneyLocation>(blankPoint);
   const [activePoint, setActivePoint] = useState<"origin" | "destination" | null>(null);
@@ -51,7 +60,15 @@ export function JourneyWorkspace() {
     resetRouteSelection();
     setBusy(false);
     setMessage("");
+    setSaving(null);
   }
+
+  useEffect(() => registerCleanup(() => {
+    requestId.current += 1;
+    setResult(null); setOrigin(blankPoint); setDestination(blankPoint);
+    setSelectedRouteId(null); setHoverRouteId(null); setFocusRouteId(null);
+    setBusy(false); setMessage(""); setSaving(null); setActivePoint(null);
+  }), [registerCleanup]);
 
   function loadDemo() {
     invalidate();
@@ -72,21 +89,60 @@ export function JourneyWorkspace() {
     invalidate();
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const from = origin.coordinate, to = destination.coordinate;
+  async function searchJourney(fromLocation: JourneyLocation, toLocation: JourneyLocation, travelMode: TravelMode, allowance: number, replay: boolean) {
+    const from = fromLocation.coordinate, to = toLocation.coordinate;
     if (!from || !to) { setMessage("Choose both locations from search results, your current location, or the map."); return; }
     const id = ++requestId.current;
+    setSaving(null);
     setBusy(true);
     setResult(null);
     resetRouteSelection();
     setMessage("");
+    const owner = currentUser.current;
+    const searchId = crypto.randomUUID();
     try {
-      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: detour, mode, data_mode: useReplay ? "replay" : "live" });
-      if (id === requestId.current) { setResult(response); setMessage(response.warnings.join(" ")); }
+      const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: allowance, mode: travelMode, data_mode: replay ? "replay" : "live" });
+      if (id === requestId.current) {
+        setResult(response); setMessage(response.warnings.join(" "));
+        if (owner && currentUser.current?.uid === owner.uid) {
+          const search: SavedSearch = { id: searchId, origin: { ...from, label: fromLocation.label.slice(0, 500) },
+            destination: { ...to, label: toLocation.label.slice(0, 500) }, mode: travelMode,
+            detourMinutes: allowance, dataMode: replay ? "replay" : "live", status: response.status,
+            selectedRouteId: response.lowest_exposure_eligible_id ?? response.fastest_id,
+            dataVersion: response.data_quality.data_version, modelVersion: response.data_quality.model_version };
+          void saveSearch(owner, search).then(() => {
+            if (currentUser.current?.uid === owner.uid && id === requestId.current) setSaving(null);
+          }).catch(() => {
+            if (currentUser.current?.uid === owner.uid && id === requestId.current) setSaving({ uid: owner.uid, search, error: true });
+          });
+        }
+      }
     } catch (error) {
       if (id === requestId.current) setMessage(error instanceof TypeError ? "Could not connect to the route service. Start it and try again." : error instanceof Error ? error.message : "Please try again.");
     } finally { if (id === requestId.current) setBusy(false); }
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await searchJourney(origin, destination, mode, detour, useReplay);
+  }
+
+  function reopen(search: SavedSearch) {
+    invalidate();
+    const from = { label: search.origin.label, coordinate: { lat: search.origin.lat, lng: search.origin.lng } };
+    const to = { label: search.destination.label, coordinate: { lat: search.destination.lat, lng: search.destination.lng } };
+    setOrigin(from); setDestination(to); setMode(search.mode); setDetour(search.detourMinutes);
+    setUseReplay(search.dataMode === "replay"); setActivePoint(null);
+    void searchJourney(from, to, search.mode, search.detourMinutes, search.dataMode === "replay");
+  }
+
+  async function retrySave() {
+    const owner = auth.user, pending = saving;
+    if (!owner || !pending || pending.uid !== owner.uid) return;
+    const id = requestId.current;
+    setSaving({ ...pending, error: false });
+    try { await saveSearch(owner, pending.search); if (currentUser.current?.uid === owner.uid && id === requestId.current) setSaving(null); }
+    catch { if (currentUser.current?.uid === owner.uid && id === requestId.current) setSaving({ ...pending, error: true }); }
   }
 
   async function testConnection() {
@@ -113,7 +169,7 @@ export function JourneyWorkspace() {
     <div className="app-shell">
       <header className="topbar">
         <Link href="/" className="brand"><span className="brand-mark" aria-hidden="true">↗</span>AeroRoute</Link>
-        <span className="preview-badge">Exposure baseline preview</span>
+        <AccountMenu />
       </header>
       <main>
         <div className="page-intro">
@@ -160,6 +216,8 @@ export function JourneyWorkspace() {
               <button className="primary-button" disabled={busy || navigating} type="submit">{busy ? "Checking journey…" : `Compare ${modeLabel} routes`}<span aria-hidden="true">→</span></button>
               <p className="form-message" role="status" aria-live="polite">{message || "Compare evaluated routes. Estimates require sufficient nearby station support."}</p>
             </form>
+            {saving && saving.uid === auth.user?.uid && <p className="save-status" role="status">{saving.error ? <>Route not saved. <button type="button" onClick={() => void retrySave()}>Retry saving</button></> : "Saving route…"}</p>}
+            <RecentRoutes disabled={busy || navigating} onReopen={reopen} />
           </aside>
           <div className="map-and-results">
             <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy || navigating ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} selectedRouteId={selectedId}
