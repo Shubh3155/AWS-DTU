@@ -88,7 +88,12 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
     if (!map.current) return;
     const markers: mapboxgl.Marker[] = [];
     if (origin) markers.push(new mapboxgl.Marker({ color: "#25614b" }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
-    if (destination) markers.push(new mapboxgl.Marker({ color: "#65846e" }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
+    if (destination) markers.push(new mapboxgl.Marker({ color: "#a1ce8f" }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
+    markers.forEach((marker, index) => {
+      const name = origin && index === 0 ? "Starting point" : "Destination";
+      marker.getElement().setAttribute("aria-label", name);
+      marker.getElement().setAttribute("title", name);
+    });
     if (!routeRef.current.length) {
       const points = [origin, destination].filter((point): point is Coordinate => point !== null);
       if (points.length === 1) map.current.flyTo({ center: [points[0].lng, points[0].lat], zoom: 14 });
@@ -112,10 +117,12 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
           <span className="map-caption">Central Delhi · historical demo area</span>
         </div>
       )}
-      {token && !failed && routes.length > 0 && (
+      {token && !failed && (routes.length > 0 || origin || destination) && (
         <div className="route-legend" aria-label="Route preview" aria-live="polite">
-          <span><i aria-hidden="true" style={{ backgroundColor: ROUTE_COLOR }} />Viewing route {routes.findIndex(route => route.id === activeRouteId) + 1}</span>
-          <span className="route-preview-hint">Hover a card to preview · tap to select</span>
+          {routes.length > 0 && <span><i aria-hidden="true" style={{ backgroundColor: ROUTE_COLOR }} />Viewing route {routes.findIndex(route => route.id === activeRouteId) + 1}</span>}
+          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b" }} />Start</span>}
+          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f" }} />Destination</span>}
+          {routes.length > 1 && <span className="route-preview-hint">Hover a card to preview · tap to select</span>}
         </div>
       )}
       {token && !failed && <div className="map-instruction" role="status">{activePoint ? `Tap the map to set your ${activePoint}.` : "Explore the map · choose a location in the journey panel"}</div>}
