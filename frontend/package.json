@@ -14,7 +14,9 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:firebase": "firebase emulators:exec --config ../firebase.json --project demo-aeroroute --only auth,firestore 'node scripts/test-firebase.mjs'"
+    "test:firebase": "firebase emulators:exec --config ../firebase.json --project demo-aeroroute --only auth,firestore 'node scripts/test-firebase.mjs'",
+    "check:production": "node scripts/check-production-config.mjs",
+    "test:deployment": "node --test tests/production-config.test.mjs"
   },
   "dependencies": {
     "firebase": "12.19.0",
@@ -25,7 +27,9 @@
   },
   "overrides": {
     "@firebase/app": "0.16.2",
-    "@firebase/app-compat": "0.5.18"
+    "@firebase/app-compat": "0.5.18",
+    "@grpc/grpc-js": "1.14.6",
+    "postcss": "8.5.29"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",

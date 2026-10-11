@@ -11,6 +11,7 @@ import httpx
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.config import Settings, get_settings
+from app.core.firebase import service_account
 
 
 def deployment(settings: Settings, service: str, image: str, version: str) -> dict:
@@ -44,6 +45,18 @@ def deployment(settings: Settings, service: str, image: str, version: str) -> di
     }
     if settings.openaq_api_key:
         env["AEROROUTE_OPENAQ_API_KEY"] = settings.openaq_api_key.get_secret_value()
+    if (
+        settings.firebase_project_id
+        or settings.firebase_credentials_json
+        or settings.firebase_credentials_path
+    ):
+        if not settings.firebase_project_id:
+            raise ValueError("Firebase project ID is required with Admin credentials")
+        account = service_account(settings)
+        if account is None:
+            raise ValueError("Lightsail Firebase alerts require private Admin credentials")
+        env["AEROROUTE_FIREBASE_PROJECT_ID"] = settings.firebase_project_id
+        env["AEROROUTE_FIREBASE_CREDENTIALS_JSON"] = json.dumps(account)
     return {
         "serviceName": service,
         "containers": {"api": {"image": image, "ports": {"8000": "HTTP"}, "environment": env}},
@@ -111,7 +124,7 @@ def main() -> int:
         url = deploy(client, payload, args.version)
         print(f"Verified backend: {url}; app version: {args.version}")
         return 0
-    except (ValueError, KeyError, IndexError, BotoCoreError, ClientError, httpx.HTTPError):
+    except (ValueError, OSError, KeyError, IndexError, BotoCoreError, ClientError, httpx.HTTPError):
         print("Deployment not verified: check configuration, AWS access and service health.")
         return 1
 

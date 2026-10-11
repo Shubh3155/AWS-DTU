@@ -46,8 +46,18 @@ jobs:
           AEROROUTE_MAPBOX_TOKEN: ${{ secrets.AEROROUTE_MAPBOX_TOKEN }}
           AEROROUTE_DATABASE_URL: ${{ secrets.AEROROUTE_DATABASE_URL }}
           AEROROUTE_CORS_ORIGINS: ${{ vars.AEROROUTE_CORS_ORIGINS }}
+          AEROROUTE_FIREBASE_PROJECT_ID: ${{ vars.AEROROUTE_FIREBASE_PROJECT_ID }}
+          AEROROUTE_FIREBASE_CREDENTIALS_JSON: ${{ secrets.AEROROUTE_FIREBASE_CREDENTIALS_JSON }}
         run: |
-          python -c 'import os; from scripts.deploy_lightsail import deployment; from app.core.config import get_settings; deployment(get_settings(), os.environ["DEPLOY_SERVICE"], ":" + os.environ["DEPLOY_SERVICE"] + ".preflight.1", os.environ["GITHUB_SHA"])'
+          python - <<'PY'
+          import os
+          from scripts.deploy_lightsail import deployment
+          from app.core.config import get_settings
+          settings = get_settings()
+          if not settings.firebase_project_id or not settings.firebase_credentials_json:
+              raise SystemExit("Configure production Firebase project and private Admin JSON before release")
+          deployment(settings, os.environ["DEPLOY_SERVICE"], ":" + os.environ["DEPLOY_SERVICE"] + ".preflight.1", os.environ["GITHUB_SHA"])
+          PY
       - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
@@ -65,4 +75,6 @@ jobs:
           AEROROUTE_DATABASE_URL: ${{ secrets.AEROROUTE_DATABASE_URL }}
           AEROROUTE_OPENAQ_API_KEY: ${{ secrets.AEROROUTE_OPENAQ_API_KEY }}
           AEROROUTE_CORS_ORIGINS: ${{ vars.AEROROUTE_CORS_ORIGINS }}
+          AEROROUTE_FIREBASE_PROJECT_ID: ${{ vars.AEROROUTE_FIREBASE_PROJECT_ID }}
+          AEROROUTE_FIREBASE_CREDENTIALS_JSON: ${{ secrets.AEROROUTE_FIREBASE_CREDENTIALS_JSON }}
         run: python -m scripts.deploy_lightsail --region "$DEPLOY_REGION" --service "$DEPLOY_SERVICE" --image "$(cat "$RUNNER_TEMP/aeroroute-image.txt")" --version "$GITHUB_SHA"

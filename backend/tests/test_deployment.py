@@ -134,3 +134,89 @@ def test_s3_publish_is_encrypted_conditional_and_immutable():
     assert publish(Duplicate(), "private-bucket", objects)
     with pytest.raises(ValueError):
         publish(Duplicate(), "private-bucket", {"snapshots/report.json": b"changed"})
+
+
+@pytest.fixture
+def admin_account():
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    return {
+        "type": "service_account",
+        "project_id": "test-project",
+        "client_email": "synthetic@test-project.iam.gserviceaccount.com",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "private_key": key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        ).decode(),
+    }
+
+
+def test_aws_exports_admin_json_not_a_local_path(admin_account, tmp_path):
+    path = tmp_path / "admin.json"
+    path.write_text(json.dumps(admin_account))
+    for source in [
+        {"firebase_credentials_path": str(path)},
+        {"firebase_credentials_json": json.dumps(admin_account)},
+    ]:
+        config = Settings(
+            mapbox_token="synthetic",
+            database_url="synthetic",
+            cors_origins=["https://frontend.example"],
+            firebase_project_id="test-project",
+            _env_file=None,
+            **source,
+        )
+        env = deployment(config, "aeroroute-api", ":aeroroute-api.api.1", "revision")["containers"][
+            "api"
+        ]["environment"]
+        assert env["AEROROUTE_FIREBASE_PROJECT_ID"] == "test-project"
+        assert json.loads(env["AEROROUTE_FIREBASE_CREDENTIALS_JSON"]) == admin_account
+        assert "AEROROUTE_FIREBASE_CREDENTIALS_PATH" not in env
+        if config.firebase_credentials_json:
+            assert admin_account["private_key"] not in repr(config)
+
+
+def test_bad_or_incomplete_admin_credentials_block_release(admin_account):
+    for source in [
+        {"firebase_project_id": "test-project"},
+        {"firebase_credentials_json": json.dumps(admin_account)},
+        {
+            "firebase_project_id": "other-project",
+            "firebase_credentials_json": json.dumps(admin_account),
+        },
+        {"firebase_project_id": "test-project", "firebase_credentials_json": "not-json"},
+    ]:
+        config = Settings(
+            mapbox_token="synthetic",
+            database_url="synthetic",
+            cors_origins=["https://frontend.example"],
+            _env_file=None,
+            **source,
+        )
+        with pytest.raises(ValueError):
+            deployment(config, "aeroroute-api", ":aeroroute-api.api.1", "revision")
+
+
+def test_admin_runtime_uses_environment_json_without_a_file(admin_account, monkeypatch):
+    from app.core.firebase import FirebaseGateway
+
+    config = Settings(
+        firebase_project_id="test-project",
+        firebase_credentials_json=json.dumps(admin_account),
+        _env_file=None,
+    )
+    calls = []
+    monkeypatch.setattr(
+        "app.core.firebase.firebase_admin.initialize_app",
+        lambda credential, options, **kwargs: calls.append((credential, options)) or "app",
+    )
+    monkeypatch.setattr("app.core.firebase.firestore.client", lambda **kwargs: "database")
+    gateway = FirebaseGateway(config)
+    gateway.initialize()
+    assert gateway.database == "database"
+    assert calls[0][0].project_id == "test-project"
+    assert calls[0][1]["projectId"] == "test-project"

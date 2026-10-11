@@ -9,7 +9,7 @@ applications:
             - npm ci
         build:
           commands:
-            - node -e 'if (!process.env.AEROROUTE_API_URL?.startsWith("https://")) throw new Error("Configure the deployed HTTPS backend URL")'
+            - npm run check:production
             - npm run lint
             - npm run typecheck
             - npm run build
