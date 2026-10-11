@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Use the same reference families across the landing page and product.
+   Licensed webfont files were not supplied; installed fonts use the stated fallback. */
+@font-face {
+  font-family: "Reference Sans";
+  src: local("Reference Sans");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reference Display";
+  src: local("Reference Display");
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+
 :root { --ink: #203d34; --muted: #66746c; --accent: #28634b; --paper: #f5f6f0; --line: #dce2d7; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
