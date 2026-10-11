@@ -220,3 +220,45 @@ def test_admin_runtime_uses_environment_json_without_a_file(admin_account, monke
     assert gateway.database == "database"
     assert calls[0][0].project_id == "test-project"
     assert calls[0][1]["projectId"] == "test-project"
+
+
+def test_vm_env_file_keeps_admin_json_on_one_private_line(admin_account, tmp_path, monkeypatch):
+    from scripts.write_release_env import write_release_env
+
+    config = Settings(
+        mapbox_token="synthetic",
+        database_url="synthetic",
+        cors_origins=["https://frontend.example"],
+        firebase_project_id="test-project",
+        firebase_credentials_json=json.dumps(admin_account),
+        _env_file=None,
+    )
+    monkeypatch.setattr("scripts.write_release_env.get_settings", lambda: config)
+    path = tmp_path / "release.env"
+    write_release_env(path, "revision")
+    values = dict(line.split("=", 1) for line in path.read_text().splitlines())
+    assert json.loads(values["AEROROUTE_FIREBASE_CREDENTIALS_JSON"]) == admin_account
+    assert values["AEROROUTE_APP_VERSION"] == "revision"
+    assert path.stat().st_mode & 0o777 == 0o600
+    with pytest.raises(FileExistsError):
+        write_release_env(path, "other")
+
+
+def test_vm_env_file_rejects_injected_docker_environment_lines(
+    admin_account, tmp_path, monkeypatch
+):
+    from scripts.write_release_env import write_release_env
+
+    config = Settings(
+        mapbox_token="synthetic\nOTHER_SETTING=bad",
+        database_url="synthetic",
+        cors_origins=["https://frontend.example"],
+        firebase_project_id="test-project",
+        firebase_credentials_json=json.dumps(admin_account),
+        _env_file=None,
+    )
+    monkeypatch.setattr("scripts.write_release_env.get_settings", lambda: config)
+    path = tmp_path / "release.env"
+    with pytest.raises(ValueError):
+        write_release_env(path, "revision")
+    assert not path.exists()
