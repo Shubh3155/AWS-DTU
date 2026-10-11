@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth-provider";
 import { TrafficDetails } from "@/components/traffic-details";
 import { routeFeatures } from "@/lib/navigation";
 import { scheduleRouteDraw } from "@/lib/map-redraw";
-import { ROUTE_COLOR } from "@/lib/route-colors";
+import { DESTINATION_COLOR, ORIGIN_COLOR, ROUTE_COLOR } from "@/lib/route-colors";
 import type { Coordinate, RouteCandidate } from "@/types/api";
 
 type Props = {
@@ -84,11 +84,13 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   useEffect(() => {
     if (!token || !container.current) return;
     let instance: mapboxgl.Map | undefined;
+    const resizeObserver = new ResizeObserver(() => instance?.resize());
+    resizeObserver.observe(container.current);
     try {
       instance = new mapboxgl.Map({
         container: container.current,
         accessToken: token,
-        style: "mapbox://styles/mapbox/light-v11",
+        style: "mapbox://styles/mapbox/dark-v11",
         center: [77.229, 28.631], // Reviewed historical demo area; live support is checked separately.
         zoom: 13,
       });
@@ -102,19 +104,19 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
     } catch {
       setFailed(true);
     }
-    return () => { instance?.remove(); map.current = null; };
+    return () => { resizeObserver.disconnect(); instance?.remove(); map.current = null; };
   }, [token]);
 
   useEffect(() => {
     if (!map.current) return;
     const markers: mapboxgl.Marker[] = [];
-    if (origin) markers.push(new mapboxgl.Marker({ color: "#25614b" }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
-    if (destination) markers.push(new mapboxgl.Marker({ color: "#a1ce8f" }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
+    if (origin) markers.push(new mapboxgl.Marker({ color: ORIGIN_COLOR }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
+    if (destination) markers.push(new mapboxgl.Marker({ color: DESTINATION_COLOR }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
     markers.forEach((marker, index) => {
       const name = origin && index === 0 ? "Starting point" : "Destination";
       marker.getElement().setAttribute("aria-label", name);
       marker.getElement().setAttribute("title", name);
-      marker.getElement().querySelector("circle")?.setAttribute("fill", origin && index === 0 ? "#a1ce8f" : "#25614b");
+      marker.getElement().querySelector("circle")?.setAttribute("fill", "#071213");
     });
     if (!routeRef.current.length) {
       const points = [origin, destination].filter((point): point is Coordinate => point !== null);
@@ -176,8 +178,8 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       {token && !failed && (routes.length > 0 || origin || destination) && (
         <div className="route-legend" aria-label="Route preview" aria-live="polite">
           {routes.length > 0 && <span><i aria-hidden="true" style={{ backgroundColor: ROUTE_COLOR }} />Viewing route {routes.findIndex(route => route.id === activeRouteId) + 1}</span>}
-          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f", border: "3px solid #25614b" }} />Start</span>}
-          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b", border: "3px solid #a1ce8f" }} />Destination</span>}
+          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: ORIGIN_COLOR }} />Start</span>}
+          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: DESTINATION_COLOR }} />Destination</span>}
           {routes.length > 1 && <span className="route-preview-hint">Hover a card to preview · tap to select</span>}
           {chosenRoute?.traffic && <span className="route-preview-hint">{chosenRoute.traffic.coverage_percent === 0 ? "Traffic unknown" : "Traffic-profile routing"}</span>}
         </div>
