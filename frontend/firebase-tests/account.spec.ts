@@ -1,20 +1,9 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-async function login(page: Page, name: string, email: string) {
-  const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Sign in with Google", exact: true }).click();
-  const popup = await popupPromise;
-  await popup.waitForLoadState();
-  const existing = popup.getByText(name, { exact: true });
-  if (await existing.count()) await existing.click();
-  else {
-    await popup.getByRole("button", { name: "Add new account" }).click();
-    await popup.locator("#email-input").fill(email);
-    await popup.locator("#display-name-input").fill(name);
-    await popup.locator("#sign-in").click();
-  }
-  await expect(page.getByRole("button", { name: "Log out", exact: true })).toBeVisible();
-}
+import { login } from "./helpers";
+import { closePlanner, compareRoutes, mockMap, openPlanner } from "../tests/helpers/journey";
+
+test.beforeEach(async ({ page }) => { await mockMap(page); });
 
 const response = {
   mode: "walking", routing_profile: "walking", status: "no_route", candidates: [], fastest_id: null,
@@ -28,57 +17,73 @@ test("Google login, saved searches, refresh, reopening, deletion and account iso
   const suffix = info.project.name;
   let requests = 0;
   await page.route("**/api/routes/compare", route => { requests += 1; return route.fulfill({ json: response }); });
-  await page.goto("/");
+  await page.goto("/journey");
   await login(page, "Alice " + suffix, "alice-" + suffix + "@example.test");
+  await openPlanner(page);
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
-  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await compareRoutes(page, "walking");
   const history = page.getByRole("region", { name: "Recent routes" });
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen Recorded Delhi start/ })).toHaveCount(1);
   await page.reload();
   await expect(page.getByRole("button", { name: "Log out", exact: true })).toBeVisible();
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen Recorded Delhi start/ })).toHaveCount(1);
+  await openPlanner(page);
   await history.getByRole("button", { name: /Reopen Recorded Delhi start/ }).click();
   await expect.poll(() => requests).toBe(2);
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen Recorded Delhi start/ })).toHaveCount(2);
+  await openPlanner(page);
   await history.getByRole("button", { name: "Delete route to Recorded Delhi destination", exact: true }).first().click();
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen Recorded Delhi start/ })).toHaveCount(1);
+  await closePlanner(page);
   await page.getByRole("button", { name: "Log out", exact: true }).click();
   await expect(page.getByRole("button", { name: "Sign in with Google", exact: true })).toBeVisible();
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen/ })).toHaveCount(0);
   await login(page, "Bob " + suffix, "bob-" + suffix + "@example.test");
+  await openPlanner(page);
   await expect(history.getByText("Your next route search will be saved here.")).toBeVisible();
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen/ })).toHaveCount(0);
+  await closePlanner(page);
   await page.getByRole("button", { name: "Log out", exact: true }).click();
   await login(page, "Alice " + suffix, "alice-" + suffix + "@example.test");
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen Recorded Delhi start/ })).toHaveCount(1);
+  await openPlanner(page);
   await history.getByRole("button", { name: "Clear all", exact: true }).click();
+  await openPlanner(page);
   await expect(history.getByRole("button", { name: /Reopen/ })).toHaveCount(0);
   const size = await page.evaluate(() => ({ width: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
   expect(size.content).toBeLessThanOrEqual(size.width);
 });
 
 test("Remember me restores login across browser contexts; session login does not", async ({ page, browser }, info) => {
-  await page.goto("/");
+  await page.goto("/journey");
   await page.getByLabel("Remember me").check();
   await login(page, "Remember " + info.project.name, "remember-" + info.project.name + "@example.test");
   const storage = await page.context().storageState({ indexedDB: true });
   const restored = await browser.newContext({ storageState: storage });
   const next = await restored.newPage();
-  await next.goto("http://127.0.0.1:3101");
+  await next.goto("http://127.0.0.1:3101/journey");
   await expect(next.getByRole("button", { name: "Log out", exact: true })).toBeVisible();
   await restored.close();
+  await closePlanner(page);
   await page.getByRole("button", { name: "Log out", exact: true }).click();
   await page.getByLabel("Remember me").uncheck();
   await login(page, "Session " + info.project.name, "session-" + info.project.name + "@example.test");
   const sessionStorage = await page.context().storageState({ indexedDB: true });
   const guest = await browser.newContext({ storageState: sessionStorage });
   const guestPage = await guest.newPage();
-  await guestPage.goto("http://127.0.0.1:3101");
+  await guestPage.goto("http://127.0.0.1:3101/journey");
   await expect(guestPage.getByRole("button", { name: "Sign in with Google", exact: true })).toBeVisible();
   await guest.close();
 });
 
-test("Denied notifications preserve GPS guidance and logout stops tracking", async ({ page }, info) => {
+test("Denied notifications preserve GPS guidance and Stop or logout clears tracking", async ({ page }, info) => {
   await page.addInitScript(() => {
     const calls = { stopped: 0 };
     Object.defineProperty(window, "gpsCalls", { value: calls });
@@ -97,14 +102,17 @@ test("Denied notifications preserve GPS guidance and logout stops tracking", asy
   await page.route("**/api/routes/compare", route => route.fulfill({ json: {
     ...response, status: "limited_data", candidates: [candidate], fastest_id: candidate.id,
   } }));
-  await page.goto("/");
+  await page.goto("/journey");
   await login(page, "GPS " + info.project.name, "gps-" + info.project.name + "@example.test");
+  await openPlanner(page);
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
-  await page.getByRole("button", { name: "Compare walking routes" }).click();
-  await page.getByRole("button", { name: /Start journey/ }).click();
+  await compareRoutes(page, "walking");
   await page.getByRole("button", { name: "Enable direction alerts", exact: true }).click();
   await expect(page.getByText("Notifications are off. You can follow the on-screen directions.")).toBeVisible();
+  await page.getByRole("button", { name: /Start journey/ }).click();
   await expect(page.getByRole("button", { name: "Stop journey", exact: true })).toBeVisible();
+  if (info.project.name === "mobile") await page.getByRole("button", { name: "Stop journey", exact: true }).click();
+  await closePlanner(page);
   await page.getByRole("button", { name: "Log out", exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { gpsCalls: { stopped: number } }).gpsCalls.stopped)).toBe(1);
   await expect(page.getByRole("button", { name: "Stop journey", exact: true })).toHaveCount(0);
@@ -113,26 +121,37 @@ test("Denied notifications preserve GPS guidance and logout stops tracking", asy
 test("Loaded history stays complete when a new search arrives and Clear all removes every page", async ({ page }, info) => {
   let requests = 0;
   await page.route("**/api/routes/compare", route => { requests += 1; return route.fulfill({ json: response }); });
-  await page.goto("/");
+  await page.goto("/journey");
   await login(page, "Pages " + info.project.name, "pages-" + info.project.name + "@example.test");
+  await openPlanner(page);
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
   const history = page.getByRole("region", { name: "Recent routes" });
   const rows = history.getByRole("button", { name: /Reopen Recorded Delhi start/ });
   for (let index = 1; index <= 21; index++) {
-    await page.getByRole("button", { name: "Compare walking routes" }).click();
+    await compareRoutes(page, "walking");
     await expect.poll(() => requests).toBe(index);
+    await openPlanner(page);
     await expect(page.getByRole("button", { name: "Compare walking routes" })).toBeEnabled();
+    await openPlanner(page);
     await expect(rows).toHaveCount(Math.min(index, 20));
   }
+  await openPlanner(page);
   await history.getByRole("button", { name: "Load older searches" }).click();
+  await openPlanner(page);
   await expect(rows).toHaveCount(21);
-  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await compareRoutes(page, "walking");
+  await openPlanner(page);
   await expect(rows).toHaveCount(22);
+  await openPlanner(page);
   await history.getByRole("button", { name: "Delete route to Recorded Delhi destination", exact: true }).last().click();
+  await openPlanner(page);
   await expect(rows).toHaveCount(21);
+  await openPlanner(page);
   await history.getByRole("button", { name: "Clear all", exact: true }).click();
+  await openPlanner(page);
   await expect(rows).toHaveCount(0);
   await page.reload();
+  await openPlanner(page);
   await expect(history.getByText("Your next route search will be saved here.")).toBeVisible();
 });
 
@@ -187,14 +206,16 @@ test("FCM confirms the installation before backend registration and logout unreg
   await page.route("**/api/routes/compare", route => route.fulfill({ json: {
     ...response, status: "limited_data", candidates: [candidate], fastest_id: candidate.id,
   } }));
-  await page.goto("/");
+  await page.goto("/journey");
   await login(page, "Push " + info.project.name, "push-" + info.project.name + "@example.test");
+  await openPlanner(page);
   await page.getByRole("button", { name: "Try recorded Delhi journey" }).click();
-  await page.getByRole("button", { name: "Compare walking routes" }).click();
+  await compareRoutes(page, "walking");
   await page.getByRole("button", { name: "Enable direction alerts", exact: true }).click();
   await expect(page.getByRole("button", { name: "Disable direction alerts", exact: true })).toBeVisible();
   expect(fid).toMatch(/^[cdef][\w-]{21}$/);
   expect(device).toEqual({ recipient: fid, recipient_kind: "fid" });
+  await closePlanner(page);
   await page.getByRole("button", { name: "Log out", exact: true }).click();
   await expect.poll(() => removed && deviceRemoved).toBe(true);
 });

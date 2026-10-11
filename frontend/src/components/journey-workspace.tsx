@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { AppLogo } from "@/components/app-logo";
+import { DashboardBackdrop } from "@/components/dashboard-backdrop";
+import { PlannerCloseIcon, PlannerMenuIcon } from "@/components/planner-icons";
 import { LocationPicker, type JourneyLocation } from "@/components/location-picker";
 import { JourneyMap } from "@/components/journey-map";
 import { TrafficDetails } from "@/components/traffic-details";
@@ -37,6 +40,11 @@ export function JourneyWorkspace() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [navigating, setNavigating] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const [plannerOpen, setPlannerOpen] = useState(false);
+  const plannerPanel = useRef<HTMLElement>(null);
+  const plannerDrawer = useRef<HTMLDialogElement>(null);
+  const workspace = useRef<HTMLDivElement>(null);
   const [connection, setConnection] = useState("Connection not checked");
   const [checking, setChecking] = useState(false);
 
@@ -49,6 +57,47 @@ export function JourneyWorkspace() {
   const selectedId = candidates.some(route => route.id === selectedRouteId) ? selectedRouteId : result?.lowest_exposure_eligible_id ?? result?.fastest_id ?? candidates[0]?.id ?? null;
   const previewId = navigating ? selectedId : hoverRouteId ?? focusRouteId ?? selectedId;
   const activeRouteId = candidates.some(route => route.id === previewId) ? previewId : selectedId;
+
+  useLayoutEffect(() => {
+    const query = window.matchMedia("(max-width: 680px), (max-width: 950px) and (max-height: 500px) and (orientation: landscape)");
+    function update() { setMobile(query.matches); setPlannerOpen(false); }
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  useLayoutEffect(() => {
+    const drawer = plannerDrawer.current;
+    if (!drawer) return;
+    if (mobile && plannerOpen && !navigating) {
+      if (!drawer.open) drawer.showModal();
+    } else if (drawer.open) drawer.close();
+  }, [mobile, plannerOpen, navigating]);
+
+  useLayoutEffect(() => {
+    const panel = plannerPanel.current;
+    if (!panel || mobile || navigating) return;
+    // Cache the expanded planner's height; collapsing it must not shrink the map.
+    function resize() {
+      const height = panel!.getBoundingClientRect().height;
+      if (height > 0) workspace.current?.style.setProperty("--planning-map-height", `${height / 2}px`);
+    }
+    const observer = new ResizeObserver(resize);
+    observer.observe(panel);
+    resize();
+    return () => observer.disconnect();
+  }, [mobile, navigating]);
+
+  function focusMap() {
+    requestAnimationFrame(() => document.getElementById("journey-map")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start",
+    }));
+  }
+
+  function navigationChanged(active: boolean) {
+    setNavigating(active); setHoverRouteId(null); setFocusRouteId(null);
+    if (active) { setPlannerOpen(false); setActivePoint(null); focusMap(); }
+  }
 
   function resetRouteSelection() {
     setSelectedRouteId(null); setHoverRouteId(null); setFocusRouteId(null);
@@ -87,6 +136,7 @@ export function JourneyWorkspace() {
     else setDestination(location);
     setActivePoint(null);
     invalidate();
+    if (mobile) setPlannerOpen(true);
   }
 
   async function searchJourney(fromLocation: JourneyLocation, toLocation: JourneyLocation, travelMode: TravelMode, allowance: number, replay: boolean) {
@@ -104,6 +154,7 @@ export function JourneyWorkspace() {
       const response = await compareJourney({ origin: from, destination: to, max_detour_minutes: allowance, mode: travelMode, data_mode: replay ? "replay" : "live" });
       if (id === requestId.current) {
         setResult(response); setMessage(response.warnings.join(" "));
+        if (mobile) { setPlannerOpen(false); focusMap(); }
         if (owner && currentUser.current?.uid === owner.uid) {
           const search: SavedSearch = { id: searchId, origin: { ...from, label: fromLocation.label.slice(0, 500) },
             destination: { ...to, label: toLocation.label.slice(0, 500) }, mode: travelMode,
@@ -165,21 +216,12 @@ export function JourneyWorkspace() {
     setMessage(response.warnings.join(" "));
   }
 
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <Link href="/" className="brand"><span className="brand-mark" aria-hidden="true">↗</span>AeroRoute</Link>
-        <AccountMenu />
-      </header>
-      <main>
-        <div className="page-intro">
-          <p className="eyebrow">A little more time. A more informed journey.</p>
-          <h1>Choose your journey<br /><span>within your time budget.</span></h1>
-          <p>Compare journey time and estimated air-pollution exposure, with room for a detour that works for you.</p>
-        </div>
-        <div className="workspace">
-          <aside className="journey-panel">
-            <div className="panel-title"><h2>Plan a journey</h2><span>{modeLabel === "car" ? "Car" : modeLabel === "motorcycle" ? "Motorcycle" : "Walking"}</span></div>
+  const planner = (
+          <aside ref={plannerPanel} className={`journey-panel${navigating ? " is-collapsed" : ""}`} aria-labelledby="journey-planner-title">
+            <div className="panel-title"><h2 id="journey-planner-title">Plan a journey</h2><span>{navigating ? "In progress" : modeLabel === "car" ? "Car" : modeLabel === "motorcycle" ? "Motorcycle" : "Walking"}</span>
+              <button type="button" className="planner-close" aria-label="Close journey planner" onClick={() => setPlannerOpen(false)}><PlannerCloseIcon /></button>
+            </div>
+            <div className="planner-body" hidden={navigating} inert={navigating}>
             <button className="demo-button" type="button" onClick={loadDemo} disabled={busy || navigating}>Try recorded Delhi journey</button>
             <form onSubmit={submit}>
               <fieldset className="travel-mode" disabled={busy || navigating}>
@@ -199,7 +241,7 @@ export function JourneyWorkspace() {
                   disabled={busy || navigating} picking={activePoint === name}
                   onPick={() => {
                     setActivePoint(activePoint === name ? null : name);
-                    if (activePoint !== name) document.getElementById("journey-map")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    if (activePoint !== name) { setPlannerOpen(false); focusMap(); }
                   }}
                   onChange={location => {
                     if (name === "origin") setOrigin(location); else setDestination(location);
@@ -218,11 +260,39 @@ export function JourneyWorkspace() {
             </form>
             {saving && saving.uid === auth.user?.uid && <p className="save-status" role="status">{saving.error ? <>Route not saved. <button type="button" onClick={() => void retrySave()}>Retry saving</button></> : "Saving route…"}</p>}
             <RecentRoutes disabled={busy || navigating} onReopen={reopen} />
+            </div>
           </aside>
+  );
+
+  return (
+    <div className={`app-shell${navigating ? " is-navigating" : ""}${mobile && plannerOpen ? " planner-open" : ""}`}>
+      <DashboardBackdrop />
+      <header className="topbar">
+        <Link href="/" className="brand"><AppLogo className="brand-mark" />AeroRoute</Link>
+        <div className="topbar-actions">
+          <AccountMenu />
+          <button type="button" className="planner-toggle" aria-label="Open journey planner" aria-controls="journey-planner-drawer"
+            aria-expanded={plannerOpen} disabled={navigating} onClick={() => setPlannerOpen(true)}><PlannerMenuIcon /></button>
+        </div>
+      </header>
+      <main>
+        <div className="page-intro" id="about">
+          <p className="eyebrow">A little more time. A more informed journey.</p>
+          <h1>Choose your journey<br /><span>within your time budget.</span></h1>
+          <p>Compare journey time and estimated air-pollution exposure, with room for a detour that works for you.</p>
+        </div>
+        <div ref={workspace} className={`workspace${navigating ? " is-navigating" : ""}`}>
+          {mobile ? <dialog ref={plannerDrawer} id="journey-planner-drawer" className="planner-drawer"
+            aria-labelledby="journey-planner-title" onClose={() => setPlannerOpen(false)} onCancel={() => setPlannerOpen(false)}
+            onClick={event => {
+              if (event.target !== event.currentTarget) return;
+              const bounds = event.currentTarget.getBoundingClientRect();
+              if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) setPlannerOpen(false);
+            }}>{planner}</dialog> : planner}
           <div className="map-and-results">
             <JourneyMap origin={origin.coordinate} destination={destination.coordinate} activePoint={busy || navigating ? null : activePoint} onSelect={selectPoint} routes={candidates} activeRouteId={activeRouteId} selectedRouteId={selectedId}
               onReroute={reroute}
-              onNavigationChange={active => { setNavigating(active); setHoverRouteId(null); setFocusRouteId(null); }}
+              onNavigationChange={navigationChanged}
               selectionReason={selectedId === result?.lowest_exposure_eligible_id ? "Lowest model estimate within your allowance" : selectedId === result?.fastest_id ? result.lowest_exposure_eligible_id ? "Fastest evaluated route" : "Fastest evaluated route · exposure unavailable" : "Manually selected route"} />
             <div className="result-previews" aria-label="Travel route results" aria-live="polite">
               {result ? result.candidates.length ? result.candidates.map((route, index) => (

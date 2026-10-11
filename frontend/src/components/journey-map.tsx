@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth-provider";
 import { TrafficDetails } from "@/components/traffic-details";
 import { routeFeatures } from "@/lib/navigation";
 import { scheduleRouteDraw } from "@/lib/map-redraw";
-import { ROUTE_COLOR } from "@/lib/route-colors";
+import { DESTINATION_COLOR, ORIGIN_COLOR, ROUTE_COLOR } from "@/lib/route-colors";
 import type { Coordinate, RouteCandidate } from "@/types/api";
 
 type Props = {
@@ -84,11 +84,13 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
   useEffect(() => {
     if (!token || !container.current) return;
     let instance: mapboxgl.Map | undefined;
+    const resizeObserver = new ResizeObserver(() => instance?.resize());
+    resizeObserver.observe(container.current);
     try {
       instance = new mapboxgl.Map({
         container: container.current,
         accessToken: token,
-        style: "mapbox://styles/mapbox/light-v11",
+        style: "mapbox://styles/mapbox/dark-v11",
         center: [77.229, 28.631], // Reviewed historical demo area; live support is checked separately.
         zoom: 13,
       });
@@ -102,19 +104,19 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
     } catch {
       setFailed(true);
     }
-    return () => { instance?.remove(); map.current = null; };
+    return () => { resizeObserver.disconnect(); instance?.remove(); map.current = null; };
   }, [token]);
 
   useEffect(() => {
     if (!map.current) return;
     const markers: mapboxgl.Marker[] = [];
-    if (origin) markers.push(new mapboxgl.Marker({ color: "#25614b" }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
-    if (destination) markers.push(new mapboxgl.Marker({ color: "#a1ce8f" }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
+    if (origin) markers.push(new mapboxgl.Marker({ color: ORIGIN_COLOR }).setLngLat([origin.lng, origin.lat]).addTo(map.current));
+    if (destination) markers.push(new mapboxgl.Marker({ color: DESTINATION_COLOR }).setLngLat([destination.lng, destination.lat]).addTo(map.current));
     markers.forEach((marker, index) => {
       const name = origin && index === 0 ? "Starting point" : "Destination";
       marker.getElement().setAttribute("aria-label", name);
       marker.getElement().setAttribute("title", name);
-      marker.getElement().querySelector("circle")?.setAttribute("fill", origin && index === 0 ? "#a1ce8f" : "#25614b");
+      marker.getElement().querySelector("circle")?.setAttribute("fill", "#071213");
     });
     if (!routeRef.current.length) {
       const points = [origin, destination].filter((point): point is Coordinate => point !== null);
@@ -176,8 +178,8 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
       {token && !failed && (routes.length > 0 || origin || destination) && (
         <div className="route-legend" aria-label="Route preview" aria-live="polite">
           {routes.length > 0 && <span><i aria-hidden="true" style={{ backgroundColor: ROUTE_COLOR }} />Viewing route {routes.findIndex(route => route.id === activeRouteId) + 1}</span>}
-          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#a1ce8f", border: "3px solid #25614b" }} />Start</span>}
-          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: "#25614b", border: "3px solid #a1ce8f" }} />Destination</span>}
+          {origin && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: ORIGIN_COLOR }} />Start</span>}
+          {destination && <span className="point-legend"><i aria-hidden="true" style={{ backgroundColor: DESTINATION_COLOR }} />Destination</span>}
           {routes.length > 1 && <span className="route-preview-hint">Hover a card to preview · tap to select</span>}
           {chosenRoute?.traffic && <span className="route-preview-hint">{chosenRoute.traffic.coverage_percent === 0 ? "Traffic unknown" : "Traffic-profile routing"}</span>}
         </div>
@@ -200,14 +202,15 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
         {!running && !navigation.arrived && <p>{selectionReason}. Model differences remain uncertain.</p>}
         <TrafficDetails route={chosenRoute} />
         {!running && navigation.message && <p role="status">{navigation.message}</p>}
+        {!running && navigation.authError && <p role="status">{navigation.authError}</p>}
         {running && <p className="gps-caption">GPS ±{fix ? Math.round(fix.accuracy) : "—"} m · time remaining is approximate</p>}
       </div>
       {running ? <button type="button" className="navigation-stop" onClick={navigation.stop}>Stop journey</button>
-        : <button type="button" className="navigation-start" onClick={() => { setFollowing(true); navigation.start(); }}>Start journey <span aria-hidden="true">↗</span></button>}
+        : <button type="button" className="navigation-start" disabled={!auth.ready || auth.busy} onClick={() => { setFollowing(true); void navigation.start(); }}>{auth.busy ? "Signing in…" : "Start journey"} <span aria-hidden="true">↗</span></button>}
       <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox for route updates. Stop ends tracking and cancels updates." : "Start follows GPS and automatically reroutes when you leave the path. Route updates share your GPS position with the route service and Mapbox. Location permission is required."}{chosenRoute.traffic && " Vehicle routes refresh about every two minutes with accurate GPS. Traffic may change between updates."}</p>
       <div className="direction-alerts">
         <button type="button" disabled={alerts.busy || !auth.ready || auth.busy} onClick={() => void (alerts.enabled ? alerts.disable() : alerts.enable())}>{alerts.busy ? "Enabling alerts…" : alerts.enabled ? "Disable direction alerts" : "Enable direction alerts"}</button>
-        <p role="status">{alerts.message || (auth.user ? "Optional cloud alerts for the next turn. Keep this page open for live directions." : "Sign in with Google to receive cloud direction alerts. On-screen directions work as a guest.")}</p>
+        <p role="status">{alerts.message || (auth.user ? "Optional cloud alerts for the next turn. Keep this page open for live directions." : "Plan and compare as a guest. Sign in with Google when you start your journey.")}</p>
       </div>
     </section>}
     </div>

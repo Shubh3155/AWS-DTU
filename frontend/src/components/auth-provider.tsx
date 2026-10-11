@@ -1,32 +1,19 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { FirebaseError } from "firebase/app";
 import { browserLocalPersistence, browserSessionPersistence, getRedirectResult, GoogleAuthProvider, onIdTokenChanged,
   setPersistence, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
 import { getFirebase, firebaseConfigured } from "@/lib/firebase";
+import { authMessage } from "@/lib/auth-errors";
 
 type Cleanup = (user: User | null) => void | Promise<void>;
 type AuthState = {
   user: User | null; ready: boolean; configured: boolean; busy: boolean; error: string;
-  login: (remember: boolean, redirect?: boolean) => Promise<void>;
+  login: (remember: boolean, redirect?: boolean) => Promise<User | null>;
   logout: () => Promise<void>;
   registerCleanup: (cleanup: Cleanup) => () => void;
 };
 const AuthContext = createContext<AuthState | null>(null);
-
-function authMessage(error: unknown) {
-  if (!(error instanceof FirebaseError)) return "Could not sign in. Please try again.";
-  const messages: Record<string, string> = {
-    "auth/popup-closed-by-user": "Sign-in cancelled. You can keep planning as a guest.",
-    "auth/popup-blocked": "Your browser blocked the sign-in window. Use Continue sign-in below.",
-    "auth/unauthorized-domain": "Sign-in is not enabled for this website yet.",
-    "auth/operation-not-allowed": "Google sign-in has not been enabled for this app yet.",
-    "auth/network-request-failed": "Sign-in could not connect. Check your connection and try again.",
-    "auth/account-exists-with-different-credential": "This account uses another sign-in method. Contact the app administrator.",
-  };
-  return messages[error.code] ?? "Could not sign in. Please try again.";
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -60,15 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (remember: boolean, redirect = false) => {
     const firebase = getFirebase();
-    if (!firebase) { setError("Sign-in is not configured yet. You can still compare routes."); return; }
+    if (!firebase) { setError("Sign-in is not configured yet. You can still compare routes."); return null; }
     setBusy(true); setError("");
     try {
       await setPersistence(firebase.auth, remember ? browserLocalPersistence : browserSessionPersistence);
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
-      if (redirect) await signInWithRedirect(firebase.auth, provider);
-      else await signInWithPopup(firebase.auth, provider);
-    } catch (error) { setError(authMessage(error)); }
+      if (redirect) { await signInWithRedirect(firebase.auth, provider); return null; }
+      const result = await signInWithPopup(firebase.auth, provider);
+      return result.user;
+    } catch (error) { setError(authMessage(error)); return null; }
     finally { setBusy(false); }
   }, []);
 

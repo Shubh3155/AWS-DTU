@@ -7,11 +7,17 @@ import { useAuth } from "@/components/auth-provider";
 
 export function useJourneyNavigation(route: RouteCandidate | undefined, onChange: (active: boolean) => void,
   onReroute: (coordinate: Coordinate, signal: AbortSignal) => Promise<void>) {
-  const { registerCleanup } = useAuth();
+  const auth = useAuth();
+  const { registerCleanup } = auth;
   const [running, setRunning] = useState(false);
   const [fix, setFix] = useState<LocationFix | null>(null);
   const [message, setMessage] = useState("");
   const [arrived, setArrived] = useState(false);
+  const [signInRequested, setSignInRequested] = useState(false);
+  const startAttempt = useRef(0);
+  const signingIn = useRef(false);
+  const latestRoute = useRef(route);
+  latestRoute.current = route;
   const callback = useRef(onChange);
   const rerouteCallback = useRef(onReroute);
   const pending = useRef<AbortController | null>(null);
@@ -24,14 +30,25 @@ export function useJourneyNavigation(route: RouteCandidate | undefined, onChange
   useEffect(() => { callback.current = onChange; }, [onChange]);
   useEffect(() => { rerouteCallback.current = onReroute; }, [onReroute]);
   const stop = useCallback(() => {
+    startAttempt.current += 1;
     if (pending.current) setMessage("Rerouting canceled.");
     pending.current?.abort(); pending.current = null;
     offRouteSince.current = null;
     setRunning(false); setFix(null); callback.current(false);
   }, []);
   useEffect(() => registerCleanup(stop), [registerCleanup, stop]);
-  function start() {
-    if (!route) return;
+  async function start() {
+    if (!route || !auth.ready || auth.busy || signingIn.current) return;
+    const attempt = ++startAttempt.current;
+    if (!auth.user) {
+      setSignInRequested(true);
+      signingIn.current = true;
+      const user = await auth.login(false);
+      signingIn.current = false;
+      // A cancelled popup, changed route, unmount or logout must not start GPS.
+      if (!user || startAttempt.current !== attempt || latestRoute.current !== route) return;
+    }
+    setSignInRequested(false);
     if (!navigator.geolocation) { setMessage("Location is unavailable in this browser."); return; }
     previous.current = 0; latestTimestamp.current = 0;
     offRouteSince.current = null; lastAttempt.current = null; rerouteError.current = "";
@@ -47,6 +64,7 @@ export function useJourneyNavigation(route: RouteCandidate | undefined, onChange
     if (!route) stop();
   }, [route, stop]);
   useEffect(() => () => {
+    startAttempt.current += 1;
     pending.current?.abort(); pending.current = null; callback.current(false);
   }, []);
 
@@ -100,5 +118,5 @@ export function useJourneyNavigation(route: RouteCandidate | undefined, onChange
     return () => { active = false; navigator.geolocation.clearWatch(id); };
   }, [running, route, stop]);
   const progress = fix && route ? journeyProgress(route, fix, previous.current) : null;
-  return { running, fix, message, arrived, progress, start, stop };
+  return { running, fix, message, arrived, progress, start, stop, authError: signInRequested ? auth.error : "" };
 }
