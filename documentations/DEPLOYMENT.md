@@ -28,6 +28,14 @@ Configure these GitHub environment values:
 | `AEROROUTE_DATABASE_URL` | Secret | Restricted backend database role with verified TLS |
 | `AEROROUTE_OPENAQ_API_KEY` | Optional secret | Authenticated audit/history commands |
 | `AEROROUTE_CORS_ORIGINS` | Variable | JSON list of explicit HTTPS frontend origins, such as `["https://APP.amplifyapp.com"]` |
+| `AEROROUTE_FIREBASE_PROJECT_ID` | Variable | Same Firebase project as the frontend |
+| `AEROROUTE_FIREBASE_CREDENTIALS_JSON` | Secret | Private Firebase Admin service-account JSON for cloud alerts; never a public/frontend variable |
+
+The release workflow validates the Firebase project/credential pair before deploying. Admin
+JSON is injected into the container environment; credentials are not baked into the image
+or printed. Limit access to the GitHub production environment and Lightsail deployment
+configuration. A local credential path cannot be mounted by this workflow. The local CLI can
+read that file and transfer its validated JSON; do not print the resulting deployment payload.
 
 Apply database migrations and provision the restricted runtime role using [DATABASE_SETUP.md](DATABASE_SETUP.md). Runtime reads need stations/observations/snapshots access; the cache additionally needs SELECT/INSERT/UPDATE/DELETE on `aeroroute.route_comparison_cache`. Use a separate migration/ingestion role for schema and observation writes. Provider/database settings are injected into the container without printing their values in workflow logs.
 
@@ -65,6 +73,19 @@ Set these variables **before building**, because Next.js rewrites and public var
 | `AEROROUTE_API_URL` | Verified Lightsail HTTPS origin; required by the build spec |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Intended public browser map token, if map interaction is enabled |
 | `NEXT_PUBLIC_API_URL` | Leave empty for the same-origin proxy; optional direct backend origin requires matching CORS |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase public web configuration |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase authorized auth hostname |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Same project as the backend |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase web app ID |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Public Web Push key for direction alerts |
+| `NEXT_PUBLIC_FIREBASE_EMULATORS` | `false` or unset in production |
+
+`npm run check:production` runs before Amplify builds. It rejects missing app settings,
+local/non-HTTPS/credential-bearing API URLs, private browser map tokens and emulator/test mode.
+Add the final Amplify/custom hostname to Firebase Auth authorized domains and the intended
+Mapbox browser-token URL restrictions. Follow [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for rules,
+indexes, Google OAuth and push verification. A build or FCM validation is not proof of delivery.
 
 Redeploy the frontend after changing its backend URL. Set backend CORS to the deployed frontend origin. Verify **Check connection**, routing geometry, detour changes, replay notices and a supported genuine-data comparison at desktop/mobile widths. Fixture-based browser tests do not prove this deployed flow.
 

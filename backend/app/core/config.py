@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     cache_ttl_seconds: int = Field(default=120, ge=1, le=600)
     firebase_project_id: str | None = None
     firebase_credentials_path: str | None = None
+    firebase_credentials_json: SecretStr | None = None
 
     @field_validator(
         "openaq_api_key",
@@ -30,6 +31,7 @@ class Settings(BaseSettings):
         "s3_bucket",
         "firebase_project_id",
         "firebase_credentials_path",
+        "firebase_credentials_json",
         mode="before",
     )
     @classmethod

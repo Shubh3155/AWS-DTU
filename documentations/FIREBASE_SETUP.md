@@ -84,6 +84,12 @@ credential file outside the repository and mount it securely on the server.
 Restart FastAPI after changing its environment. Unconfigured cloud endpoints
 return a visible configuration error; the guest routing service still starts.
 
+For the AWS Lightsail workflow, set `AEROROUTE_FIREBASE_PROJECT_ID` as a GitHub production
+variable and `AEROROUTE_FIREBASE_CREDENTIALS_JSON` as a private production secret. The server
+accepts that JSON directly; it validates the private key and matching project without writing
+a file. Set JSON or `AEROROUTE_FIREBASE_CREDENTIALS_PATH`, never both. Keep Admin JSON out
+of Amplify public variables and images. See [DEPLOYMENT.md](DEPLOYMENT.md).
+
 The web SDK is pinned to 12.19.0 and Admin SDK to 7.7.x. Browser registration installs
 `onRegistered` before calling `register`, then binds the confirmed installation ID
 (FID) to the backend. It tracks FID changes and removes its observers on logout;

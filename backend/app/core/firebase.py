@@ -1,6 +1,8 @@
 """Lazy Firebase Admin access. Guest routing starts without Firebase credentials."""
 
+import json
 import os
+from pathlib import Path
 from threading import Lock
 from uuid import uuid4
 
@@ -11,6 +13,22 @@ from google.auth.credentials import AnonymousCredentials
 from google.auth.exceptions import DefaultCredentialsError
 
 from app.core.config import Settings
+
+
+def service_account(settings: Settings) -> dict | None:
+    """Read private server credentials without persisting or logging environment JSON."""
+    if settings.firebase_credentials_json and settings.firebase_credentials_path:
+        raise ValueError("Choose one Firebase credential source")
+    if settings.firebase_credentials_json:
+        data = json.loads(settings.firebase_credentials_json.get_secret_value())
+    elif settings.firebase_credentials_path:
+        data = json.loads(Path(settings.firebase_credentials_path).read_text())
+    else:
+        return None
+    if not isinstance(data, dict) or data.get("project_id") != settings.firebase_project_id:
+        raise ValueError("Firebase credential project must match the configured project")
+    credentials.Certificate(data)  # Validate the private key before a release, without network IO.
+    return data
 
 
 class FirebaseTransaction:
@@ -64,8 +82,9 @@ class FirebaseGateway:
                     EmulatorCredentials()
                     if emulators
                     else (
-                        credentials.Certificate(self.settings.firebase_credentials_path)
+                        credentials.Certificate(service_account(self.settings))
                         if self.settings.firebase_credentials_path
+                        or self.settings.firebase_credentials_json
                         else credentials.ApplicationDefault()
                     )
                 )
