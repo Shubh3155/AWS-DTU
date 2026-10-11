@@ -74,7 +74,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Visit `http://localhost:3000` and use **Check connection**. Backend health is at `http://localhost:8000/health`; API docs are at `http://localhost:8000/docs`. Both apps start without provider credentials. Add a browser Mapbox token for the map; private credentials belong only in `backend/.env`.
+Visit `http://localhost:3000`, choose **Get Started**, and use **Check connection** in the journey dashboard at `/journey`. Location selection, transport modes and route comparisons are available to guests; Google sign-in is requested when starting GPS navigation. Landing **Sign Up** also opens Google sign-in. Backend health is at `http://localhost:8000/health`; API docs are at `http://localhost:8000/docs`. Both apps start without provider credentials. Add a browser Mapbox token for the map; private credentials belong only in `backend/.env`.
 
 With Mapbox configured, the page displays actual walking routes, durations and detour eligibility. Database access enables PM2.5 scores when every route sample has sufficient recent station support. Live mode is the default; **Use recorded pollution observations** explicitly selects historical replay. Missing or stale readings keep exposure unavailable. Lower model estimates remain uncertain, and reduction percentages are withheld pending validation. Missing routing credentials return HTTP 503. See the [baseline handoff](documentations/EXPOSURE_BASELINE.md) and [recorded snapshot](documentations/INGESTION.md).
 
