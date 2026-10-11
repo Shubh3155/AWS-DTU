@@ -7,8 +7,15 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
 from app.core.pilot import contains, polygon
 from app.model.baseline import BaselinePolicy
 from app.schemas.routes import ComparisonRequest, ComparisonResponse, PilotResponse
-from app.services.cache import cache_identity, read_routes, route_cache_ttl, store_routes
+from app.services.cache import (
+    cache_identity,
+    live_route_identity,
+    read_routes,
+    route_cache_ttl,
+    store_routes,
+)
 from app.services.comparison import compare_routes
+from app.services.live_air_quality import fetch_live_air_quality
 from app.services.snapshots import load_snapshot
 from app.services.walking import RoutingError, vehicle_candidates, walking_candidates
 
@@ -39,23 +46,34 @@ def compare(
     settings = http_request.app.state.settings
     pool = http_request.app.state.database_pool
     now = datetime.now(UTC)
-    snapshot_cache = http_request.app.state.snapshot_cache
-    snapshot_key = (request.data_mode, request.snapshot_id)
-    loaded = snapshot_cache.get(snapshot_key)
-    if loaded is None:
-        loaded = load_snapshot(settings, request.data_mode, request.snapshot_id, pool)
-        if loaded[0] is not None:
-            snapshot_cache.put(snapshot_key, loaded, ttl=10)
-    snapshot, warnings = loaded
-    warnings = list(warnings)
-    if not all(contains(point.lat, point.lng) for point in (request.origin, request.destination)):
-        warnings.append("This journey is outside the reviewed historical demo area.")
+    snapshot = None
+    warnings = []
+    if request.data_mode == "replay":
+        snapshot_cache = http_request.app.state.snapshot_cache
+        snapshot_key = (request.data_mode, request.snapshot_id)
+        loaded = snapshot_cache.get(snapshot_key)
+        if loaded is None:
+            loaded = load_snapshot(settings, request.data_mode, request.snapshot_id, pool)
+            if loaded[0] is not None:
+                snapshot_cache.put(snapshot_key, loaded, ttl=10)
+        snapshot, snapshot_warnings = loaded
+        warnings.extend(snapshot_warnings)
+        if not all(
+            contains(point.lat, point.lng) for point in (request.origin, request.destination)
+        ):
+            warnings.append("This journey is outside the reviewed historical demo area.")
     policy = BaselinePolicy(
         station_radius_metres=settings.baseline_station_radius_metres,
         max_age_hours=settings.baseline_max_age_hours,
     )
     route_cache = http_request.app.state.route_cache
-    route_key = cache_identity(request, snapshot, policy, now)[0] if snapshot else None
+    route_key = (
+        live_route_identity(request, now)
+        if request.data_mode == "live"
+        else cache_identity(request, snapshot, policy, now)[0]
+        if snapshot
+        else None
+    )
     routes = route_cache.get(route_key) if route_key else None
     if routes is None and snapshot:
         routes = read_routes(settings, request, snapshot, policy, now, pool)
@@ -82,8 +100,16 @@ def compare(
             raise HTTPException(
                 status_code=error.status, detail={"code": error.code, "message": error.message}
             ) from None
-    if any(not contains(lat, lng) for route in routes for lng, lat in route.geometry.coordinates):
+    if request.data_mode == "replay" and any(
+        not contains(lat, lng) for route in routes for lng, lat in route.geometry.coordinates
+    ):
         warnings.append("One or more evaluated paths leave the reviewed historical demo area.")
+    live_data = None
+    if request.data_mode == "live":
+        live_data, live_warnings = fetch_live_air_quality(
+            routes, policy, http_request.app.state.live_air_quality_cache, datetime.now(UTC)
+        )
+        warnings.extend(live_warnings)
     result = compare_routes(
         routes,
         request,
@@ -91,6 +117,7 @@ def compare(
         policy,
         warnings=warnings,
         now=datetime.now(UTC),
+        live_data=live_data,
     )
     # Opaque, short-lived receipts bind navigation to actual provider output.
     # Active sessions persist their route in Firestore after this receipt is used.
@@ -100,8 +127,10 @@ def compare(
             receipt, {"route": candidate.model_dump(mode="json"), "mode": request.mode}, ttl=1800
         )
         candidate.navigation_token = receipt
-    http_response.headers["X-AeroRoute-Cache"] = "hit" if hit else "miss" if snapshot else "bypass"
-    if snapshot and not hit:
+    http_response.headers["X-AeroRoute-Cache"] = "hit" if hit else "miss" if route_key else "bypass"
+    if request.data_mode == "live" and not hit:
+        route_cache.put(route_key, routes, ttl=route_cache_ttl(settings, request))
+    elif snapshot and not hit:
         route_cache.put(route_key, routes, ttl=route_cache_ttl(settings, request))
         background_tasks.add_task(
             store_routes,

@@ -18,6 +18,20 @@ from app.services.walking import WalkingRoute
 CONTRACT = "travel-steps-v6-traffic"
 
 
+def live_route_identity(request: ComparisonRequest, now: datetime) -> str:
+    """Live routing geometry is cached independently of pollution and the database."""
+    interval = 300 if request.mode == "walking" else 60
+    identity = {
+        "origin": request.origin.model_dump(),
+        "destination": request.destination.model_dump(),
+        "mode": request.mode,
+        "bucket": int(now.timestamp()) // interval,
+        "contract": CONTRACT,
+    }
+    digest = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
+    return "live-route-" + digest
+
+
 def route_cache_ttl(settings: Settings, request: ComparisonRequest) -> int:
     return (
         min(60, settings.cache_ttl_seconds)

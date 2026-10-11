@@ -27,7 +27,7 @@ def test_cache_expiry_capacity_and_caller_mutations():
     assert not cache.values
 
 
-def test_memory_hits_recheck_freshness_and_expiry_does_not_mask_database_failure(monkeypatch):
+def test_replay_snapshot_cache_expiry_does_not_mask_database_failure(monkeypatch):
     elapsed = [0]
 
     class Clock:
@@ -36,7 +36,7 @@ def test_memory_hits_recheck_freshness_and_expiry_does_not_mask_database_failure
             return NOW + timedelta(seconds=elapsed[0])
 
     monkeypatch.setattr("app.api.routes.datetime", Clock)
-    data = snapshot(stations(observed=NOW - timedelta(hours=2) + timedelta(seconds=5)), "live")
+    data = snapshot(stations(), "replay")
     reads = []
 
     def load(*args):
@@ -52,13 +52,13 @@ def test_memory_hits_recheck_freshness_and_expiry_does_not_mask_database_failure
     app.state.snapshot_cache = RuntimeCache(clock=lambda: elapsed[0])
     app.state.route_cache = RuntimeCache(clock=lambda: elapsed[0])
     client = TestClient(app)
-    payload = request(mode="live").model_dump()
+    payload = request().model_dump()
     first = client.post("/api/routes/compare", json=payload)
     assert first.json()["candidates"][0]["estimated_exposure"] is not None
     elapsed[0] = 6
     second = client.post("/api/routes/compare", json=payload)
     assert second.headers["X-AeroRoute-Cache"] == "hit"
-    assert second.json()["candidates"][0]["estimated_exposure"] is None
+    assert second.json()["candidates"][0]["estimated_exposure"] is not None
     assert len(reads) == 1
     elapsed[0] = 11
     third = client.post("/api/routes/compare", json=payload)
@@ -78,8 +78,8 @@ def test_snapshot_cache_is_scoped_to_requested_mode_and_identity(monkeypatch):
     monkeypatch.setattr("app.api.routes.load_snapshot", load)
     monkeypatch.setattr("app.api.routes.read_routes", lambda *a: [walking()])
     client = TestClient(create_app(Settings(mapbox_token="private", _env_file=None)))
-    for mode, identity in [("replay", None), ("live", None), ("replay", "other")]:
+    for mode, identity in [("replay", None), ("replay", "other")]:
         payload = request(mode=mode).model_dump()
         payload["snapshot_id"] = identity
         assert client.post("/api/routes/compare", json=payload).status_code == 200
-    assert calls == [("replay", None), ("live", None), ("replay", "other")]
+    assert calls == [("replay", None), ("replay", "other")]

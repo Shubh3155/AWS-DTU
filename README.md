@@ -3,13 +3,16 @@
 Walking-route comparisons using estimated PM2.5 exposure and a user-defined time budget.
 
 The local comparison flow is implemented: genuine walking routes, detour limits,
-Supabase snapshots, historical exposure estimates, green route previews and bounded
-caching. Route-quality screening and a Central Delhi historical demo boundary are
-reviewed. Backend and desktop/mobile checks run in CI.
+Supabase historical snapshots, route-region live forecasts, green route previews and
+bounded caching. Live mode fetches current Open-Meteo / CAMS regional PM2.5 along
+actual routes rather than reading stored pollution from Supabase. Route-quality
+screening and a Central Delhi historical demo boundary are reviewed. Backend and
+desktop/mobile checks run in CI. See [live air quality](documentations/LIVE_AIR_QUALITY.md).
 Separate November evaluation reveals substantially larger station errors than
 October, and the latest live audit has only one usable fresh station. Estimates
-remain provisional; no validated cleaner-detour benefit is claimed. AWS deployment
-and the final recorded demonstration remain pending. See the
+remain provisional; no validated cleaner-detour benefit is claimed. Amplify and the
+Lightsail VM deployment are recorded in [AWS_VM_DEPLOYMENT.md](documentations/AWS_VM_DEPLOYMENT.md).
+The live-forecast change needs a frontend/backend release; the final recording remains pending. See the
 [data credibility review](documentations/DATA_CREDIBILITY.md) and
 [path-quality review](documentations/ROUTE_QUALITY.md).
 
@@ -76,7 +79,16 @@ npm run dev
 
 Visit `http://localhost:3000`, choose **Get Started**, and use **Check connection** in the journey dashboard at `/journey`. Location selection, transport modes and route comparisons are available to guests; Google sign-in is requested when starting GPS navigation. Landing **Sign Up** also opens Google sign-in. Backend health is at `http://localhost:8000/health`; API docs are at `http://localhost:8000/docs`. Both apps start without provider credentials. Add a browser Mapbox token for the map; private credentials belong only in `backend/.env`.
 
-With Mapbox configured, the page displays actual walking routes, durations and detour eligibility. Database access enables PM2.5 scores when every route sample has sufficient recent station support. Live mode is the default; **Use recorded pollution observations** explicitly selects historical replay. Missing or stale readings keep exposure unavailable. Lower model estimates remain uncertain, and reduction percentages are withheld pending validation. Missing routing credentials return HTTP 503. See the [baseline handoff](documentations/EXPOSURE_BASELINE.md) and [recorded snapshot](documentations/INGESTION.md).
+With Mapbox configured, the page displays actual travel routes, durations and detour
+eligibility. Live mode is the default and requests current regional PM2.5 forecasts
+directly from Open-Meteo for the regions each path crosses, without a Supabase
+pollution read. The approximately 45 km CAMS Global grid is not street-level data.
+**Use recorded pollution observations** explicitly selects historical replay, whose
+scores use database snapshots and the existing station-support rules. Missing, stale,
+or partial provider data keeps full-route exposure unavailable. Lower model estimates
+remain uncertain, and reduction percentages are withheld pending validation. Missing
+routing credentials return HTTP 503. See [live air quality](documentations/LIVE_AIR_QUALITY.md)
+and the [recorded snapshot](documentations/INGESTION.md).
 
 ## Checks
 

@@ -140,8 +140,8 @@ def test_oversized_snapshot_is_not_silently_truncated_and_scored(monkeypatch):
     assert "observation limit" in warnings[0]
 
 
-@pytest.mark.parametrize("mode", ["live", "replay"])
-def test_api_consumes_explicit_snapshot_mode_and_serializes_scoring(monkeypatch, mode):
+def test_api_consumes_explicit_replay_snapshot_and_serializes_scoring(monkeypatch):
+    mode = "replay"
     geometry = LineString(coordinates=[(77.2, 28.6), (77.2001, 28.6001)])
     route = WalkingRoute(
         id="synthetic-route",
@@ -172,8 +172,7 @@ def test_api_consumes_explicit_snapshot_mode_and_serializes_scoring(monkeypatch,
         "max_detour_minutes": 5,
         "snapshot_id": "synthetic-replay",
     }
-    if mode == "replay":
-        payload["data_mode"] = "replay"
+    payload["data_mode"] = "replay"
     response = client.post("/api/routes/compare", json=payload)
     assert response.status_code == 200
     assert calls == [(mode, "synthetic-replay")]
@@ -182,13 +181,7 @@ def test_api_consumes_explicit_snapshot_mode_and_serializes_scoring(monkeypatch,
     assert result["data_quality"]["snapshot_id"] == "synthetic-replay"
     assert result["data_quality"]["model_version"].startswith("idw-v1-")
     assert result["estimated_reduction_percent"] is None
-    if mode == "replay":
-        assert result["status"] == "single_candidate"
-        assert result["candidates"][0]["estimated_exposure"] == pytest.approx(1600)
-        assert result["data_quality"]["station_count"] == 3
-        assert result["data_quality"]["reference_time"] == "2026-10-07T12:00:00Z"
-    else:
-        # Old data, even tagged live, cannot score the current journey.
-        assert result["status"] == "limited_data"
-        assert result["candidates"][0]["estimated_exposure"] is None
-        assert result["data_quality"]["station_count"] == 0
+    assert result["status"] == "single_candidate"
+    assert result["candidates"][0]["estimated_exposure"] == pytest.approx(1600)
+    assert result["data_quality"]["station_count"] == 3
+    assert result["data_quality"]["reference_time"] == "2026-10-07T12:00:00Z"

@@ -55,6 +55,28 @@ test("live limited support never displays zero exposure", async ({ page }) => {
   await expect(page.getByText("Data support is insufficient to compare full-route exposures.")).toBeVisible();
 });
 
+test("live model scores show regional coverage and attribution without invented stations", async ({ page }) => {
+  const data = comparison();
+  data.data_quality = { ...data.data_quality, data_mode: "live", source_type: "model_forecast",
+    observed_from: null, observed_to: null, snapshot_id: null, station_count: 0, sample_count: 4,
+    valid_from: "2026-10-11T10:00:00Z", valid_to: "2026-10-11T11:00:00Z",
+    spatial_resolution_km: 45, provider_ids: ["Open-Meteo / Copernicus CAMS Global"],
+    model_version: "cams-global-current-route-v1" };
+  await page.route("**/api/routes/compare", route => route.fulfill({ json: data }));
+  await journey(page);
+  await compareRoutes(page, "walking");
+  await expect(page.getByText("Estimated exposure: 1600.0 µg·min/m³")).toBeVisible();
+  await expect(page.getByText("Air-quality time coverage: 100%")).toHaveCount(2);
+  await expect(page.getByRole("heading", { name: "Current regional air-quality forecast" })).toBeVisible();
+  await expect(page.getByText(/Forecast valid:/)).toContainText("IST");
+  await expect(page.getByText(/Route sampling regions: 4/)).toBeVisible();
+  await expect(page.getByText(/Regional model resolution: approximately 45 km/)).toBeVisible();
+  await expect(page.getByText(/Time-filtered stations:/)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open-Meteo", exact: true })).toHaveAttribute("href", "https://open-meteo.com/en/docs/air-quality-api");
+  await expect(page.getByRole("link", { name: "Copernicus CAMS", exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
 test("changing allowance or replay mode clears old scores", async ({ page }) => {
   await page.route("**/api/routes/compare", route => route.fulfill({ json: comparison() }));
   await journey(page);

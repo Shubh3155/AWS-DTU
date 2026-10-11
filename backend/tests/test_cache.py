@@ -103,8 +103,8 @@ def test_cache_store_sets_ttl_and_contains_original_step_times(monkeypatch):
     assert params[-3].obj["walking_routes"][0]["steps"][0]["duration"] == 1200
 
 
-def test_api_cache_hit_skips_provider_but_rechecks_current_freshness(monkeypatch):
-    old = snapshot(stations(observed=NOW - timedelta(days=5)), "live")
+def test_replay_api_cache_hit_skips_provider_and_retains_historical_scoring(monkeypatch):
+    old = snapshot(stations(observed=NOW - timedelta(days=5)), "replay")
     monkeypatch.setattr("app.api.routes.load_snapshot", lambda *a: (old, []))
     monkeypatch.setattr("app.api.routes.read_routes", lambda *a: [walking()])
 
@@ -113,8 +113,8 @@ def test_api_cache_hit_skips_provider_but_rechecks_current_freshness(monkeypatch
 
     monkeypatch.setattr("app.api.routes.walking_candidates", provider)
     client = TestClient(create_app(Settings(mapbox_token="private", _env_file=None)))
-    result = client.post("/api/routes/compare", json=request(mode="live").model_dump())
+    result = client.post("/api/routes/compare", json=request().model_dump())
     assert result.status_code == 200
     assert result.headers["X-AeroRoute-Cache"] == "hit"
-    assert result.json()["status"] == "limited_data"
-    assert result.json()["candidates"][0]["estimated_exposure"] is None
+    assert result.json()["status"] == "single_candidate"
+    assert result.json()["candidates"][0]["estimated_exposure"] is not None
