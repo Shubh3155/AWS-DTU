@@ -64,6 +64,13 @@ export type ComparisonResponse = {
   warnings: string[];
   data_quality: {
     data_mode: "live" | "replay" | "unavailable";
+    source_type?: "station_observations" | "model_forecast" | "unavailable";
+    valid_from?: string | null;
+    valid_to?: string | null;
+    sample_count?: number;
+    spatial_resolution_km?: number | null;
+    attribution?: string | null;
+    source_url?: string | null;
     observed_from: string | null;
     observed_to: string | null;
     fetched_at: string | null;

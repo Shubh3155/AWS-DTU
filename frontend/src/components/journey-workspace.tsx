@@ -54,6 +54,7 @@ export function JourneyWorkspace() {
   const [hoverRouteId, setHoverRouteId] = useState<string | null>(null);
   const [focusRouteId, setFocusRouteId] = useState<string | null>(null);
   const candidates = result?.candidates ?? [];
+  const modeledAir = result?.data_quality.source_type === "model_forecast";
   const selectedId = candidates.some(route => route.id === selectedRouteId) ? selectedRouteId : result?.lowest_exposure_eligible_id ?? result?.fastest_id ?? candidates[0]?.id ?? null;
   const previewId = navigating ? selectedId : hoverRouteId ?? focusRouteId ?? selectedId;
   const activeRouteId = candidates.some(route => route.id === previewId) ? previewId : selectedId;
@@ -306,7 +307,7 @@ export function JourneyWorkspace() {
                   {route.via && <p>Waypoint-generated candidate · via {route.via.lat.toFixed(4)}, {route.via.lng.toFixed(4)}</p>}
                   <p>{route.within_budget ? "Within your time allowance" : "Outside your time allowance"}</p>
                   <p>Estimated exposure: {route.estimated_exposure === null ? "Unavailable" : `${route.estimated_exposure.toFixed(1)} ${route.exposure_unit}`}</p>
-                  <p>Modeled-time support: {route.coverage_percent.toFixed(0)}%</p>
+                  <p>Air-quality time coverage: {route.coverage_percent.toFixed(0)}%</p>
                   <button type="button" disabled={navigating} className="show-route" aria-label={`Show route ${index + 1} on map`} aria-pressed={route.id === selectedId} onClick={() => { setSelectedRouteId(route.id); setHoverRouteId(null); setFocusRouteId(route.id); }}>{route.id === activeRouteId ? "Showing on map" : "Show on map"}<span aria-hidden="true">↗</span></button>
                 </div>
               )) : <div className="result-card"><h3>No route found</h3><p>Try different starting and destination points.</p></div> : (
@@ -316,18 +317,25 @@ export function JourneyWorkspace() {
           </div>
         </div>
         <section className="data-notice"><span className="notice-dot" aria-hidden="true" /><div>
-          <h2>{result?.data_quality.data_mode === "replay" ? "Recorded-data replay · historical air observations" : "Data quality comes with the comparison."}</h2>
+          <h2>{result?.data_quality.data_mode === "replay" ? "Recorded-data replay · historical air observations" : modeledAir ? "Current regional air-quality forecast" : "Data quality comes with the comparison."}</h2>
           {result ? <>
-            <p>Observations: {observationTime(result.data_quality.observed_from)} to {observationTime(result.data_quality.observed_to)}.</p>
-            <p>Snapshot fetched: {observationTime(result.data_quality.fetched_at)}. Time-filtered stations: {result.data_quality.station_count}.</p>
-            {result.data_quality.provider_ids.length > 0 && <p>Observation sources: {result.data_quality.provider_ids.join(", ")}.</p>}
+            {modeledAir ? <>
+              <p>Forecast valid: {observationTime(result.data_quality.valid_from ?? null)} to {observationTime(result.data_quality.valid_to ?? null)}.</p>
+              <p>API fetched: {observationTime(result.data_quality.fetched_at)}. Route sampling regions: {result.data_quality.sample_count ?? 0}.</p>
+              <p>Regional model resolution: approximately {result.data_quality.spatial_resolution_km ?? 45} km. Time coverage shows data availability, not accuracy or monitoring-station coverage.</p>
+            </> : <>
+              <p>Observations: {observationTime(result.data_quality.observed_from)} to {observationTime(result.data_quality.observed_to)}.</p>
+              <p>Snapshot fetched: {observationTime(result.data_quality.fetched_at)}. Time-filtered stations: {result.data_quality.station_count}.</p>
+            </>}
+            {result.data_quality.provider_ids.length > 0 && <p>{modeledAir ? "Forecast sources" : "Observation sources"}: {result.data_quality.provider_ids.join(", ")}.</p>}
+            {modeledAir && <p>Air quality data: <a href="https://open-meteo.com/en/docs/air-quality-api" target="_blank" rel="noreferrer">Open-Meteo</a> and <a href="https://atmosphere.copernicus.eu/" target="_blank" rel="noreferrer">Copernicus CAMS</a>.</p>}
             {result.data_quality.data_mode === "replay" && <p>Historical reference: {observationTime(result.data_quality.reference_time)}. Directions are current; pollution observations are recorded.</p>}
             {result.status === "uncertain_difference" && <p className="uncertainty-notice">The difference is uncertain. A lower model estimate is not a reliable improvement recommendation.</p>}
             {result.status === "single_candidate" && <p>Only one route candidate is available; no alternative-route improvement is claimed.</p>}
             {result.status === "no_lower_exposure_candidate" && <p>No eligible candidate has a lower estimated exposure than the fastest evaluated route.</p>}
             {result.status === "limited_data" && <p>Data support is insufficient to compare full-route exposures.</p>}
-            {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. Historical validation errors vary substantially between periods; station support does not establish street-level accuracy.</p>}
-          </> : <p>Routes come from Mapbox. Station interpolation is a provisional model; source times and coverage appear with results. No improvement percentages are claimed before validation.</p>}
+            {result.data_quality.model_version && <p className="model-caption">Model: {result.data_quality.model_version}. {modeledAir ? "The coarse regional forecast cannot reliably distinguish nearby streets. Exposure uses the current field throughout the journey; arrival-time changes are not predicted." : "Historical validation errors vary substantially between periods; station support does not establish street-level accuracy."}</p>}
+          </> : <p>Routes come from Mapbox. Live mode fetches current regional PM2.5 forecasts along each route; recorded replay uses historical station observations. Source times and coverage appear with results.</p>}
         </div></section>
       </main>
       <footer><p>Ambient exposure estimates · field validation still needed</p><div><span role="status">{connection}</span><button onClick={testConnection} disabled={checking}>{checking ? "Checking…" : "Check connection"}</button></div></footer>
