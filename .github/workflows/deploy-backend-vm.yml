@@ -60,7 +60,7 @@ jobs:
               raise SystemExit('Configure the private deployment key and pinned host key')
           folder = Path.home()/'.ssh'
           folder.mkdir(mode=0o700, exist_ok=True)
-          (folder/'id_ed25519').write_text(os.environ['DEPLOY_KEY'])
+          (folder/'id_ed25519').write_text(os.environ['DEPLOY_KEY'].strip() + '\n')
           (folder/'known_hosts').write_text(os.environ['KNOWN_HOSTS'])
           PY
       - name: Upload and activate release
