@@ -10,6 +10,7 @@ from app.core.config import Settings, get_settings
 from app.core.database import create_pool
 from app.core.firebase import FirebaseGateway
 from app.core.runtime_cache import RuntimeCache
+from app.services.live_air_quality import LiveAirQualityCache
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -37,7 +38,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
         title="AeroRoute API",
         version=configuration.app_version,
-        description="Walking candidates and station-interpolated PM2.5 exposure with data quality.",
+        description="Travel routes with current regional PM2.5 forecasts or historical replay.",
     )
     application.add_middleware(
         CORSMiddleware,
@@ -59,6 +60,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.database_pool = None
     application.state.snapshot_cache = RuntimeCache()
     application.state.route_cache = RuntimeCache()
+    application.state.live_air_quality_cache = LiveAirQualityCache()
     application.state.navigation_routes = RuntimeCache(capacity=256)
     application.state.firebase = FirebaseGateway(configuration)
     application.state.settings = configuration

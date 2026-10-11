@@ -27,7 +27,17 @@ def verify_mode(request, result):
     else:
         if result.data_quality.data_mode == "replay":
             raise ValueError("Live mode must never silently use replay")
-        if result.data_quality.station_count < 3 and any(
+        if result.data_quality.source_type == "model_forecast":
+            if result.data_quality.sample_count < 1:
+                raise ValueError("Live forecasts require sampled route regions")
+            if not result.data_quality.valid_from or not result.data_quality.valid_to:
+                raise ValueError("Live forecasts require valid-time metadata")
+            if any(
+                r.estimated_exposure is not None and r.coverage_percent != 100
+                for r in result.candidates
+            ):
+                raise ValueError("Partial forecast support must withhold full-route scores")
+        elif result.data_quality.station_count < 3 and any(
             r.estimated_exposure is not None for r in result.candidates
         ):
             raise ValueError("Insufficient live stations must withhold scores")

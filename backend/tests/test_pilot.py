@@ -32,6 +32,7 @@ def test_paths_leaving_area_are_warned_even_when_endpoints_are_inside(monkeypatc
             "origin": {"lat": 28.6315, "lng": 77.2167},
             "destination": {"lat": 28.628, "lng": 77.241},
             "max_detour_minutes": 5,
+            "data_mode": "replay",
         },
     )
     assert response.status_code == 200

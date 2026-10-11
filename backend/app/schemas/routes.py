@@ -79,6 +79,13 @@ class RouteCandidate(BaseModel):
 
 class DataQuality(BaseModel):
     data_mode: Literal["live", "replay", "unavailable"]
+    source_type: Literal["station_observations", "model_forecast", "unavailable"] = "unavailable"
+    valid_from: AwareDatetime | None = None
+    valid_to: AwareDatetime | None = None
+    sample_count: int = Field(default=0, ge=0)
+    spatial_resolution_km: float | None = Field(default=None, gt=0)
+    attribution: str | None = None
+    source_url: str | None = None
     observed_from: AwareDatetime | None = None
     observed_to: AwareDatetime | None = None
     fetched_at: AwareDatetime | None = None

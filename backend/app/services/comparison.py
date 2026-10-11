@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 
 from app.model.baseline import BaselinePolicy, score_route, usable_observations
 from app.schemas.routes import ComparisonRequest, ComparisonResponse, DataQuality, RouteCandidate
+from app.services.live_air_quality import LiveAirQuality
 from app.services.snapshots import PollutionSnapshot
 from app.services.walking import WalkingRoute
 
@@ -15,6 +16,7 @@ def compare_routes(
     policy: BaselinePolicy,
     warnings: list[str] | None = None,
     now: datetime | None = None,
+    live_data: LiveAirQuality | None = None,
 ) -> ComparisonResponse:
     notes = list(warnings or [])
     if request.mode == "driving":
@@ -39,7 +41,19 @@ def compare_routes(
         )
     quality = DataQuality(data_mode="unavailable")
     observations = []
-    if snapshot is not None:
+    reference = now or datetime.now(UTC)
+    if live_data is not None and request.data_mode == "live":
+        quality = live_data.quality(reference, policy)
+        notes.append(
+            "Current PM2.5 comes from Open-Meteo / Copernicus CAMS Global forecasts, "
+            "not monitoring-station observations. The approximately 45 km model grid "
+            "cannot reliably distinguish nearby streets; 100% time support is not accuracy."
+        )
+        notes.append(
+            "Exposure holds the current regional field fixed during the journey; "
+            "it is not an arrival-time air-quality prediction or inhaled dose."
+        )
+    elif snapshot is not None:
         if snapshot.data_mode != request.data_mode:
             notes.append(
                 "Snapshot mode does not match the requested data mode; scoring is withheld."
@@ -51,6 +65,7 @@ def compare_routes(
             observations = usable_observations(snapshot.observations, reference, policy)
             quality = DataQuality(
                 data_mode=snapshot.data_mode,
+                source_type="station_observations",
                 snapshot_id=snapshot.snapshot_id,
                 reference_time=reference,
                 fetched_at=snapshot.fetched_at,
@@ -82,7 +97,11 @@ def compare_routes(
     fastest = min(routes, key=lambda route: (route.duration, route.id)) if routes else None
     candidates = []
     for route in routes:
-        score = score_route(route, observations, policy)
+        score = (
+            live_data.score(route, policy, reference)
+            if live_data is not None and request.data_mode == "live"
+            else score_route(route, observations, policy)
+        )
         notes.extend(score.warnings)
         candidates.append(
             RouteCandidate(
