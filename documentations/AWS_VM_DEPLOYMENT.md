@@ -16,6 +16,13 @@ GitHub Amplify access is limited to `Shubh3155/AWS-DTU`. Frontend hosting follow
 `main` with `frontend` as its monorepo root. Public Firebase configuration and the
 public Mapbox token belong in Amplify; private credentials do not.
 
+The branded URL is `https://aeroroute.d1qrrcsa5p4lz3.amplifyapp.com`.
+Amplify serves the `aeroroute` branch, which the hosting sync workflow fast-forwards
+from `main` on each push. Continue development on `main`; do not commit directly
+to the hosting branch. The workflow refuses to overwrite a divergent branch.
+Backend releases still run from `main`. Keep both frontend hostnames in Firebase
+Auth's authorized domains and the backend CORS allowlist while the old URL is active.
+
 ## Production environment
 
 The [VM workflow](../.github/workflows/deploy-backend-vm.yml) uses the existing backend
