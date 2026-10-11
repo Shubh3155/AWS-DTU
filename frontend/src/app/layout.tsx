@@ -17,7 +17,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `if((location.pathname==='/'||location.pathname==='/about')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('motion-pending');window.__landingEntranceStarted=true;window.__landingMotionTimer=setTimeout(function(){document.documentElement.classList.remove('motion-pending')},3500)}` }} />
+      </head>
       <body><AuthProvider>{children}</AuthProvider></body>
     </html>
   );

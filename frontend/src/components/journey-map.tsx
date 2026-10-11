@@ -200,14 +200,15 @@ export function JourneyMap({ origin, destination, activePoint, onSelect, routes,
         {!running && !navigation.arrived && <p>{selectionReason}. Model differences remain uncertain.</p>}
         <TrafficDetails route={chosenRoute} />
         {!running && navigation.message && <p role="status">{navigation.message}</p>}
+        {!running && navigation.authError && <p role="status">{navigation.authError}</p>}
         {running && <p className="gps-caption">GPS ±{fix ? Math.round(fix.accuracy) : "—"} m · time remaining is approximate</p>}
       </div>
       {running ? <button type="button" className="navigation-stop" onClick={navigation.stop}>Stop journey</button>
-        : <button type="button" className="navigation-start" onClick={() => { setFollowing(true); navigation.start(); }}>Start journey <span aria-hidden="true">↗</span></button>}
+        : <button type="button" className="navigation-start" disabled={!auth.ready || auth.busy} onClick={() => { setFollowing(true); void navigation.start(); }}>{auth.busy ? "Signing in…" : "Start journey"} <span aria-hidden="true">↗</span></button>}
       <p className="navigation-note">{running ? "Automatic rerouting is on. GPS positions are sent to the route service and Mapbox for route updates. Stop ends tracking and cancels updates." : "Start follows GPS and automatically reroutes when you leave the path. Route updates share your GPS position with the route service and Mapbox. Location permission is required."}{chosenRoute.traffic && " Vehicle routes refresh about every two minutes with accurate GPS. Traffic may change between updates."}</p>
       <div className="direction-alerts">
         <button type="button" disabled={alerts.busy || !auth.ready || auth.busy} onClick={() => void (alerts.enabled ? alerts.disable() : alerts.enable())}>{alerts.busy ? "Enabling alerts…" : alerts.enabled ? "Disable direction alerts" : "Enable direction alerts"}</button>
-        <p role="status">{alerts.message || (auth.user ? "Optional cloud alerts for the next turn. Keep this page open for live directions." : "Sign in with Google to receive cloud direction alerts. On-screen directions work as a guest.")}</p>
+        <p role="status">{alerts.message || (auth.user ? "Optional cloud alerts for the next turn. Keep this page open for live directions." : "Plan and compare as a guest. Sign in with Google when you start your journey.")}</p>
       </div>
     </section>}
     </div>

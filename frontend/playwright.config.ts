@@ -2,6 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  outputDir: "./test-results/e2e",
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: 2,

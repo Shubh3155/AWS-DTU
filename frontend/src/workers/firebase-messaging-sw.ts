@@ -56,9 +56,9 @@ self.addEventListener("notificationclick", event => {
     const data = event.notification.data;
     if (!active || active.expiresAt <= Date.now() || Number(data?.expiresAt) <= Date.now() || active.journeyId !== data?.journeyId || active.routeVersion !== data?.routeVersion || Number(data?.sequence) !== active.lastDisplayedSequence) return;
     const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    const existing = windows.find(client => new URL(client.url).origin === self.location.origin);
+    const existing = windows.find(client => new URL(client.url).origin === self.location.origin && new URL(client.url).pathname === "/journey");
     if (existing) { await existing.focus(); existing.postMessage({ type: "refresh-guidance" }); }
-    else await self.clients.openWindow("/");
+    else await self.clients.openWindow("/journey");
   })());
 });
 

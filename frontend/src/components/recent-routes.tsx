@@ -45,7 +45,7 @@ export function RecentRoutes({ disabled, onReopen }: { disabled: boolean; onReop
     finally { setWorking(false); }
   }
 
-  return <section className="recent-routes" aria-label="Recent routes">
+  return <section className="recent-routes" id="recent-routes" aria-label="Recent routes">
     <div className="recent-heading"><h2>Recent routes</h2>{uid && rows.length > 0 && <button type="button" disabled={working || disabled} onClick={() => void action(() => clearHistory(uid))}>Clear all</button>}</div>
     {!ready ? <p role="status">Restoring your session…</p> : !uid ? <p>Sign in with Google to save and reopen your route searches.</p> : <>
       {state.uid === uid && state.loading && <p role="status">Loading recent routes…</p>}
